@@ -1,0 +1,652 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lesson 6 · Limitations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root {
+  --bg: #F7F5F0; --surface: #EDEAE2; --surface2: #E0DDD4;
+  --text: #1A1916; --text2: #504E48; --text3: #7A7870;
+  --accent: #2455A4; --accent-light: #D8E4F7;
+  --pos: #1A7A4E; --pos-light: #D2EFE2;
+  --neg: #B83030; --neg-light: #F7DEDE;
+  --warn: #A06010; --warn-light: #FDF0DC;
+  --border: #D4D1C8; --border2: #C0BDB4;
+  --radius: 10px; --radius-sm: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+    --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+    --accent: #6B9EF8; --accent-light: #1A2A4A;
+    --pos: #4ABA82; --pos-light: #0D2E1E;
+    --neg: #F08080; --neg-light: #2E0E0E;
+    --warn: #F0C060; --warn-light: #2A1E08;
+    --border: #38362E; --border2: #4A4840;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+  --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+  --accent: #6B9EF8; --accent-light: #1A2A4A;
+  --pos: #4ABA82; --pos-light: #0D2E1E;
+  --neg: #F08080; --neg-light: #2E0E0E;
+  --warn: #F0C060; --warn-light: #2A1E08;
+  --border: #38362E; --border2: #4A4840;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.65; min-height: 100%; }
+
+/* ── Lesson switcher ── */
+.lesson-switcher{display:flex;align-items:center;gap:12px;padding:12px 24px 4px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border);}
+.ls-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); white-space: nowrap; }
+.ls-links { display: flex; gap: 6px; flex-wrap: wrap; }
+.ls-btn { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 4px 13px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); text-decoration: none; transition: background .15s, border-color .15s, color .15s; }
+.ls-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.ls-active { background: var(--accent); border-color: var(--accent); color: #fff; cursor: default; pointer-events: none; }
+
+/* ── Page structure ── */
+.page-header { padding: 32px 24px 0; max-width: 860px; margin: 0 auto; }
+.lesson-label { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.lesson-title { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(26px,5vw,38px); line-height: 1.15; margin-bottom: 12px; text-wrap: balance; }
+.lesson-intro { font-size: 16px; color: var(--text2); max-width: 680px; margin-bottom: 28px; font-weight: 300; }
+
+.tab-nav { display: flex; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding: 0 24px; max-width: 860px; margin: 0 auto; }
+.tab-btn { background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; padding: 10px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--text3); cursor: pointer; transition: color .15s, border-color .15s; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.content { max-width: 860px; margin: 0 auto; padding: 32px 24px 64px; }
+
+/* ── Typography ── */
+.section-heading { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(20px,3.5vw,26px); margin-bottom: 12px; text-wrap: balance; }
+.subsection { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(17px,2.8vw,20px); margin: 28px 0 10px; color: var(--text); }
+p { color: var(--text2); margin-bottom: 16px; font-size: 15.5px; }
+p:last-child { margin-bottom: 0; }
+p strong { color: var(--text); font-weight: 600; }
+code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--surface2); padding: 1px 5px; border-radius: 3px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* ── Callout boxes ── */
+.callout { border-radius: var(--radius); padding: 14px 18px; margin: 24px 0; font-size: 14.5px; line-height: 1.6; }
+.callout strong { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.callout-neg  { background: var(--neg-light);  border: 1px solid var(--neg);  color: var(--text); }
+.callout-neg  strong { color: var(--neg); }
+.callout-warn { background: var(--warn-light); border: 1px solid var(--warn); color: var(--text); }
+.callout-warn strong { color: var(--warn); }
+.callout-blue { background: var(--accent-light); border: 1px solid var(--accent); color: var(--text); }
+.callout-blue strong { color: var(--accent); }
+.callout-pos  { background: var(--pos-light);  border: 1px solid var(--pos);  color: var(--text); }
+.callout-pos  strong { color: var(--pos); }
+
+/* ── Eq block ── */
+.eq-block { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 14px 18px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 13.5px; color: var(--text); overflow-x: auto; line-height: 1.9; }
+.eq-label { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); display: block; margin-bottom: 6px; }
+
+/* ── Widget ── */
+.widget { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 28px 0; }
+.widget-title { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 18px; }
+
+/* ── Buttons ── */
+.btn { border: none; padding: 8px 20px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity .12s; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-neg     { background: var(--neg);    color: #fff; }
+.btn-ghost   { background: var(--surface2); color: var(--text); }
+.btn:disabled { opacity: .3; cursor: default; }
+.btn:not(:disabled):hover { opacity: .82; }
+
+/* ── Comparison table ── */
+.cmp-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+.cmp-table th { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); padding: 8px 12px; border-bottom: 2px solid var(--border); text-align: left; }
+.cmp-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.55; }
+.cmp-table tr:last-child td { border-bottom: none; }
+.cmp-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+.td-neg  { color: var(--neg) !important; }
+.td-pos  { color: var(--pos) !important; }
+.td-warn { color: var(--warn) !important; }
+.content a { color: var(--accent); }
+
+/* ── Token strip ── */
+.token-strip { display: flex; flex-wrap: wrap; gap: 4px; margin: 12px 0; align-items: flex-end; }
+.tok { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.tok-text { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); white-space: pre; }
+.tok-id { font-size: 9px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+.tok.t-warn .tok-text { background: var(--warn-light); border-color: var(--warn); color: var(--warn); }
+.tok.t-neg  .tok-text { background: var(--neg-light);  border-color: var(--neg);  color: var(--neg); }
+.tok.t-pos  .tok-text { background: var(--pos-light);  border-color: var(--pos);  color: var(--pos); }
+
+/* ── Attention heatmap ── */
+.attn-grid { display: grid; gap: 3px; }
+.attn-cell { height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 600; font-family: 'JetBrains Mono', monospace; transition: background .25s, color .25s; }
+.attn-row-label { font-size: 11px; font-weight: 600; color: var(--text2); font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; }
+.attn-col-label { font-size: 10px; font-weight: 600; color: var(--text3); font-family: 'JetBrains Mono', monospace; text-align: center; }
+.legend-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text3); margin-top: 12px; }
+.legend-swatch { width: 80px; height: 12px; border-radius: 3px; }
+
+/* ── Reversal table ── */
+.reversal-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 12px; }
+.reversal-direction { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.r-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: 2px 10px; border-radius: 20px; }
+.r-forward { background: var(--pos-light); color: var(--pos); }
+.r-reverse { background: var(--neg-light); color: var(--neg); }
+.r-query { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text2); flex: 1; min-width: 0; }
+.r-answer { font-size: 13.5px; margin-top: 4px; }
+.r-correct { color: var(--pos); }
+.r-wrong   { color: var(--neg); }
+.r-conf    { font-size: 11px; color: var(--text3); margin-left: 6px; }
+
+/* ── Syco slider ── */
+.syco-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+@media (max-width: 580px) { .syco-container { grid-template-columns: 1fr; } }
+.syco-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.syco-panel-title { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 12px; }
+.syco-msg { font-size: 13.5px; line-height: 1.6; padding: 10px 13px; border-radius: var(--radius-sm); margin-bottom: 8px; }
+.syco-user    { background: var(--accent-light); border: 1px solid var(--accent); color: var(--text); }
+.syco-model   { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+.syco-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); margin-bottom: 4px; }
+.syco-highlight { background: var(--neg-light); border-radius: 3px; padding: 0 2px; color: var(--neg); font-weight: 600; }
+.syco-highlight-pos { background: var(--pos-light); border-radius: 3px; padding: 0 2px; color: var(--pos); font-weight: 600; }
+
+
+/* ── Probe pair ── */
+.probe-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+@media (max-width: 560px) { .probe-pair { grid-template-columns: 1fr; } }
+.probe-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; }
+.probe-direction { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.probe-q { font-size: 13px; font-family: 'JetBrains Mono', monospace; color: var(--text2); margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+.probe-a { font-size: 14px; font-weight: 500; }
+.probe-status { font-size: 11px; margin-left: 6px; }
+
+/* ── Context length demo ── */
+.ctx-bar-wrap { margin: 16px 0; }
+.ctx-bar { height: 32px; border-radius: var(--radius-sm); display: flex; overflow: hidden; border: 1px solid var(--border); }
+.ctx-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; font-family: 'JetBrains Mono', monospace; transition: opacity .2s; }
+.ctx-seg-begin { background: var(--pos-light); color: var(--pos); border-color: var(--pos); }
+.ctx-seg-middle { background: var(--neg-light); color: var(--neg); }
+.ctx-seg-end { background: var(--pos-light); color: var(--pos); }
+.ctx-caption { font-size: 12.5px; color: var(--text3); margin-top: 8px; font-style: italic; }
+
+.slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.slider-label { font-size: 13px; color: var(--text2); font-weight: 500; white-space: nowrap; }
+.slider-val { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--neg); font-weight: 600; width: 56px; text-align: center; }
+input[type=range] { flex: 1; min-width: 120px; accent-color: var(--neg); cursor: pointer; }
+
+.recall-result { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-top: 12px; }
+.recall-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.recall-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text3); width: 60px; flex-shrink: 0; }
+.recall-track { flex: 1; background: var(--surface2); border-radius: 3px; height: 20px; overflow: hidden; }
+.recall-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding: 0 7px; font-size: 10px; color: #fff; font-weight: 600; transition: width .4s; }
+.recall-begin-fill { background: var(--pos); }
+.recall-middle-fill { background: var(--neg); }
+.recall-end-fill { background: var(--pos); }
+</style>
+
+<!-- LESSON NAV -->
+<nav class="lesson-switcher" aria-label="Course navigation">
+  <a class="ls-label" href="index.html" style="text-decoration:none">LLM Mechanics</a>
+  <div class="ls-links">
+    <a href="lesson1.html" class="ls-btn">1 · Foundations</a>
+    <a href="lesson2.html" class="ls-btn">2 · Architecture</a>
+    <a href="lesson3.html" class="ls-btn">3 · Forward Pass</a>
+    <a href="lesson4.html" class="ls-btn">4 · Training</a>
+    <a href="lesson5.html" class="ls-btn">5 · Representations</a>
+    <span class="ls-btn ls-active">6 · Limitations</span>
+    <a href="lesson7.html" class="ls-btn">7 · Mech Interp</a>
+    <a href="lesson8.html" class="ls-btn">8 · Neural Systems</a>
+    <a href="lesson9.html" class="ls-btn">9 · Hands-On</a>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="lesson-label">Lesson 6 · Limitations</div>
+  <h1 class="lesson-title">What LLMs Get Wrong — and Why</h1>
+  <p class="lesson-intro">
+    Modern language models are remarkably fluent. Fluency is not accuracy. This lesson catalogues the systematic failure modes baked into the architecture, the training objective, and the fine-tuning process — and explains why each one is not a bug to be patched but a structural consequence of how the system is built.
+  </p>
+</header>
+
+<nav class="tab-nav" role="tablist">
+  <button class="tab-btn active" onclick="switchTab('memory')">1 · Memory &amp; Attention</button>
+  <button class="tab-btn" onclick="switchTab('tokens')">2 · Tokenization</button>
+  <button class="tab-btn" onclick="switchTab('hallucination')">3 · Hallucination</button>
+  <button class="tab-btn" onclick="switchTab('directional')">4 · Directional Knowledge</button>
+  <button class="tab-btn" onclick="switchTab('sycophancy')">5 · Sycophancy</button>
+</nav>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 1 · CONTEXT & MEMORY
+     ═══════════════════════════════════════════════════════ -->
+<section class="tab-panel active" id="tab-memory">
+  <h2 class="section-heading">Memory &amp; Attention</h2>
+  <p>A language model has no persistent state between turns. There is no hidden memory, no internal note-taking, no stored summary of the conversation so far. Every forward pass starts from scratch — the only information available is what fits in the current context window. This has two distinct consequences: the <strong>exogenous memory</strong> problem (there is no other kind of memory) and the <strong>lost-in-the-middle</strong> problem (even content that <em>is</em> in the context may not be reliably attended to).</p>
+
+  <h3 class="subsection">Exogenous memory</h3>
+  <p>When you send a message, the entire conversation history is re-submitted as input tokens. The model runs a fresh forward pass each turn, constructing the same KV cache from scratch (unless a prompt-caching layer stores a fixed prefix). It has no notion of "remembering" anything — it simply reads what it is given.</p>
+  <p>So when long conversations degrade, it is not because the model forgets between turns. Either earlier content was <strong>dropped</strong> (truncated or summarized) to fit the context window — once a token falls outside the window, it is gone, not faded — or content that is still present is used less reliably (lost in the middle, below).</p>
+
+  <div class="callout callout-neg">
+    <strong>Structural consequence</strong>
+    Memory is entirely exogenous: managed outside the model by the application layer (the conversation history, retrieval systems, injected summaries). The model itself has no write access to any persistent store.
+  </div>
+
+  <h3 class="subsection">Context summarization as a weak link</h3>
+  <p>When a conversation approaches the context limit, the application layer typically <strong>summarizes</strong> earlier turns and replaces them with the condensed text. This is not compression in the technical sense — the original tokens are gone, and what remains is a lossy, human-readable approximation. Many deployed chat assistants do this once a session grows long enough.</p>
+  <div class="callout callout-warn">
+    <strong>Why summarization fails</strong>
+    The summarizer must decide what is important before knowing what future turns will need. Specific values — numbers, file paths, variable names, URLs — tend to be paraphrased away. Nuance collapses ("the user was ambivalent but chose A" becomes "the user chose A"). And if the summary mischaracterizes something, every subsequent turn inherits that error with no way to check the original. Retrieval-augmented approaches store the full history externally and pull relevant chunks back in, reducing reliance on summarization — but introduce their own retrieval errors in turn.
+  </div>
+
+  <h3 class="subsection">Lost in the middle</h3>
+  <p>Even within the context window, attention is not uniform. A consistent empirical finding is that models use information most reliably when it sits near the <strong>beginning</strong> or <strong>end</strong> of a long input, and less reliably when it sits in the <strong>middle</strong> (<a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noopener">Liu et al., 2023</a>). Information placed in the middle of a very long context can be effectively invisible even though it is technically present.</p>
+
+  <div class="widget">
+    <div class="widget-title">Figure 1 — Recall accuracy by position in context (schematic)</div>
+
+    <div class="slider-row">
+      <span class="slider-label">Context length</span>
+      <input type="range" id="ctx-len-slider" min="1" max="5" step="1" value="3" oninput="updateCtxViz()">
+      <span class="slider-val" id="ctx-len-val">32k tokens</span>
+    </div>
+
+    <div class="ctx-bar-wrap">
+      <div class="ctx-bar" id="ctx-bar">
+        <div class="ctx-seg ctx-seg-begin" id="ctx-begin" style="flex:1">Begin</div>
+        <div class="ctx-seg ctx-seg-middle" id="ctx-middle" style="flex:2">Middle</div>
+        <div class="ctx-seg ctx-seg-end" id="ctx-end" style="flex:1">End</div>
+      </div>
+      <div class="ctx-caption" id="ctx-caption"></div>
+    </div>
+
+    <div class="recall-result">
+      <div class="recall-row">
+        <div class="recall-label">Begin</div>
+        <div class="recall-track"><div class="recall-fill recall-begin-fill" id="rf-begin"></div></div>
+      </div>
+      <div class="recall-row">
+        <div class="recall-label">Middle</div>
+        <div class="recall-track"><div class="recall-fill recall-middle-fill" id="rf-middle"></div></div>
+      </div>
+      <div class="recall-row" style="margin-bottom:0">
+        <div class="recall-label">End</div>
+        <div class="recall-track"><div class="recall-fill recall-end-fill" id="rf-end"></div></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px;">Illustrative percentages, not measurements; the U shape follows <a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noopener">"Lost in the Middle" (Liu et al., 2023)</a>. Actual curves vary by model and task. Recent frontier models score near ceiling on single-fact ("needle") retrieval at these lengths; the middle dip shows up more on tasks that need several facts or reasoning over them.</p>
+  </div>
+
+  <h3 class="subsection">Why attention is positionally biased</h3>
+  <p>Several mechanisms contribute. The beginning of a sequence is privileged because the first tokens are always in every causal attention window — every subsequent token can attend to them. Middle tokens, by contrast, are in the window of only a subset of later positions.</p>
+  <p>Positional encodings (RoPE in most modern models) give each position a unique signature, but the model's training distribution over context lengths affects which positional encodings are well-calibrated at inference time.</p>
+
+  <div class="callout callout-blue">
+    <strong>Diagnostic: summarization vs. lost-in-the-middle</strong>
+    When a model displays a memory lapse — claiming it has no record of a file, artifact, or detail from earlier in the conversation — you can get a rough hint about which failure mode occurred: <em>tell the model what it seems to have forgotten and observe how it responds.</em> Treat the answer as weak evidence. The model cannot inspect its own context, and it may say "oh yes" to anything you assert (that is itself sycophancy, <a href="#sycophancy" onclick="goTab('sycophancy');return false">Tab 5</a>). A firmer check is to ask it to quote the earlier passage word for word.
+    <ul style="margin:10px 0 0;padding-left:18px;line-height:1.8;">
+      <li><strong>Recognition with correct detail:</strong> the information was probably present in context but not surfaced unprompted — a lost-in-the-middle effect. Attention failed, not storage.</li>
+      <li><strong>No recognition (treats it as new):</strong> the original is gone — summarized or truncated away. You have effectively re-injected it.</li>
+      <li><strong>Partial recall (right category, wrong detail):</strong> often a summarization artifact. The summary preserved the gist but dropped the specific value.</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-pos">
+    <strong>Try it yourself</strong>
+    You can evoke a lost-in-the-middle lapse directly. Open a new chat and try this:
+    <ol style="margin:10px 0 0;padding-left:18px;line-height:1.9;">
+      <li>Find a long text you wrote yourself — lecture notes, a paper draft, anything the model has not seen during training. Avoid famous published books: the model likely has them memorized and will answer from pretraining rather than from the context you injected.</li>
+      <li>Plant a specific, unusual fact somewhere in the middle of the document (e.g., insert a sentence like <em>"The secondary electrode voltage was 4.73 V"</em> at the halfway point).</li>
+      <li>Paste the full document into a new chat, then ask: <em>"What was the secondary electrode voltage?"</em></li>
+      <li>Repeat with the planted fact at the beginning, then at the end. Compare how confidently and accurately the model retrieves it across positions.</li>
+    </ol>
+    <p style="margin:10px 0 0;font-size:13.5px;">The effect deepens with longer documents. At short context lengths the model retrieves reliably from all positions; the U-shaped accuracy curve only emerges clearly once the document is long enough to put genuine pressure on attention. Try at 5k, 20k, and 80k tokens if you want to see the progression.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 2 · TOKENIZATION
+     ═══════════════════════════════════════════════════════ -->
+<section class="tab-panel" id="tab-tokens">
+  <h2 class="section-heading">Tokenization Artifacts</h2>
+  <p>Language models do not see characters. They see <strong>tokens</strong> — byte-pair encoded chunks that are typically word-pieces or whole words (in GPT-2, often with the leading space attached). A vocabulary of ~50,000 tokens (GPT-2: 50,257) covers most English text efficiently, but this design decision creates systematic blind spots for tasks that require character-level reasoning.</p>
+
+  <h3 class="subsection">What the model actually reads</h3>
+  <p>BPE (byte-pair encoding) merges the most frequent character pairs iteratively, building a vocabulary of subword units. Common English words become single tokens; rare words, foreign scripts, and unusual strings may be split into many short tokens, each carrying little information.</p>
+
+  <div class="callout callout-blue">
+    <strong>BPE, tokens, and tokenization</strong>
+    These three terms are related but distinct. <strong>BPE (Byte-Pair Encoding)</strong> is the algorithm used to build the vocabulary: it scans the training corpus, finds the most frequently co-occurring character pairs, and merges them into single entries — repeatedly, until the vocabulary reaches its target size (50,257 entries in GPT-2). A <strong>token</strong> is one of those learned entries: anything from a single byte up to a common word, each assigned a unique integer ID. GPT-2 splits text into words, numbers and punctuation before applying BPE, so its tokens never span two words. <strong>Tokenization</strong> is the act of splitting a new input string into those units at inference time. So "BPE entry" and "token" mean essentially the same thing — BPE is the mechanism that decides what the tokens are.
+  </div>
+
+  <div class="widget">
+    <div class="widget-title">Figure 2 — Tokenization examples</div>
+    <div id="tok-examples"></div>
+  </div>
+
+  <h3 class="subsection">Why character-level tasks are hard</h3>
+  <p>When a user asks <em>"how many r's are in 'strawberry'?"</em>, the model cannot answer by inspection — it must reason about character composition from a representation that has already lost character boundaries. The word "strawberry" might be a single token, giving the model no direct access to its internal characters.</p>
+
+  <div class="callout callout-neg">
+    <strong>Failure mode</strong>
+    The model cannot count letters, detect anagrams, or perform character-level string operations reliably, not because it lacks "attention" to the task, but because the characters were never present as atomic units in its input representation.
+  </div>
+
+  <h3 class="subsection">Rare words and foreign scripts</h3>
+  <p>Tokenizers are trained on corpora that are heavily skewed toward English. Rare words and non-English text are tokenized less efficiently — more tokens per character, shorter subword units, less semantic coherence per token. This directly reduces model quality for those inputs:</p>
+
+  <table class="cmp-table">
+    <thead><tr><th>Input</th><th>GPT-2 tokens</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>"hello"</td><td>1</td><td class="td-pos">Full word, rich prior</td></tr>
+      <tr><td>"bonjour"</td><td>3 (bon / j / our)</td><td>Fragmented</td></tr>
+      <tr><td>"привет" (Russian)</td><td>7 (2 byte tokens for п, then one per letter)</td><td class="td-warn">One token per letter; little learned structure per token</td></tr>
+      <tr><td>Random UUID</td><td>about 18–32 (≈24–25 on average)</td><td class="td-neg">Maximally fragmented; nearly uniform prior</td></tr>
+      <tr><td>"རྒྱལ་བ་" (Tibetan)</td><td>19 (from 21 UTF-8 bytes)</td><td class="td-neg">Byte-level territory: almost no BPE merges, so nearly every UTF-8 byte becomes its own token; almost no learned semantic structure</td></tr>
+      <tr><td>Linear B / Cuneiform (extinct)</td><td>4 per sign (one per UTF-8 byte)</td><td class="td-neg">Essentially zero training data; model can emit the Unicode code points but cannot produce meaningful text</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="subsection">Can the model output in tokenizer-foreign languages?</h3>
+  <p>Modern tokenizers use <strong>byte-level BPE</strong> as a safety net — all 256 possible bytes are always in the vocabulary, so the model can technically emit <em>any</em> UTF-8 character sequence, including scripts with no dedicated BPE entries. But generating meaningful output in a language requires two separate things: tokenizer coverage (handled by byte fallback) and <strong>training data in that script</strong> (not handled by anything).</p>
+  <p>For living rare scripts — Tibetan, Ge'ez, Cherokee — the model has seen small amounts of training text, enough to produce something that looks vaguely right but with high error rates: real words mixed with invented ones, broken grammar, unreliable Unicode validity. For extinct scripts — Linear B, Cuneiform, Egyptian Hieroglyphics — the model cannot produce meaningful text at all. It has seen those code points only in academic papers and Unicode documentation; at best it will reproduce a handful of memorized examples.</p>
+  <div class="callout callout-warn">
+    <strong>Comprehension vs. generation asymmetry</strong>
+    A model may correctly identify that it is reading Tibetan or Ge'ez (from surrounding context clues — language name, transliteration, script shape description) even when it cannot generate a grammatical sentence back. Comprehension leans on context; generation requires weight-encoded knowledge of the language. Rare scripts often fall on the right side of the comprehension threshold but well below the generation threshold.
+  </div>
+
+  <div class="callout callout-neg" style="margin-top:4px">
+    <strong>Case study: a haiku in Linear B</strong>
+    Example output from a chat assistant (2025), asked to write a haiku in Linear B:
+    <div style="font-size:18px;letter-spacing:2px;margin:12px 0 6px;font-family:'JetBrains Mono',monospace;color:var(--text)">𐀄𐀈𐀳𐀤 𐀮𐀯𐀁𐀗<br>𐀌𐀧𐀙𐀃𐀫 𐀀𐀤𐀖𐀁𐀃<br>𐀛𐀣𐀬 𐀅𐀁 𐀒𐀘</div>
+    <p style="margin:0 0 8px;font-size:13.5px;">All but two of the characters are real Linear B code points from the Unicode block U+10000–U+1007F; the other two (U+1000C and U+10027) are unassigned gaps in that block. The sequences are not real Mycenaean Greek. The output is confabulation — the appearance of Linear B text without any underlying language knowledge to back it up.</p>
+    <p style="margin:0 0 8px;font-size:13.5px;">Two failure modes ran simultaneously. The tokenization failure: Linear B has almost no BPE entries, so the model was most likely operating at the byte level with near-zero learned structure for the script. The hallucination failure: the output was presented with confidence, a romanization, and a poetic framing — fluent packaging around meaningless content.</p>
+    <p style="margin:0;font-size:13.5px;">A better response would have led with the limitation: <em>"I can emit Linear B code points, but I cannot compose in Mycenaean Greek — anything I produce will be meaningless."</em> In this exchange a disclaimer came only after the output.</p>
+  </div>
+
+  <h3 class="subsection">Number tokenization</h3>
+  <p>Numbers present a particular challenge. "1024" might tokenize as a single token with a learned representation, while "1025" tokenizes differently or is split. Arithmetic reasoning across token boundaries requires the model to learn number representations across inconsistent tokenizations — one reason LLMs struggle with multi-digit arithmetic without external tools.</p>
+
+  <div class="callout callout-blue">
+    <strong>Note on workarounds</strong>
+    Spacing characters before letters (e.g., " r a i n") forces character-level tokenization, making some tasks easier. Tool-augmented models offload character operations to code interpreters that work at the byte level. Neither approach eliminates the underlying mismatch — they route around it.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 3 · HALLUCINATION
+     ═══════════════════════════════════════════════════════ -->
+<section class="tab-panel" id="tab-hallucination">
+  <h2 class="section-heading">Hallucination</h2>
+  <p>A language model generates text by predicting the most plausible next token given the context. Plausibility — as measured by training loss — is not the same as truth. The model has no mechanism to verify its outputs against an external ground truth. The result is <strong>hallucination</strong>: fluent, confident, incorrect text that is indistinguishable in style from correct text.</p>
+
+  <h3 class="subsection">Why the training objective cannot prevent it</h3>
+  <p>The pretraining objective is cross-entropy loss over next-token prediction: predict which token actually follows in the training document. This objective rewards continuations that match the statistical patterns of human writing — which includes many forms of confident, fluent assertion regardless of factual status. The model is not trained to refuse claims it cannot verify; it is trained to continue text plausibly.</p>
+
+  <p>Put differently: the loss rewards matching the training text, not being true. For facts that appear often in the data, that amounts to the same thing; for facts the model has not learned, a fluent wrong guess looks no different to it from a fluent right one, and nothing in the objective rewards saying "I don't know" instead.</p>
+
+  <h3 class="subsection">Types of hallucination</h3>
+
+  <table class="cmp-table">
+    <thead><tr><th>Type</th><th>Example</th><th>Root cause</th></tr></thead>
+    <tbody>
+      <tr><td>Factual fabrication</td><td>Inventing citations, dates, or names that sound plausible</td><td>Plausibility ≠ accuracy in the training signal</td></tr>
+      <tr><td>Knowledge boundary failure</td><td>Answering confidently about events after the training cutoff</td><td>Internal "I don't know this" signals exist but are not reliably acted on; training rewards guessing (see below)</td></tr>
+      <tr><td>Confabulation under pressure</td><td>Generating a specific answer when the user signals they expect one</td><td>RLHF reward for sounding helpful; see <a href="#sycophancy" onclick="goTab('sycophancy');return false">Tab 5</a></td></tr>
+      <tr><td>Intrinsic inconsistency</td><td>Contradicting itself across a long generation</td><td>Generation is stateless — no explicit consistency check</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="subsection">Fluency as a confound</h3>
+  <p>Hallucinated text is typically well-formed, grammatically correct, and stylistically appropriate. This makes it difficult to detect from surface form alone. The softmax measures the probability of the next token given context, not the probability that the generated claim is true.</p>
+  <p>That does not mean the model has no sense of what it knows. Large pretrained models are fairly well calibrated on multiple-choice and true/false questions, and can be trained to predict whether they know an answer (<a href="https://arxiv.org/abs/2207.05221" target="_blank" rel="noopener">Kadavath et al., 2022</a>). Models also carry internal directions that track whether they recognize an entity; steering along them switches between refusing and hallucinating (<a href="https://arxiv.org/abs/2411.14257" target="_blank" rel="noopener">Ferrando et al., 2024</a>). The problem is that this signal is not reliably turned into "I don't know": pretraining makes some errors statistically inevitable, and post-training against benchmarks that score "I don't know" as wrong rewards a confident guess over an admission of uncertainty (<a href="https://arxiv.org/abs/2509.04664" target="_blank" rel="noopener">Kalai et al., 2025</a>).</p>
+
+  <h3 class="subsection">Mitigations and their limits</h3>
+  <p>Retrieval-augmented generation (RAG) reduces hallucination by grounding claims in retrieved documents, but the model can still hallucinate within or about those documents. RLHF can lower rates of obvious hallucination, but cannot eliminate the structural decoupling between fluency and accuracy. Chain-of-thought prompting makes errors more visible without guaranteeing that each reasoning step is grounded.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 4 · DIRECTIONAL KNOWLEDGE
+     ═══════════════════════════════════════════════════════ -->
+<section class="tab-panel" id="tab-directional">
+  <h2 class="section-heading">Directional Knowledge</h2>
+  <p>Two failure modes share a common cause: the autoregressive training objective is strictly left-to-right. The model learns to predict token t from tokens 0 through t−1. This asymmetry produces representational asymmetries — knowledge stored in the weights is directional in ways that can be surprising and difficult to correct.</p>
+
+  <h3 class="subsection">The reversal curse</h3>
+  <p>A model trained on facts of the form "A is B" does not automatically learn "B is A" (<a href="https://arxiv.org/abs/2309.12288" target="_blank" rel="noopener">Berglund et al., 2023</a>). Their example: GPT-4 answers <em>"Who is Tom Cruise's mother?"</em> (Mary Lee Pfeiffer) but often fails <em>"Who is Mary Lee Pfeiffer's son?"</em>. Across many celebrity–parent pairs, GPT-4 named the parent 79% of the time but the child only 33% of the time. The forward association is learned; the reverse is not.</p>
+  <p>This is counterintuitive — a human who learns that A is B automatically knows that B is A. For a transformer trained autoregressively, the two directions are independent associations stored in different weight configurations, and only the one that appears in the training data is reliably learned.</p>
+
+  <div class="widget">
+    <div class="widget-title">Figure 3 — Reversal curse: forward vs. reverse probes</div>
+    <div id="reversal-examples"></div>
+  </div>
+
+  <div class="callout callout-neg">
+    <strong>Root cause</strong>
+    The causal language model objective: P(token<sub>t</sub> | token<sub>0</sub> … token<sub>t−1</sub>). There is no symmetric objective. The reverse conditional P(token<sub>0</sub> | token<sub>1</sub> … token<sub>T−1</sub>) is never directly trained. Bidirectional models such as BERT are trained with a different objective and may be less affected, but they trade off the ability to generate text.
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>A note on famous examples</strong>
+    The reversal curse was documented by Berglund et al. (2023) and widely discussed online. Newer models trained after that point have likely seen the paper, the blog posts, and the specific test cases — meaning they may now answer the Mary Lee Pfeiffer question correctly from memorization rather than from any genuine bidirectional reasoning. The structural cause (left-to-right training objective) has not changed; what changes is that famous test cases get absorbed into training data and stop eliciting the failure. This is a general problem with LLM benchmarking: once a failure mode becomes well-known, its canonical examples are effectively patched by data contamination. Controlled studies use fictional entities or procedurally generated probes kept off the public internet to avoid this.
+  </div>
+
+  <h3 class="subsection">Exposure bias</h3>
+  <p>During training, the model always conditions on <strong>ground-truth</strong> preceding tokens. At every training step, token t is predicted from the actual tokens 0 through t−1 taken from the training document — not from the model's own previous predictions.</p>
+  <p>At inference, the model conditions on its own <strong>previous outputs</strong>. If it makes an error at position 3, position 4 is generated from a context that never appeared during training. Each error moves the generation into out-of-distribution territory, where subsequent predictions are less reliable — causing errors to compound in ways that training did not address.</p>
+
+  <div class="callout callout-warn">
+    <strong>Connection to hallucination</strong>
+    Exposure bias amplifies hallucination: once a model commits to an incorrect premise early in a generation, subsequent tokens condition on that premise and may generate further incorrect claims consistent with it. The model is not "lying" — it is continuing plausibly from the context it has been given, which happens to be wrong.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 5 · SYCOPHANCY
+     ═══════════════════════════════════════════════════════ -->
+<section class="tab-panel" id="tab-sycophancy">
+  <h2 class="section-heading">Sycophancy</h2>
+  <p>RLHF (reinforcement learning from human feedback) shapes model behavior toward responses that human raters prefer. Human raters are not neutral: they tend to rate agreeable responses more highly, even when those responses are less accurate. The result is a systematic bias toward <strong>telling users what they want to hear</strong> — confirming stated premises, agreeing with expressed opinions, and drifting toward the user's apparent position under pressure. This is sycophancy. RLHF did not invent it: pretrained models with no RLHF can already show it, more so at larger scale (<a href="https://arxiv.org/abs/2212.09251" target="_blank" rel="noopener">Perez et al., 2022</a>), and scale and instruction tuning increase it (<a href="https://arxiv.org/abs/2308.03958" target="_blank" rel="noopener">Wei et al., 2023</a>). RLHF can then amplify it.</p>
+
+  <h3 class="subsection">How RLHF amplifies sycophancy</h3>
+  <p>A reward model is trained on human preference judgments between pairs of model responses. If raters systematically prefer flattering or agreeable responses over accurate but challenging ones, the reward model learns to assign higher scores to agreeable outputs. The policy trained against this reward model then learns to generate agreeable outputs — not because they are better, but because they score higher.</p>
+
+  <div class="callout callout-neg">
+    <strong>The structural tension</strong>
+    RLHF optimizes for human approval, not for accuracy. Approval and accuracy correlate enough that RLHF is still net positive — but sycophancy is the residual, systematic error where they diverge.
+  </div>
+
+  <h3 class="subsection">Manifestations</h3>
+  <div class="syco-container">
+    <div class="syco-panel">
+      <div class="syco-panel-title">Premise confirmation</div>
+      <div class="syco-tag">User</div>
+      <div class="syco-msg syco-user">I think Einstein failed math in school — that shows genius doesn't follow conventional paths, right?</div>
+      <div class="syco-tag">Sycophantic response</div>
+      <div class="syco-msg syco-model">That's a <span class="syco-highlight">great perspective</span>! Einstein's unconventional path is indeed inspiring. <span class="syco-highlight">While the story is debated</span>, the broader point about non-traditional genius is absolutely valid.</div>
+      <div class="syco-tag">Accurate response</div>
+      <div class="syco-msg syco-model">Actually, <span class="syco-highlight-pos">that's a common myth</span> — Einstein excelled at mathematics from an early age. The misconception may have originated from a misreading of Swiss grading scales. The broader point about unconventional genius paths is worth discussing separately.</div>
+    </div>
+    <div class="syco-panel">
+      <div class="syco-panel-title">Position drift under pressure</div>
+      <div class="syco-tag">Exchange</div>
+      <div class="syco-msg syco-user">What's 17 × 24?</div>
+      <div class="syco-msg syco-model" style="margin-bottom:4px">408.</div>
+      <div class="syco-msg syco-user">Are you sure? I got 412.</div>
+      <div class="syco-msg syco-model syco-highlight" style="margin-bottom:4px">You might be right — let me reconsider. 412 does seem plausible given…</div>
+      <div style="font-size:12px;color:var(--neg);margin-top:6px">408 is correct. The model abandoned a true answer under social pressure — not because it found an error, but because the user expressed doubt.</div>
+    </div>
+  </div>
+
+  <h3 class="subsection">Why sycophancy is difficult to eliminate</h3>
+  <p>Sycophancy is not a training bug — it is the rational output of optimizing a proxy (human approval) that imperfectly correlates with the true goal (accuracy). Collecting preference data where raters consistently reward honest disagreement over agreeable flattery is difficult at scale: raters are human and subject to the same social pressures the model learns to exploit.</p>
+  <p><a href="https://arxiv.org/abs/2212.08073" target="_blank" rel="noopener">Constitutional AI</a> and AI feedback (RLAIF) attempt to provide a more consistent signal by having a model critique outputs against explicit principles. In principle this could reduce sycophancy, but it introduces its own systematic biases depending on how the principles are written.</p>
+
+  <div class="callout callout-blue">
+    <strong>The deeper issue</strong>
+    Sycophancy is a misalignment problem at the level of the objective function, not the model architecture. A model trained only on next-token prediction already picks up some of it, plausibly because human text is full of agreement with whoever is speaking. RLHF then optimizes a proxy for human approval and can strengthen it (<a href="https://arxiv.org/abs/2310.13548" target="_blank" rel="noopener">Sharma et al., 2023</a>). This makes it a microcosm of the broader alignment challenge: proxy objectives diverge from intended objectives at the edges.
+  </div>
+</section>
+
+
+</div><!-- end .content -->
+
+<script>
+/* ─── Tab switching ─── */
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+/* ─── Context length / lost-in-the-middle viz ─── */
+var CTX_LENGTHS = ['4k','8k','16k','32k','128k'];
+var CTX_TOKENS  = [4000,8000,16000,32000,128000];
+
+function updateCtxViz() {
+  var v = parseInt(document.getElementById('ctx-len-slider').value);
+  var len = CTX_LENGTHS[v-1];
+  document.getElementById('ctx-len-val').textContent = len + ' tokens';
+
+  // Recall rates: begin stays high, middle degrades more at longer ctx, end stays medium-high
+  var beginRate  = Math.max(0.72, 0.92 - (v-1)*0.04);
+  var middleRate = Math.max(0.25, 0.70 - (v-1)*0.11);
+  var endRate    = Math.max(0.60, 0.85 - (v-1)*0.05);
+
+  document.getElementById('rf-begin').style.width  = (beginRate*100).toFixed(0)+'%';
+  document.getElementById('rf-begin').textContent  = (beginRate*100).toFixed(0)+'%';
+  document.getElementById('rf-middle').style.width = (middleRate*100).toFixed(0)+'%';
+  document.getElementById('rf-middle').textContent = (middleRate*100).toFixed(0)+'%';
+  document.getElementById('rf-end').style.width    = (endRate*100).toFixed(0)+'%';
+  document.getElementById('rf-end').textContent    = (endRate*100).toFixed(0)+'%';
+
+  // Middle flex grows as context length grows
+  document.getElementById('ctx-middle').style.flex = 1 + (v-1)*0.8;
+  document.getElementById('ctx-caption').textContent =
+    'At ' + len + ' tokens, a fact placed in the middle is recalled ' + (middleRate*100).toFixed(0) +
+    '% of the time, vs ' + (beginRate*100).toFixed(0) + '% at the beginning and ' + (endRate*100).toFixed(0) +
+    '% at the end. Recall is lowest in the middle, and the gap grows with context length (segment widths are schematic).';
+}
+updateCtxViz();
+
+/* ─── Tokenization examples (static) ─── */
+var TOK_EXAMPLES = [
+  { label: 'Common words', text: '"hello world"', tokens: [{t:'hello',id:'31373'},{t:' world',id:'995'}], note: null },
+  { label: 'Strawberry (3 tokens, no character access)', text: '"strawberry"', tokens: [{t:'st',id:'301',cls:'t-warn'},{t:'raw',id:'1831',cls:'t-warn'},{t:'berry',id:'8396',cls:'t-warn'}], note: 'The model sees "st"+"raw"+"berry" (with a leading space, " strawberry" is a single token, 41236). Either way it has no direct access to the characters s-t-r-a-w-b-e-r-r-y.' },
+  { label: 'Unusual compound', text: '"anthropomorphization"', tokens: [{t:'anthrop',id:'22178'},{t:'omorph',id:'25831',cls:'t-warn'},{t:'ization',id:'1634'}], note: 'Rare words split at learned boundaries that may not align with morpheme boundaries.' },
+  { label: 'Number string', text: '"1024" vs "1025"', tokens: [{t:'1024',id:'35500'},{t:' vs',id:'3691'},{t:' 10',id:'838',cls:'t-warn'},{t:'25',id:'1495',cls:'t-warn'}], note: '"1024" is a single token; "1025" is split into " 10"+"25". Arithmetic across these requires different reasoning paths.' },
+];
+
+var tokExamplesEl = document.getElementById('tok-examples');
+TOK_EXAMPLES.forEach(function(ex) {
+  var div = document.createElement('div');
+  div.style.cssText = 'margin-bottom:20px';
+  var label = document.createElement('div');
+  label.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px';
+  label.textContent = ex.label;
+  div.appendChild(label);
+
+  var strip = document.createElement('div');
+  strip.className = 'token-strip';
+  ex.tokens.forEach(function(tok) {
+    var t = document.createElement('div');
+    t.className = 'tok' + (tok.cls ? ' '+tok.cls : '');
+    t.innerHTML = '<div class="tok-text">' + tok.t.replace(/</g,'&lt;') + '</div><div class="tok-id">' + tok.id + '</div>';
+    strip.appendChild(t);
+  });
+  div.appendChild(strip);
+
+  if (ex.note) {
+    var n = document.createElement('div');
+    n.style.cssText = 'font-size:12.5px;color:var(--warn);margin-top:6px';
+    n.textContent = ex.note;
+    div.appendChild(n);
+  }
+  tokExamplesEl.appendChild(div);
+});
+
+/* ─── Reversal curse examples ─── */
+var REVERSAL_DATA = [
+  {
+    forward: { q: '"Who is Tom Cruise\'s mother?"', a: 'Mary Lee Pfeiffer', correct: true },
+    reverse: { q: '"Who is Mary Lee Pfeiffer\'s son?"', a: 'Often fails to name Tom Cruise', correct: false },
+    note: 'Real-world example from Berglund et al. (2023), tested on GPT-4. Tom Cruise is mentioned far more often than his mother, and text usually names the celebrity first.'
+  },
+  {
+    forward: { q: '"Daphne Barrington is ___"', a: 'the director of "A Journey Through Time"', correct: true },
+    reverse: { q: '"The director of \'A Journey Through Time\' is ___"', a: 'No better than a random name', correct: false },
+    note: 'Controlled test from Berglund et al. (2023): models fine-tuned on fictitious "A is B" sentences answer in the trained order but are at chance in the reverse order.'
+  },
+  {
+    forward: { q: '"The capital of France is ___"', a: 'Paris', correct: true },
+    reverse: { q: '"Paris is the capital of ___"', a: 'France ✓ (high-frequency reversal, both directions in training data)', correct: true },
+    note: 'Exception: very high-frequency facts appear in both directions in training text and are learned bidirectionally.'
+  },
+];
+
+var revEl = document.getElementById('reversal-examples');
+REVERSAL_DATA.forEach(function(d) {
+  var card = document.createElement('div');
+  card.className = 'reversal-card';
+
+  function makeDir(dir, data) {
+    var row = document.createElement('div');
+    row.className = 'reversal-direction';
+    var lbl = document.createElement('span');
+    lbl.className = 'r-label ' + (dir === 'forward' ? 'r-forward' : 'r-reverse');
+    lbl.textContent = dir === 'forward' ? '→ Forward' : '← Reverse';
+    var q = document.createElement('span');
+    q.className = 'r-query';
+    q.textContent = data.q;
+    row.appendChild(lbl); row.appendChild(q);
+    var ans = document.createElement('div');
+    ans.className = 'r-answer ' + (data.correct ? 'r-correct' : 'r-wrong');
+    ans.innerHTML = (data.correct ? '✓ ' : '✗ ') + data.a;
+    return [row, ans];
+  }
+
+  var [fr, fa] = makeDir('forward', d.forward);
+  var [rr, ra] = makeDir('reverse', d.reverse);
+  card.appendChild(fr); card.appendChild(fa);
+  card.style.marginBottom = '4px';
+  var card2 = document.createElement('div');
+  card2.className = 'reversal-card';
+  card2.style.cssText = 'margin-bottom:4px;border-top:none;border-radius:0 0 var(--radius) var(--radius)';
+  card2.appendChild(rr); card2.appendChild(ra);
+
+  var noteEl = document.createElement('div');
+  noteEl.style.cssText = 'font-size:12px;color:var(--text3);padding:8px 12px;background:var(--surface2);border-radius:0 0 var(--radius-sm) var(--radius-sm)';
+  noteEl.textContent = d.note;
+
+  revEl.appendChild(card);
+  revEl.appendChild(card2);
+  revEl.appendChild(noteEl);
+
+  var spacer = document.createElement('div');
+  spacer.style.height = '16px';
+  revEl.appendChild(spacer);
+});
+
+</script>
+<script>
+// Open a tab from the link, e.g. ...#tabid
+window.addEventListener('load', () => {
+  const h = location.hash.slice(1);
+  if (!h) return;
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === h || b.dataset.tab === 'tab-' + h ||
+    (b.getAttribute('onclick') || '').includes("'" + h + "'"));
+  if (b) b.click();
+});
+function goTab(id) {
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === id || b.dataset.tab === 'tab-' + id ||
+    (b.getAttribute('onclick') || '').includes("'" + id + "'"));
+  if (b) { b.click(); window.scrollTo(0, 0); }
+}
+</script>
+</body>
+</html>

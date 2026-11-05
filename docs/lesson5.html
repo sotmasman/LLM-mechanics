@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Lesson 5 · Representations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #F7F5F0; --surface: #EDEAE2; --surface2: #E0DDD4;
+  --text: #1A1916; --text2: #504E48; --text3: #7A7870;
+  --accent: #2455A4; --accent-light: #D8E4F7;
+  --pos: #1A7A4E; --pos-light: #D2EFE2;
+  --neg: #B83030; --neg-light: #F7DEDE;
+  --warn: #A06010; --warn-light: #FDF0DC;
+  --border: #D4D1C8; --border2: #C0BDB4;
+  --radius: 10px; --radius-sm: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+    --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+    --accent: #6B9EF8; --accent-light: #1A2A4A;
+    --pos: #4ABA82; --pos-light: #0D2E1E;
+    --neg: #F08080; --neg-light: #2E0E0E;
+    --warn: #F0C060; --warn-light: #2A1E08;
+    --border: #38362E; --border2: #4A4840;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+  --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+  --accent: #6B9EF8; --accent-light: #1A2A4A;
+  --pos: #4ABA82; --pos-light: #0D2E1E;
+  --neg: #F08080; --neg-light: #2E0E0E;
+  --warn: #F0C060; --warn-light: #2A1E08;
+  --border: #38362E; --border2: #4A4840;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.65;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);}
+img{max-width:100%;}[hidden]{display:none!important;}
+
+/* ── lesson switcher ── */
+.lesson-switcher{display:flex;align-items:center;gap:12px;padding:12px 24px 4px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border);}
+.ls-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);white-space:nowrap;}
+.ls-links{display:flex;gap:6px;flex-wrap:wrap;}
+.ls-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:4px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);text-decoration:none;transition:background .15s,border-color .15s,color .15s;}
+.ls-btn:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+.ls-active{background:var(--accent);border-color:var(--accent);color:#fff;cursor:default;pointer-events:none;}
+
+/* ── page layout ── */
+.page-header{padding:36px 24px 24px;max-width:860px;margin:0 auto;}
+.lesson-label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.page-header h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;color:var(--text);text-wrap:balance;}
+.page-header .subtitle{margin-top:10px;font-size:16px;color:var(--text2);max-width:600px;}
+
+/* ── tabs ── */
+.tab-nav{display:flex;flex-wrap:nowrap;gap:2px;padding:0 24px;border-bottom:2px solid var(--border);max-width:860px;margin:0 auto;overflow-x:auto;scrollbar-width:none;}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;padding:10px 11px;white-space:nowrap;flex-shrink:0;border:none;background:none;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-panel{display:none;padding:32px 24px;max-width:860px;margin:0 auto;}
+.tab-panel.active{display:block;}
+.motivation-lede{background:var(--accent-light);border:1.5px solid var(--accent);border-radius:8px;padding:18px 22px;margin-bottom:32px;}
+.motivation-lede p{font-size:15px;line-height:1.7;color:var(--text2);margin:0;}
+.motivation-title{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px!important;}
+
+/* ── typography ── */
+h2{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(22px,3.5vw,28px);font-weight:400;color:var(--text);margin-bottom:16px;text-wrap:balance;}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:24px 0 10px;}
+h4{font-size:14px;font-weight:600;color:var(--text2);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.06em;}
+p{margin-bottom:14px;color:var(--text2);font-size:15.5px;}
+p:last-child{margin-bottom:0;}
+code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:var(--surface2);padding:1px 5px;border-radius:3px;}
+.eq{font-family:'JetBrains Mono',monospace;font-size:15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 18px;margin:16px 0;overflow-x:auto;color:var(--text);line-height:1.6;}
+.eq-table{display:flex;flex-direction:column;gap:10px;}
+.eq-row{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;}
+.eq-lhs{white-space:nowrap;}
+.eq-rhs{color:var(--text3);font-size:13px;white-space:nowrap;}
+.eq-rhs::before{content:"— ";}
+
+/* ── insight boxes ── */
+.insight{border-left:3px solid var(--accent);background:var(--accent-light);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;margin:20px 0;}
+.insight-pos{border-left-color:var(--pos);background:var(--pos-light);}
+.insight-warn{border-left-color:var(--warn);background:var(--warn-light);}
+.insight-neg{border-left-color:var(--neg);background:var(--neg-light);}
+.insight strong{display:block;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:5px;}
+.insight-pos strong{color:var(--pos);}
+.insight-warn strong{color:var(--warn);}
+.insight-neg strong{color:var(--neg);}
+.insight p{margin:0;font-size:14px;}
+
+/* ── step list ── */
+.step-list{display:flex;flex-direction:column;gap:0;margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.step-item{display:grid;grid-template-columns:120px 1fr;gap:0;border-bottom:1px solid var(--border);}
+.step-item:last-child{border-bottom:none;}
+.step-label{background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:14px 16px;display:flex;align-items:flex-start;padding-top:16px;}
+.step-body{padding:14px 18px;font-size:14px;line-height:1.65;}
+.step-body strong{font-family:'JetBrains Mono',monospace;font-size:13px;}
+@media(max-width:560px){.step-item{grid-template-columns:1fr;}.step-label{padding-bottom:4px;}}
+
+/* ── grid ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;}
+@media(max-width:600px){.two-col{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.card h3{margin-top:0;}
+
+/* ── table ── */
+.table-wrap{overflow-x:auto;margin:20px 0;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{background:var(--surface2);color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:10px 14px;text-align:left;}
+td{padding:10px 14px;border-top:1px solid var(--border);color:var(--text2);vertical-align:top;}
+tr:hover td{background:var(--surface);}
+
+/* ── widgets ── */
+.widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;}
+.widget-title{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
+label{font-size:13px;font-weight:500;color:var(--text2);}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.slider-row label{white-space:nowrap;min-width:130px;}
+.slider-val{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);min-width:50px;text-align:right;}
+.result-box{background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 16px;margin-top:16px;}
+.result-box .metric{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.result-box .metric:last-child{margin-bottom:0;}
+.result-box .metric-label{font-size:13px;color:var(--text3);}
+.result-box .metric-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;color:var(--text);}
+canvas{border-radius:var(--radius-sm);display:block;width:100%;max-width:100%;}
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:8px 18px;border-radius:20px;border:1.5px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;transition:opacity .15s;}
+.btn:hover{opacity:.85;}
+.btn-outline{background:transparent;color:var(--accent);}
+.btn-outline:hover{background:var(--accent-light);opacity:1;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.tok-btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;padding:5px 12px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;transition:all .15s;}
+.tok-btn.selA{background:var(--accent);border-color:var(--accent);color:#fff;}
+.tok-btn.selB{background:var(--warn);border-color:var(--warn);color:#fff;}
+
+/* ── bar chart ── */
+.bar-group{display:flex;flex-direction:column;gap:6px;margin:16px 0;}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-lbl{font-size:12px;color:var(--text3);min-width:60px;font-family:'JetBrains Mono',monospace;}
+.bar-track{flex:1;height:18px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width .4s;}
+.bar-num{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text2);min-width:36px;text-align:right;}
+
+/* ── word chip ── */
+.tab-panel a{color:var(--accent);}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 9px;border-radius:4px;background:var(--surface2);color:var(--text2);border:1px solid var(--border);margin:2px;}
+</style>
+</head>
+<body>
+
+<!-- Lesson Switcher -->
+<nav class="lesson-switcher" aria-label="Course navigation">
+  <a class="ls-label" href="index.html" style="text-decoration:none">LLM Mechanics</a>
+  <div class="ls-links">
+    <a href="lesson1.html" class="ls-btn">1 · Foundations</a>
+    <a href="lesson2.html" class="ls-btn">2 · Architecture</a>
+    <a href="lesson3.html" class="ls-btn">3 · Forward Pass</a>
+    <a href="lesson4.html" class="ls-btn">4 · Training</a>
+    <span class="ls-btn ls-active">5 · Representations</span>
+        <a href="lesson6.html" class="ls-btn">6 · Limitations</a>
+    <a href="lesson7.html" class="ls-btn">7 · Mech Interp</a>
+    <a href="lesson8.html" class="ls-btn">8 · Neural Systems</a>
+    <a href="lesson9.html" class="ls-btn">9 · Hands-On</a>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="lesson-label">Lesson 5</div>
+  <h1>Representations</h1>
+  <p class="subtitle">What does a transformer actually learn? What computational structures emerge when LLMs learn, and what is the geometry of this feature space?</p>
+</header>
+
+<nav class="tab-nav" aria-label="Lesson sections">
+  <button class="tab-btn active" data-tab="residual">1 · Residual Stream</button>
+  <button class="tab-btn" data-tab="linear">2 · Linear Representations</button>
+  <button class="tab-btn" data-tab="super">3 · Superposition</button>
+  <button class="tab-btn" data-tab="probing">4 · Feature Readout</button>
+  <button class="tab-btn" data-tab="neuro">5 · Neuro Parallels</button>
+</nav>
+
+<!-- ──────────────────────────────── TAB 1: Residual Stream -->
+<section class="tab-panel active" id="tab-residual">
+  <h2>Residual Stream Evolution</h2>
+  <div class="motivation-lede">
+    <p class="motivation-title">Vastness of input space</p>
+    <p>The number of distinct token sequences a model can receive is bounded by <strong>V<sup>N</sup></strong> — vocabulary size raised to the context length. For GPT-2, with V = 50,257 tokens and N = 1,024, that gives roughly 10<sup>4,814</sup> possible inputs, compared to ~10<sup>80</sup> atoms in the observable universe. A model with ~10<sup>8</sup> parameters (GPT-2 small, 124M) cannot memorize this space; it must compress it into a learnable internal geometry where similar meanings cluster and useful computations become linear. That geometry lives in the residual stream.</p>
+  </div>
+  <p>A token's representation is not static — it evolves as it passes through each transformer layer, accumulating contextual information.</p>
+
+  <h3>The Read-Write View</h3>
+  <p>Each transformer component reads from the residual stream and adds its output back. Attention heads read and write through low-rank projections (64 dimensions per head in GPT-2); the MLP expands to 3,072 dimensions and projects back to 768:</p>
+  <div class="eq">y<sub><i>l</i></sub> = x<sub><i>l</i></sub> + Σ<sub>h</sub> Attn<sub>h</sub>(x<sub><i>l</i></sub>) &nbsp;&nbsp;&nbsp; ← attention sublayer (sum over all heads)<br>x<sub><i>l</i>+1</sub> = y<sub><i>l</i></sub> + MLP(y<sub><i>l</i></sub>) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← MLP sublayer (also called FFN)</div>
+  <p>This is not overwriting — it's <em>additive</em>. Early layers write syntactic features; middle layers write semantic ones; late layers write information needed for output prediction. The residual stream at the final layer is the sum of all these contributions.</p>
+
+  <h3>What gets written, layer by layer?</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Depth</th><th>Residual stream typically encodes</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Early (first ~quarter)</strong></td><td>Token identity, part of speech, local co-occurrence patterns</td><td>Probing for POS, basic syntax</td></tr>
+        <tr><td><strong>Middle (roughly the middle half)</strong></td><td>Semantic roles, entity types, clause structure, coreference</td><td>Probing for parse structure, named entities, semantic roles, coreference</td></tr>
+        <tr><td><strong>Late (last ~quarter)</strong></td><td>Task-specific predictions, discourse relations, output logit geometry</td><td>Direct logit attribution, ablation studies</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12px;color:var(--text3);margin:8px 0 20px;line-height:1.6;">† The early→middle→late progression is drawn primarily from BERT probing studies: <a href="https://arxiv.org/abs/1905.05950" target="_blank" rel="noopener">Tenney et al. (2019)</a> <em>BERT Rediscovers the Classical NLP Pipeline</em> (ACL); <a href="https://aclanthology.org/P19-1356/" target="_blank" rel="noopener">Jawahar et al. (2019)</a> <em>What Does BERT Learn about the Structure of Language?</em> (ACL). The qualitative pattern generalizes to GPT-style decoder-only models — supported by e.g. <a href="https://arxiv.org/abs/2202.05262" target="_blank" rel="noopener">Meng et al. (2022)</a> on factual associations — but systematic layer-by-layer probing of GPT architectures is less comprehensive.</p>
+
+  <!-- Layer-by-layer probing accuracy chart -->
+  <div class="widget">
+    <div class="widget-title">Fig. 1 · Layer-by-Layer Probing Accuracy</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:14px;">Accuracy of a linear probe decoding <strong style="color:var(--accent)">Part-of-Speech</strong> tags from the residual stream at each layer. Higher = more linearly decodable. (Illustrative values — schematic only, not from a specific study.)</p>
+    <div class="bar-group" style="margin:0;">
+      <div class="bar-row"><span class="bar-lbl">L0</span><div class="bar-track"><div class="bar-fill" style="width:52%;background:var(--accent)"></div></div><span class="bar-num">52%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L1</span><div class="bar-track"><div class="bar-fill" style="width:71%;background:var(--accent)"></div></div><span class="bar-num">71%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L2</span><div class="bar-track"><div class="bar-fill" style="width:83%;background:var(--accent)"></div></div><span class="bar-num">83%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L3</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:var(--accent)"></div></div><span class="bar-num">88%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L4</span><div class="bar-track"><div class="bar-fill" style="width:91%;background:var(--accent)"></div></div><span class="bar-num">91%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L5</span><div class="bar-track"><div class="bar-fill" style="width:93%;background:var(--accent)"></div></div><span class="bar-num">93%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L6</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:var(--accent)"></div></div><span class="bar-num">90%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L7</span><div class="bar-track"><div class="bar-fill" style="width:87%;background:var(--accent)"></div></div><span class="bar-num">87%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L8</span><div class="bar-track"><div class="bar-fill" style="width:83%;background:var(--accent)"></div></div><span class="bar-num">83%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L9</span><div class="bar-track"><div class="bar-fill" style="width:79%;background:var(--accent)"></div></div><span class="bar-num">79%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L10</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--accent)"></div></div><span class="bar-num">75%</span></div>
+      <div class="bar-row"><span class="bar-lbl">L11</span><div class="bar-track"><div class="bar-fill" style="width:71%;background:var(--accent)"></div></div><span class="bar-num">71%</span></div>
+    </div>
+    <div style="font-size:13px;color:var(--text2);margin-top:12px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);">Part-of-speech (POS) tags label each word's grammatical role — noun, verb, adjective, determiner, and so on. POS tags are linearly decodable from early layers — in this sketch of a 12-layer model like GPT-2 (layers L0–L11), syntactic features peak in the early-to-middle layers, then are gradually diluted as later layers write semantic information needed for output prediction.</div>
+  </div>
+
+  <h3>Direct Logit Attribution</h3>
+  <p>Direct Logit Attribution (DLA) is a mechanistic interpretability tool — it answers the question: which layers are responsible for the model predicting a particular token? We can decompose the model's final output into contributions from each layer. The logit for token t is:</p>
+  <div class="eq">logit(t) = x<sub>final</sub> · E[t]<sup>⊤</sup><br>
+            = (x<sub>0</sub> + Σ<sub><i>l</i></sub> Δx<sub><i>l</i></sub>) · E[t]<sup>⊤</sup><br>
+            = x<sub>0</sub>·E[t]<sup>⊤</sup>  +  Σ<sub><i>l</i></sub> Δx<sub><i>l</i></sub>·E[t]<sup>⊤</sup></div>
+  <p>Each term is the direct logit attribution of layer <i>l</i> — how much that layer's write to the residual stream increased or decreased the logit of token t (the probability also depends on every other token's logit). This decomposes the model's prediction into per-layer contributions. The split is exact once the final LayerNorm's scale (and mean) are frozen at their values for this input, as is standard practice: the LayerNorm then acts as the same linear map on every term, plus one constant term from its learned bias.</p>
+
+  <p style="color:var(--text3);font-size:13px;margin-top:16px;">We'll build on DLA in <a href="lesson7.html#dla"><strong>Lesson 7 (Mechanistic Interpretability)</strong></a>, alongside the logit lens and activation patching — tools that together let you trace exactly what a model computes and why.</p>
+</section>
+
+<!-- ──────────────────────────────── TAB 3: Linear Representations -->
+<section class="tab-panel" id="tab-linear">
+  <h2>The Linear Representation Hypothesis</h2>
+  <p>One of the most important empirical discoveries about LLMs: the features they represent — concepts, properties, syntactic roles — tend to be encoded as <em>linear directions</em> in residual stream space, not as complex, nonlinear regions.</p>
+
+  <h3>Features as Directions</h3>
+  <p>If the model represents "is-French" as a linear direction f ∈ ℝ<sup>d</sup>, then:</p>
+  <div class="eq">is<sub>French</sub>(token) ≈ x · f / ‖f‖  (dot product with the feature direction)</div>
+  <p>The same direction f can be read by any linear operation — attention queries/keys, MLP weight rows, the unembedding matrix. This universality is what makes linear representations computationally powerful: any component can read any feature without nonlinear coordination.</p>
+
+  <div class="insight insight-pos">
+    <strong>Why linearity enables compositionality</strong>
+    <p>Linear features can be combined by adding vectors, so several properties can be active in the same residual stream at once. A tempting extension is that facts compose the same way: f<sub>France</sub> + f<sub>capital-of</sub> ≈ f<sub>Paris</sub>. Treat that as a hypothesis, not a result: models appear to retrieve facts like this through attention and MLP computation (<a href="lesson7.html#editing">Lesson 7, Tab 7</a>), not by literal vector addition.</p>
+  </div>
+
+  <!-- Interactive: Feature vector visualization -->
+  <div class="widget">
+    <div class="widget-title">Fig. 2 · The is-French Feature Direction</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:14px;">Schematic 2D projection. The "is-French" direction <em>f</em> is a consistent offset — adding <em>f</em> to any English token moves it toward its French equivalent. The vertical axis captures unrelated semantic content (animacy).</p>
+    <canvas id="vec-canvas" height="260"></canvas>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--text3);">
+      <span><span style="color:var(--accent);">→</span> French direction <em>f</em></span>
+      <span><span style="color:var(--neg);">●</span> English tokens</span>
+      <span><span style="color:var(--pos);">●</span> French tokens</span>
+    </div>
+    <div id="vec-info" style="font-size:13px;color:var(--text2);margin-top:10px;min-height:20px;"></div>
+  </div>
+
+  <h3>Evidence for the Linear Hypothesis</h3>
+  <div class="two-col">
+    <div class="card" style="border-top:3px solid var(--accent);">
+      <h3 style="color:var(--accent);">Arithmetic in Embedding Space</h3>
+      <p>king − man + woman ≈ queen (word2vec; <a href="https://arxiv.org/abs/1301.3781" target="_blank" rel="noopener">Mikolov et al. 2013</a>). This predates modern LLMs but established that linear structure appears from language modeling objectives. LLMs show more precise and richer versions of the same phenomenon.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--pos);">
+      <h3 style="color:var(--pos);">Causal Intervention Studies</h3>
+      <p>Adding a direction vector found by contrasting two sets of prompts to the residual stream can change the model's answer in the predicted way (activation steering, <a href="lesson7.html#steering">Lesson 7, Tab 6</a>). The linear direction causally controls behavior — not just correlates with it.</p>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card" style="border-top:3px solid var(--neg);">
+      <h3 style="color:var(--neg);">Linear Probes</h3>
+      <p>A logistic regression trained on residual stream vectors predicts POS tags, entity types, sentiment, and other features at high accuracy (often >90%) — suggesting these features live in linearly-separable subspaces.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--warn);">
+      <h3 style="color:var(--warn);">Representation Engineering</h3>
+      <p><a href="https://arxiv.org/abs/2310.01405" target="_blank" rel="noopener">Zou et al. (2023)</a>: directions for "honesty," "fear," and other abstract concepts can be found by contrasting activations to contrastive prompt pairs. Steering by these directions reliably changes model behavior.</p>
+    </div>
+  </div>
+
+  <h3>How is <em>f</em> found in practice?</h3>
+  <p>Five complementary methods measure LLM representations. Most find individual feature directions f that can then be interpreted, steered, or ablated — they agree more than they disagree, which is itself evidence that there is a stable direction to find. RSA takes a different approach: rather than singling out individual features, it characterizes the geometry of the full representation space without committing to any feature basis.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Method</th><th>How it works</th><th>Key property</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Sparse autoencoders (SAEs)</strong></td>
+          <td>Train an autoencoder with a sparsity penalty to reconstruct residual stream vectors. Features emerge as dictionary atoms without any labels.</td>
+          <td>Unsupervised; requires no hypothesis about what to look for. Elaborated in <a href="lesson7.html#saes"><strong>Lesson 7, Tab 8</strong></a>, where the superposition problem motivates them.</td>
+        </tr>
+        <tr>
+          <td><strong>Probing</strong></td>
+          <td>Train a linear classifier to predict the feature label (e.g. French/not-French) from x. The classifier's weight vector is f.</td>
+          <td>Supervised; needs labeled examples. Covered in depth in <a href="#probing" onclick="goTab('probing');return false"><strong>Tab 4</strong></a>.</td>
+        </tr>
+        <tr>
+          <td><strong>RSA</strong></td>
+          <td>Compute pairwise distances between activation vectors across conditions; the RDM captures representational geometry. Correlate RDMs across layers, models, or brains.</td>
+          <td>No feature hypothesis or labels needed. Geometry-level, not feature-level — compares representational <em>structure</em> across systems. Covered in <a href="#probing" onclick="goTab('probing');return false"><strong>Tab 4</strong></a>.</td>
+        </tr>
+        <tr>
+          <td><strong>Difference-in-means</strong></td>
+          <td>Compute mean(French activations) − mean(non-French activations). The difference vector is f.</td>
+          <td>Simple and surprisingly effective. No training required. Covered in <a href="#probing" onclick="goTab('probing');return false"><strong>Tab 4</strong></a>.</td>
+        </tr>
+        <tr>
+          <td><strong>Steering vectors</strong></td>
+          <td>Find a direction by contrasting activations on contrastive prompts, then verify causally: does adding f to the stream change behavior in the expected direction?</td>
+          <td>Causal, not just correlational. Confirms that f is actively used, not just stored. Covered in <a href="lesson7.html#steering"><strong>Lesson 7, Tab 6</strong></a>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Limits and caveats</h3>
+  <p>The linear hypothesis does not claim all computation is linear. The nonlinearities (GELU in MLPs, softmax in attention) are essential for computation. What the hypothesis claims is that the <em>stored features</em> — the intermediate representations that circuits read and write — tend to be linear.</p>
+
+  <div class="insight insight-warn">
+    <strong>When linearity breaks down</strong>
+    <p>Polysemanticity — a single neuron responding to several unrelated concepts — does not by itself break linearity: it means the neuron basis is not the feature basis, which superposition explains (<a href="#super" onclick="goTab('super');return false">Tab 3</a>). Genuinely non-linear features do exist. <a href="https://arxiv.org/abs/2405.14860" target="_blank" rel="noopener">Engels et al. (2024)</a> found circular features for days of the week and months of the year in GPT-2 and Mistral 7B: the values lie on a circle in a 2D subspace, not along one direction, and intervention experiments in Mistral 7B and Llama 3 8B show the models use them for arithmetic such as "two days after Friday".</p>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────── TAB 4: Superposition -->
+<section class="tab-panel" id="tab-super">
+  <h2>Superposition &amp; Polysemanticity</h2>
+
+  <h3>Capacity and Superposition</h3>
+  <p>Why use d = 768 dimensions (GPT-2 small; 1,600 in GPT-2 XL) rather than, say, 100? Two related arguments explain it — one about geometry, one about the structure of language itself.</p>
+
+  <div class="card" style="border-top:3px solid var(--accent);margin:20px 0;">
+    <h3 style="margin-top:0;color:var(--accent);">The Capacity Argument</h3>
+    <p>If you want to represent features as directions and require them to be <strong><em>perfectly orthogonal</em></strong> — so activating one feature causes zero interference with any other — a d-dimensional space can hold exactly d features. That's a hard linear-algebra ceiling: you can't squeeze a 4th mutually orthogonal vector into 3D space.</p>
+    <p>But "exactly orthogonal" is stricter than necessary. The number of directions that are <strong><em>nearly orthogonal</em></strong> — pairwise cosine similarity below some small threshold — grows exponentially with d. This follows from probabilistic geometry (the Johnson–Lindenstrauss family of results): in high dimensions, two random unit vectors have expected dot-product near zero, and most random pairs are nearly orthogonal by concentration of measure. At d = 768, a model can maintain far more than 768 near-orthogonal feature directions simultaneously. Each new dimension is not just one new slot — it unlocks a combinatorial explosion of near-orthogonal directions.</p>
+    <div class="insight" style="margin-bottom:0;">
+      <strong>Intuition: the geometry of high dimensions</strong>
+      <p>In 2D you can fit exactly 2 orthogonal vectors. In 3D, exactly 3. But in 100D you can fit vastly more <span style="font-weight:700;font-style:italic">nearly orthogonal</span> vectors — directions whose pairwise dot-products are all small. The capacity of the space for near-orthogonal representations grows far faster than d itself. This is why the jump from d = 768 to d = 12,288 is not merely 16× more capacity — it's an exponential expansion in the number of representable near-orthogonal features.</p>
+    </div>
+  </div>
+
+  <div class="card" style="border-top:3px solid var(--pos);margin:20px 0 28px;">
+    <h3 style="margin-top:0;color:var(--pos);">The Superposition Argument</h3>
+    <p>The capacity argument explains why bigger d helps — but superposition pushes further: models appear to pack <em>more than d concepts</em> into d dimensions by deliberately sacrificing perfect orthogonality.</p>
+    <p>This is only possible because natural-language features are <strong>sparse</strong>. "Banana" and "legal contract" are almost never relevant in the same context. If two features almost never co-occur, you can store them as non-orthogonal, overlapping directions at little cost — the interference only matters when both features fire at the same time, which barely happens in practice. The network trades occasional crosstalk for the ability to represent a far richer feature vocabulary.</p>
+    <p>The trade-off is real: when superposed features do co-occur, their activations interfere and downstream computations see noise. Whether the compression is worth it depends entirely on how sparse features are. For the vast majority of world knowledge — which is sparse by nature — the math says it is overwhelmingly worth it.</p>
+  </div>
+
+  <p>A 768-dimensional residual stream can, in principle, represent 768 orthogonal features. But LLMs appear to represent <em>far more</em> features than they have dimensions. This is the superposition hypothesis: the model packs more features than dimensions by using <em>approximate</em> (not exact) orthogonality. It was demonstrated in small toy models by <a href="https://arxiv.org/abs/2209.10652" target="_blank" rel="noopener">Elhage et al. (2022), <em>Toy Models of Superposition</em></a>; for LLMs it remains a well-supported hypothesis.</p>
+
+  <h3>The Geometry of Superposition</h3>
+  <p>If features are sparse — meaning most features are "off" for any given token — the model can tolerate small interference between non-orthogonal feature directions. The vectors form an overcomplete basis:</p>
+  <div class="eq">Each feature f has a unit direction f ∈ ℝ<sup>d</sup>  &nbsp;(same f as in <a href="#linear" onclick="goTab('linear');return false">Tab 2</a>)<br>
+  |{features}| ≫ d,  but  |f<sub>i</sub> · f<sub>j</sub>| ≪ 1  for i ≠ j</div>
+  <p>In high dimensions, you can pack exponentially many near-orthogonal vectors. The tradeoff: when two active features have non-zero dot product, they interfere — producing "ghost" activations for features not actually present.</p>
+
+  <div class="insight insight-pos" style="margin:16px 0;">
+    <strong>Features ≠ vocabulary tokens</strong>
+    <p>The vocabulary |V| (50,257 tokens in GPT-2) is the set of subword units the model outputs — fixed at training time. Features are something different: internal representational directions in the residual stream encoding abstract properties of the context (syntactic roles, semantic categories, world-knowledge attributes). |{features}| in the formula above refers to this internal feature set, which is not predefined and can vastly exceed |V|. The unembedding matrix maps from feature space to vocabulary space — features influence which tokens get high probability, but they are not tokens themselves.</p>
+  </div>
+
+  <!-- Superposition Visualization -->
+  <div class="widget">
+    <div class="widget-title">Fig. 3 · Superposition Visualization</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:14px;">Left: 2 features in 2D — perfectly orthogonal, but capped at d features total. Right: 5 features in the same 2D space via superposition — approximate orthogonality introduces some interference, but the model can represent far more than d features. LLMs do this deliberately.</p>
+    <p style="font-size:12px;color:var(--text3);margin:-4px 0 14px;line-height:1.6;">f₁–f₅ are arbitrary features, each a learned direction in the residual stream — Frenchness, royalty, animacy, plurality, verb-ness, "mentions a city," "appears in legal text," or anything else the model has found useful to represent.</p>
+    <div style="overflow-x:auto;">
+<svg viewBox="0 -20 720 310" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+<text x="165" y="-10" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" font-family="'DM Sans',sans-serif">n = 2 features · d = 2 dimensions</text>
+<text x="538" y="-10" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" font-family="'DM Sans',sans-serif">n = 5 features · d = 2 dimensions</text>
+<text x="165" y="5" text-anchor="middle" font-size="11.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">limited to d features — no interference</text>
+<text x="538" y="5" text-anchor="middle" font-size="11.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">superposition — more features, some interference</text>
+<line x1="351" y1="12" x2="351" y2="280" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="4,3"/>
+<line x1="57.0" y1="158" x2="273.0" y2="158" stroke="var(--border)" stroke-width="0.8"/>
+<line x1="165" y1="50.0" x2="165" y2="266.0" stroke="var(--border)" stroke-width="0.8"/>
+<circle cx="165" cy="158" r="108" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+<line x1="57.0" y1="158.0" x2="273.0" y2="158.0" stroke="#2455A4" stroke-width="2.8" stroke-linecap="round"/>
+<circle cx="273.0" cy="158.0" r="5" fill="#2455A4"/>
+<circle cx="57.0" cy="158.0" r="5" fill="#2455A4"/>
+<text x="293.0" y="158.0" text-anchor="start" dominant-baseline="middle" font-size="14" font-weight="700" fill="#2455A4" font-family="'DM Sans',sans-serif">f₁</text>
+<line x1="165.0" y1="266.0" x2="165.0" y2="50.0" stroke="#B83030" stroke-width="2.8" stroke-linecap="round"/>
+<circle cx="165.0" cy="50.0" r="5" fill="#B83030"/>
+<circle cx="165.0" cy="266.0" r="5" fill="#B83030"/>
+<text x="165.0" y="30.0" text-anchor="middle" font-size="14" font-weight="700" fill="#B83030" font-family="'DM Sans',sans-serif">f₂</text>
+<polyline points="179,158 179,144 165,144" fill="none" stroke="var(--text3)" stroke-opacity="0.7" stroke-width="1.8"/>
+<text x="165" y="288" text-anchor="middle" font-size="13" fill="var(--text3)" font-weight="600" font-family="'JetBrains Mono',monospace">cos θ₁₂ = 0   — zero interference</text>
+<line x1="430.0" y1="158" x2="646.0" y2="158" stroke="var(--border)" stroke-width="0.8"/>
+<line x1="538" y1="50.0" x2="538" y2="266.0" stroke="var(--border)" stroke-width="0.8"/>
+<circle cx="538" cy="158" r="108" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+<line x1="430.0" y1="158.0" x2="646.0" y2="158.0" stroke="#2455A4" stroke-width="2.8" stroke-linecap="round" opacity="0.9"/>
+<circle cx="646.0" cy="158.0" r="5" fill="#2455A4"/>
+<circle cx="430.0" cy="158.0" r="5" fill="#2455A4"/>
+<text x="666.0" y="158.0" text-anchor="start" dominant-baseline="middle" font-size="14" font-weight="700" fill="#2455A4" font-family="'DM Sans',sans-serif">f₁</text>
+<line x1="450.6" y1="221.5" x2="625.4" y2="94.5" stroke="#B83030" stroke-width="2.8" stroke-linecap="round" opacity="0.9"/>
+<circle cx="625.4" cy="94.5" r="5" fill="#B83030"/>
+<circle cx="450.6" cy="221.5" r="5" fill="#B83030"/>
+<text x="641.6" y="82.8" text-anchor="start" dominant-baseline="middle" font-size="14" font-weight="700" fill="#B83030" font-family="'DM Sans',sans-serif">f₂</text>
+<line x1="504.6" y1="260.7" x2="571.4" y2="55.3" stroke="#A06010" stroke-width="2.8" stroke-linecap="round" opacity="0.9"/>
+<circle cx="571.4" cy="55.3" r="5" fill="#A06010"/>
+<circle cx="504.6" cy="260.7" r="5" fill="#A06010"/>
+<text x="577.6" y="36.3" text-anchor="start" dominant-baseline="middle" font-size="14" font-weight="700" fill="#A06010" font-family="'DM Sans',sans-serif">f₃</text>
+<line x1="571.4" y1="260.7" x2="504.6" y2="55.3" stroke="#1A7A4E" stroke-width="2.8" stroke-linecap="round" opacity="0.9"/>
+<circle cx="504.6" cy="55.3" r="5" fill="#1A7A4E"/>
+<circle cx="571.4" cy="260.7" r="5" fill="#1A7A4E"/>
+<text x="498.4" y="36.3" text-anchor="end" dominant-baseline="middle" font-size="14" font-weight="700" fill="#1A7A4E" font-family="'DM Sans',sans-serif">f₄</text>
+<line x1="625.4" y1="221.5" x2="450.6" y2="94.5" stroke="#9060D0" stroke-width="2.8" stroke-linecap="round" opacity="0.9"/>
+<circle cx="450.6" cy="94.5" r="5" fill="#9060D0"/>
+<circle cx="625.4" cy="221.5" r="5" fill="#9060D0"/>
+<text x="434.4" y="82.8" text-anchor="end" dominant-baseline="middle" font-size="14" font-weight="700" fill="#9060D0" font-family="'DM Sans',sans-serif">f₅</text>
+<text x="538" y="288" text-anchor="middle" font-size="13" fill="#A06010" font-weight="600" font-family="'JetBrains Mono',monospace">mean |cos θ| ≈ 0.56   — partial interference</text>
+</svg>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Polysemanticity is a consequence</strong>
+    <p>When features are in superposition, a single neuron (dimension in a specific basis) will respond to multiple unrelated features — because each feature direction is spread across many neurons. This explains why neurons in LLMs often seem to activate for unrelated concepts: the neuron basis is not the feature basis.</p>
+  </div>
+
+  <div class="insight insight-pos">
+    <strong>Superposition and sparse coding: related, but reversed</strong>
+    <p>Neuroscience has long proposed sparse coding in sensory cortex: learning a sparse code from natural images gives V1-like receptive fields (<a href="https://doi.org/10.1038/381607a0" target="_blank" rel="noopener">Olshausen &amp; Field, 1996</a>), and the overcomplete version of the model (<a href="https://doi.org/10.1016/S0042-6989(97)00169-7" target="_blank" rel="noopener">Olshausen &amp; Field, 1997</a>) fits the fact that primary visual cortex has many more neurons than the input fibres it receives, so a large dictionary of features can each have neurons of their own, with only a few active for any image. Superposition is the reverse: more features than neurons, so features must share neurons, which is why LLM neurons are polysemantic. What the two codes share is sparsity: only a few features are active at a time, which is what keeps both readable. Both trade capacity against interference, but from opposite sides. The closest LLM counterpart of the V1 model is the sparse autoencoder (<a href="lesson7.html#saes">Lesson 7, Tab 8</a>), which gives each feature a unit of its own.</p>
+  </div>
+</section>
+
+<!-- ──────────────────────────────── TAB 4: Probing & RSA -->
+<section class="tab-panel" id="tab-probing">
+  <h2>Feature Readout</h2>
+  <p>To understand what a network represents, we need tools that can measure internal representations without assuming we know what to look for. This tab covers three complementary methods. <strong>Linear probes</strong> and <strong>difference-in-means</strong> find individual feature directions from labeled data, each by a different mechanism. <strong>RSA</strong> characterizes the geometry of the full representation space without committing to any feature hypothesis. For the causal complement — testing whether a found direction actually drives the model's output — see <a href="lesson7.html#steering"><strong>Lesson 7, Tab 6</strong></a> (Steering Vectors).</p>
+
+  <h3>Cosine Similarity</h3>
+  <p>Before diving into the methods, it helps to have a feel for the core metric. All three approaches in this tab ultimately depend on measuring distances or angles between high-dimensional activation vectors. The standard tool is <strong>cosine similarity</strong> — the dot product of two unit-normalized vectors — which measures the angle between them regardless of their magnitudes:</p>
+  <div class="eq">cos(θ) = (u · v) / (‖u‖ ‖v‖)</div>
+  <p>A value of 1 means the vectors point in the same direction (identical representations); 0 means orthogonal (unrelated); −1 means opposite. Because residual stream vectors can vary widely in norm across layers and tokens, normalization is what makes the comparison meaningful.</p>
+
+  <h3>Linear Probes</h3>
+  <p>A linear probe trains a logistic regression on frozen internal activations to predict some property Y:</p>
+  <div class="eq">P(Y = y | x<sub><i>l</i></sub>) = softmax(x<sub><i>l</i></sub> W + b)<sub>y</sub></div>
+  <p>High accuracy means the property is <em>linearly decodable</em> from that layer — a weak claim about what the model "knows" but a strong claim about linear accessibility to other components. The weight matrix <strong>W</strong> is the probe's learned readout: for a binary classifier, <strong>W</strong> reduces to a single vector, and that vector <em>is</em> the feature direction <strong>f</strong>. Training the probe is therefore one way to find <strong>f</strong> — the direction in activation space that best separates the two classes.</p>
+
+  <div class="insight insight-warn">
+    <strong>The probing methodology debate</strong>
+    <p>High probe accuracy doesn't mean the model <em>uses</em> that information for its task — it might be incidentally stored. Low accuracy doesn't mean the information is absent — it could be encoded nonlinearly. Probing is best paired with causal intervention: does <em>removing</em> the feature direction degrade task performance?</p>
+  </div>
+
+  <h3>Representational Similarity Analysis (RSA)</h3>
+  <p>RSA (<a href="https://doi.org/10.3389/neuro.06.004.2008" target="_blank" rel="noopener">Kriegeskorte et al. 2008</a>) is a general framework for asking whether two systems organize information similarly — without needing to align their internal dimensions. The two systems can be anything: two different models, two layers within the same model, two brain regions, or a model and a brain. The key idea is to compare geometry rather than coordinates: instead of asking "do these two systems use the same features?", RSA asks "do they impose the same pairwise structure on the same set of inputs?" The model–brain comparison is one application, but RSA is equally useful for comparing layers across depth, architectures across training runs, or representational spaces across species.</p>
+  <div class="eq">RDM[i,j] = 1 − corr(R<sub>i</sub>, R<sub>j</sub>) &nbsp;&nbsp;&nbsp;(representational dissimilarity)</div>
+  <div class="eq">RSA score = corr(RDM<sub>model</sub>, RDM<sub>brain</sub>)</div>
+  <p>Here R<sub>i</sub> and R<sub>j</sub> are the residual stream vectors at a chosen layer <i>l</i> for inputs <em>i</em> and <em>j</em> — each is a single <em>d</em>-dimensional vector, the residual stream width at that layer (e.g. 768 for GPT-2, several thousand for larger models). For LLMs the residual stream at layer <i>l</i> is a (sequence length × <em>d</em>) matrix, so a single position must be chosen — typically the last token or an average across tokens — to produce the one vector R<sub>i</sub>. The pipeline:</p>
+  <ol style="margin:10px 0 10px 20px;line-height:1.8;color:var(--text1);">
+    <li>Choose a layer <i>l</i> to analyze.</li>
+    <li>Run <em>n</em> inputs through the model; at layer <i>l</i>, record each input's activation vector → R<sub>1</sub> … R<sub>n</sub>, giving an <em>n</em> × <em>d</em> matrix <strong>R</strong>.</li>
+    <li>For every pair (i, j), compute corr(R<sub>i</sub>, R<sub>j</sub>) and subtract from 1 → fills RDM[i, j].</li>
+    <li>The result is an <em>n</em> × <em>n</em> dissimilarity matrix capturing the geometry of that layer.</li>
+  </ol>
+  <p>The key insight: if two systems represent things similarly, their pairwise distance matrices will correlate — regardless of whether they use the same basis vectors or dimensionality.</p>
+  <div class="insight insight-warn">
+    <strong>A shared limitation: stimulus sampling is hypothesis-driven.</strong> The RDM only captures geometry over the inputs you chose to run. Categories or contrasts you didn't sample are invisible. This is true of probing and difference-in-means too — you decide in advance which labels and contrasts matter. SAEs (<a href="lesson7.html#saes">Lesson 7, Tab 8</a>) are the exception: they find structure in activations without being told what to look for, which is one of their main advantages over the methods in this tab.
+  </div>
+
+  <!-- RSA Matrix Visualization -->
+  <div class="widget">
+    <div class="widget-title">Fig. 4 · RDMs Early and Late in an LLM</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:14px;"><em>Simulated matrices for a 12-layer model like GPT-2 small (layers L0–L11): 16 sentences in 4 topics (4 per topic), last token, RDM = 1 − r.</em> The values are made up but follow the typical pattern: nearly uniform early, topic blocks late. The two matrices share one colour scale; the right panel splits their sentence pairs into same-topic and different-topic pairs, on the same scale.</p>
+    <div style="overflow-x:auto;">
+<svg viewBox="0 -12 890 348" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+<text x="174.0" y="5" text-anchor="middle" font-size="14" font-weight="700" fill="#7A7870" font-family="'DM Sans',sans-serif">Layer 0</text>
+<text x="174.0" y="22" text-anchor="middle" font-size="11.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">all sentences nearly identical</text>
+<text x="174.0" y="37" text-anchor="middle" font-size="11.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">weak topic structure</text>
+<text x="65" y="88" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Food</text>
+<text x="96" y="56" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Food</text>
+<text x="65" y="140" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Sport</text>
+<text x="148" y="56" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Sport</text>
+<text x="65" y="192" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Weather</text>
+<text x="200" y="56" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Weather</text>
+<text x="65" y="244" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Politics</text>
+<text x="252" y="56" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Politics</text>
+<rect x="70" y="62" width="13" height="13" fill="rgb(36,85,164)"/><rect x="83" y="62" width="13" height="13" fill="rgb(42,88,163)"/><rect x="96" y="62" width="13" height="13" fill="rgb(43,89,162)"/><rect x="109" y="62" width="13" height="13" fill="rgb(41,88,163)"/><rect x="122" y="62" width="13" height="13" fill="rgb(45,90,162)"/><rect x="135" y="62" width="13" height="13" fill="rgb(43,89,163)"/><rect x="148" y="62" width="13" height="13" fill="rgb(43,89,163)"/><rect x="161" y="62" width="13" height="13" fill="rgb(46,91,162)"/><rect x="174" y="62" width="13" height="13" fill="rgb(43,89,162)"/><rect x="187" y="62" width="13" height="13" fill="rgb(43,89,162)"/><rect x="200" y="62" width="13" height="13" fill="rgb(44,90,162)"/><rect x="213" y="62" width="13" height="13" fill="rgb(45,90,162)"/><rect x="226" y="62" width="13" height="13" fill="rgb(43,89,162)"/><rect x="239" y="62" width="13" height="13" fill="rgb(44,90,162)"/><rect x="252" y="62" width="13" height="13" fill="rgb(42,88,163)"/><rect x="265" y="62" width="13" height="13" fill="rgb(43,89,163)"/><rect x="70" y="75" width="13" height="13" fill="rgb(42,88,163)"/><rect x="83" y="75" width="13" height="13" fill="rgb(36,85,164)"/><rect x="96" y="75" width="13" height="13" fill="rgb(41,88,163)"/><rect x="109" y="75" width="13" height="13" fill="rgb(40,87,163)"/><rect x="122" y="75" width="13" height="13" fill="rgb(41,88,163)"/><rect x="135" y="75" width="13" height="13" fill="rgb(41,88,163)"/><rect x="148" y="75" width="13" height="13" fill="rgb(43,89,162)"/><rect x="161" y="75" width="13" height="13" fill="rgb(43,89,162)"/><rect x="174" y="75" width="13" height="13" fill="rgb(43,89,163)"/><rect x="187" y="75" width="13" height="13" fill="rgb(43,89,162)"/><rect x="200" y="75" width="13" height="13" fill="rgb(41,88,163)"/><rect x="213" y="75" width="13" height="13" fill="rgb(43,89,162)"/><rect x="226" y="75" width="13" height="13" fill="rgb(44,89,162)"/><rect x="239" y="75" width="13" height="13" fill="rgb(44,90,162)"/><rect x="252" y="75" width="13" height="13" fill="rgb(42,88,163)"/><rect x="265" y="75" width="13" height="13" fill="rgb(43,89,163)"/><rect x="70" y="88" width="13" height="13" fill="rgb(43,89,162)"/><rect x="83" y="88" width="13" height="13" fill="rgb(41,88,163)"/><rect x="96" y="88" width="13" height="13" fill="rgb(36,85,164)"/><rect x="109" y="88" width="13" height="13" fill="rgb(39,87,163)"/><rect x="122" y="88" width="13" height="13" fill="rgb(43,89,163)"/><rect x="135" y="88" width="13" height="13" fill="rgb(40,87,163)"/><rect x="148" y="88" width="13" height="13" fill="rgb(41,88,163)"/><rect x="161" y="88" width="13" height="13" fill="rgb(45,90,162)"/><rect x="174" y="88" width="13" height="13" fill="rgb(40,87,163)"/><rect x="187" y="88" width="13" height="13" fill="rgb(44,90,162)"/><rect x="200" y="88" width="13" height="13" fill="rgb(44,89,162)"/><rect x="213" y="88" width="13" height="13" fill="rgb(43,89,163)"/><rect x="226" y="88" width="13" height="13" fill="rgb(44,89,162)"/><rect x="239" y="88" width="13" height="13" fill="rgb(44,89,162)"/><rect x="252" y="88" width="13" height="13" fill="rgb(45,90,162)"/><rect x="265" y="88" width="13" height="13" fill="rgb(43,89,162)"/><rect x="70" y="101" width="13" height="13" fill="rgb(41,88,163)"/><rect x="83" y="101" width="13" height="13" fill="rgb(40,87,163)"/><rect x="96" y="101" width="13" height="13" fill="rgb(39,87,163)"/><rect x="109" y="101" width="13" height="13" fill="rgb(36,85,164)"/><rect x="122" y="101" width="13" height="13" fill="rgb(42,89,163)"/><rect x="135" y="101" width="13" height="13" fill="rgb(42,89,163)"/><rect x="148" y="101" width="13" height="13" fill="rgb(42,88,163)"/><rect x="161" y="101" width="13" height="13" fill="rgb(43,89,162)"/><rect x="174" y="101" width="13" height="13" fill="rgb(42,89,163)"/><rect x="187" y="101" width="13" height="13" fill="rgb(45,90,162)"/><rect x="200" y="101" width="13" height="13" fill="rgb(41,88,163)"/><rect x="213" y="101" width="13" height="13" fill="rgb(42,88,163)"/><rect x="226" y="101" width="13" height="13" fill="rgb(42,88,163)"/><rect x="239" y="101" width="13" height="13" fill="rgb(40,88,163)"/><rect x="252" y="101" width="13" height="13" fill="rgb(46,91,162)"/><rect x="265" y="101" width="13" height="13" fill="rgb(40,87,163)"/><rect x="70" y="114" width="13" height="13" fill="rgb(45,90,162)"/><rect x="83" y="114" width="13" height="13" fill="rgb(41,88,163)"/><rect x="96" y="114" width="13" height="13" fill="rgb(43,89,163)"/><rect x="109" y="114" width="13" height="13" fill="rgb(42,89,163)"/><rect x="122" y="114" width="13" height="13" fill="rgb(36,85,164)"/><rect x="135" y="114" width="13" height="13" fill="rgb(42,88,163)"/><rect x="148" y="114" width="13" height="13" fill="rgb(42,88,163)"/><rect x="161" y="114" width="13" height="13" fill="rgb(44,90,162)"/><rect x="174" y="114" width="13" height="13" fill="rgb(41,88,163)"/><rect x="187" y="114" width="13" height="13" fill="rgb(45,90,162)"/><rect x="200" y="114" width="13" height="13" fill="rgb(42,89,163)"/><rect x="213" y="114" width="13" height="13" fill="rgb(43,89,162)"/><rect x="226" y="114" width="13" height="13" fill="rgb(42,89,163)"/><rect x="239" y="114" width="13" height="13" fill="rgb(44,90,162)"/><rect x="252" y="114" width="13" height="13" fill="rgb(42,88,163)"/><rect x="265" y="114" width="13" height="13" fill="rgb(43,89,162)"/><rect x="70" y="127" width="13" height="13" fill="rgb(43,89,163)"/><rect x="83" y="127" width="13" height="13" fill="rgb(41,88,163)"/><rect x="96" y="127" width="13" height="13" fill="rgb(40,87,163)"/><rect x="109" y="127" width="13" height="13" fill="rgb(42,89,163)"/><rect x="122" y="127" width="13" height="13" fill="rgb(42,88,163)"/><rect x="135" y="127" width="13" height="13" fill="rgb(36,85,164)"/><rect x="148" y="127" width="13" height="13" fill="rgb(43,89,163)"/><rect x="161" y="127" width="13" height="13" fill="rgb(45,90,162)"/><rect x="174" y="127" width="13" height="13" fill="rgb(40,87,163)"/><rect x="187" y="127" width="13" height="13" fill="rgb(45,90,162)"/><rect x="200" y="127" width="13" height="13" fill="rgb(44,90,162)"/><rect x="213" y="127" width="13" height="13" fill="rgb(43,89,163)"/><rect x="226" y="127" width="13" height="13" fill="rgb(44,89,162)"/><rect x="239" y="127" width="13" height="13" fill="rgb(43,89,163)"/><rect x="252" y="127" width="13" height="13" fill="rgb(45,90,162)"/><rect x="265" y="127" width="13" height="13" fill="rgb(43,89,162)"/><rect x="70" y="140" width="13" height="13" fill="rgb(43,89,163)"/><rect x="83" y="140" width="13" height="13" fill="rgb(43,89,162)"/><rect x="96" y="140" width="13" height="13" fill="rgb(41,88,163)"/><rect x="109" y="140" width="13" height="13" fill="rgb(42,88,163)"/><rect x="122" y="140" width="13" height="13" fill="rgb(42,88,163)"/><rect x="135" y="140" width="13" height="13" fill="rgb(43,89,163)"/><rect x="148" y="140" width="13" height="13" fill="rgb(36,85,164)"/><rect x="161" y="140" width="13" height="13" fill="rgb(42,88,163)"/><rect x="174" y="140" width="13" height="13" fill="rgb(43,89,162)"/><rect x="187" y="140" width="13" height="13" fill="rgb(43,89,162)"/><rect x="200" y="140" width="13" height="13" fill="rgb(43,89,162)"/><rect x="213" y="140" width="13" height="13" fill="rgb(42,88,163)"/><rect x="226" y="140" width="13" height="13" fill="rgb(46,91,162)"/><rect x="239" y="140" width="13" height="13" fill="rgb(41,88,163)"/><rect x="252" y="140" width="13" height="13" fill="rgb(39,86,163)"/><rect x="265" y="140" width="13" height="13" fill="rgb(43,89,162)"/><rect x="70" y="153" width="13" height="13" fill="rgb(46,91,162)"/><rect x="83" y="153" width="13" height="13" fill="rgb(43,89,162)"/><rect x="96" y="153" width="13" height="13" fill="rgb(45,90,162)"/><rect x="109" y="153" width="13" height="13" fill="rgb(43,89,162)"/><rect x="122" y="153" width="13" height="13" fill="rgb(44,90,162)"/><rect x="135" y="153" width="13" height="13" fill="rgb(45,90,162)"/><rect x="148" y="153" width="13" height="13" fill="rgb(42,88,163)"/><rect x="161" y="153" width="13" height="13" fill="rgb(36,85,164)"/><rect x="174" y="153" width="13" height="13" fill="rgb(43,89,162)"/><rect x="187" y="153" width="13" height="13" fill="rgb(44,89,162)"/><rect x="200" y="153" width="13" height="13" fill="rgb(43,89,162)"/><rect x="213" y="153" width="13" height="13" fill="rgb(43,89,162)"/><rect x="226" y="153" width="13" height="13" fill="rgb(44,89,162)"/><rect x="239" y="153" width="13" height="13" fill="rgb(44,90,162)"/><rect x="252" y="153" width="13" height="13" fill="rgb(43,89,163)"/><rect x="265" y="153" width="13" height="13" fill="rgb(43,89,163)"/><rect x="70" y="166" width="13" height="13" fill="rgb(43,89,162)"/><rect x="83" y="166" width="13" height="13" fill="rgb(43,89,163)"/><rect x="96" y="166" width="13" height="13" fill="rgb(40,87,163)"/><rect x="109" y="166" width="13" height="13" fill="rgb(42,89,163)"/><rect x="122" y="166" width="13" height="13" fill="rgb(41,88,163)"/><rect x="135" y="166" width="13" height="13" fill="rgb(40,87,163)"/><rect x="148" y="166" width="13" height="13" fill="rgb(43,89,162)"/><rect x="161" y="166" width="13" height="13" fill="rgb(43,89,162)"/><rect x="174" y="166" width="13" height="13" fill="rgb(36,85,164)"/><rect x="187" y="166" width="13" height="13" fill="rgb(44,90,162)"/><rect x="200" y="166" width="13" height="13" fill="rgb(42,89,163)"/><rect x="213" y="166" width="13" height="13" fill="rgb(40,87,163)"/><rect x="226" y="166" width="13" height="13" fill="rgb(46,91,162)"/><rect x="239" y="166" width="13" height="13" fill="rgb(44,90,162)"/><rect x="252" y="166" width="13" height="13" fill="rgb(42,89,163)"/><rect x="265" y="166" width="13" height="13" fill="rgb(42,88,163)"/><rect x="70" y="179" width="13" height="13" fill="rgb(43,89,162)"/><rect x="83" y="179" width="13" height="13" fill="rgb(43,89,162)"/><rect x="96" y="179" width="13" height="13" fill="rgb(44,90,162)"/><rect x="109" y="179" width="13" height="13" fill="rgb(45,90,162)"/><rect x="122" y="179" width="13" height="13" fill="rgb(45,90,162)"/><rect x="135" y="179" width="13" height="13" fill="rgb(45,90,162)"/><rect x="148" y="179" width="13" height="13" fill="rgb(43,89,162)"/><rect x="161" y="179" width="13" height="13" fill="rgb(44,89,162)"/><rect x="174" y="179" width="13" height="13" fill="rgb(44,90,162)"/><rect x="187" y="179" width="13" height="13" fill="rgb(36,85,164)"/><rect x="200" y="179" width="13" height="13" fill="rgb(42,88,163)"/><rect x="213" y="179" width="13" height="13" fill="rgb(41,88,163)"/><rect x="226" y="179" width="13" height="13" fill="rgb(42,88,163)"/><rect x="239" y="179" width="13" height="13" fill="rgb(42,88,163)"/><rect x="252" y="179" width="13" height="13" fill="rgb(43,89,163)"/><rect x="265" y="179" width="13" height="13" fill="rgb(45,90,162)"/><rect x="70" y="192" width="13" height="13" fill="rgb(44,90,162)"/><rect x="83" y="192" width="13" height="13" fill="rgb(41,88,163)"/><rect x="96" y="192" width="13" height="13" fill="rgb(44,89,162)"/><rect x="109" y="192" width="13" height="13" fill="rgb(41,88,163)"/><rect x="122" y="192" width="13" height="13" fill="rgb(42,89,163)"/><rect x="135" y="192" width="13" height="13" fill="rgb(44,90,162)"/><rect x="148" y="192" width="13" height="13" fill="rgb(43,89,162)"/><rect x="161" y="192" width="13" height="13" fill="rgb(43,89,162)"/><rect x="174" y="192" width="13" height="13" fill="rgb(42,89,163)"/><rect x="187" y="192" width="13" height="13" fill="rgb(42,88,163)"/><rect x="200" y="192" width="13" height="13" fill="rgb(36,85,164)"/><rect x="213" y="192" width="13" height="13" fill="rgb(41,88,163)"/><rect x="226" y="192" width="13" height="13" fill="rgb(41,88,163)"/><rect x="239" y="192" width="13" height="13" fill="rgb(44,90,162)"/><rect x="252" y="192" width="13" height="13" fill="rgb(43,89,162)"/><rect x="265" y="192" width="13" height="13" fill="rgb(44,90,162)"/><rect x="70" y="205" width="13" height="13" fill="rgb(45,90,162)"/><rect x="83" y="205" width="13" height="13" fill="rgb(43,89,162)"/><rect x="96" y="205" width="13" height="13" fill="rgb(43,89,163)"/><rect x="109" y="205" width="13" height="13" fill="rgb(42,88,163)"/><rect x="122" y="205" width="13" height="13" fill="rgb(43,89,162)"/><rect x="135" y="205" width="13" height="13" fill="rgb(43,89,163)"/><rect x="148" y="205" width="13" height="13" fill="rgb(42,88,163)"/><rect x="161" y="205" width="13" height="13" fill="rgb(43,89,162)"/><rect x="174" y="205" width="13" height="13" fill="rgb(40,87,163)"/><rect x="187" y="205" width="13" height="13" fill="rgb(41,88,163)"/><rect x="200" y="205" width="13" height="13" fill="rgb(41,88,163)"/><rect x="213" y="205" width="13" height="13" fill="rgb(36,85,164)"/><rect x="226" y="205" width="13" height="13" fill="rgb(45,90,162)"/><rect x="239" y="205" width="13" height="13" fill="rgb(43,89,162)"/><rect x="252" y="205" width="13" height="13" fill="rgb(43,89,162)"/><rect x="265" y="205" width="13" height="13" fill="rgb(43,89,162)"/><rect x="70" y="218" width="13" height="13" fill="rgb(43,89,162)"/><rect x="83" y="218" width="13" height="13" fill="rgb(44,89,162)"/><rect x="96" y="218" width="13" height="13" fill="rgb(44,89,162)"/><rect x="109" y="218" width="13" height="13" fill="rgb(42,88,163)"/><rect x="122" y="218" width="13" height="13" fill="rgb(42,89,163)"/><rect x="135" y="218" width="13" height="13" fill="rgb(44,89,162)"/><rect x="148" y="218" width="13" height="13" fill="rgb(46,91,162)"/><rect x="161" y="218" width="13" height="13" fill="rgb(44,89,162)"/><rect x="174" y="218" width="13" height="13" fill="rgb(46,91,162)"/><rect x="187" y="218" width="13" height="13" fill="rgb(42,88,163)"/><rect x="200" y="218" width="13" height="13" fill="rgb(41,88,163)"/><rect x="213" y="218" width="13" height="13" fill="rgb(45,90,162)"/><rect x="226" y="218" width="13" height="13" fill="rgb(36,85,164)"/><rect x="239" y="218" width="13" height="13" fill="rgb(41,88,163)"/><rect x="252" y="218" width="13" height="13" fill="rgb(43,89,162)"/><rect x="265" y="218" width="13" height="13" fill="rgb(44,89,162)"/><rect x="70" y="231" width="13" height="13" fill="rgb(44,90,162)"/><rect x="83" y="231" width="13" height="13" fill="rgb(44,90,162)"/><rect x="96" y="231" width="13" height="13" fill="rgb(44,89,162)"/><rect x="109" y="231" width="13" height="13" fill="rgb(40,88,163)"/><rect x="122" y="231" width="13" height="13" fill="rgb(44,90,162)"/><rect x="135" y="231" width="13" height="13" fill="rgb(43,89,163)"/><rect x="148" y="231" width="13" height="13" fill="rgb(41,88,163)"/><rect x="161" y="231" width="13" height="13" fill="rgb(44,90,162)"/><rect x="174" y="231" width="13" height="13" fill="rgb(44,90,162)"/><rect x="187" y="231" width="13" height="13" fill="rgb(42,88,163)"/><rect x="200" y="231" width="13" height="13" fill="rgb(44,90,162)"/><rect x="213" y="231" width="13" height="13" fill="rgb(43,89,162)"/><rect x="226" y="231" width="13" height="13" fill="rgb(41,88,163)"/><rect x="239" y="231" width="13" height="13" fill="rgb(36,85,164)"/><rect x="252" y="231" width="13" height="13" fill="rgb(42,89,163)"/><rect x="265" y="231" width="13" height="13" fill="rgb(42,88,163)"/><rect x="70" y="244" width="13" height="13" fill="rgb(42,88,163)"/><rect x="83" y="244" width="13" height="13" fill="rgb(42,88,163)"/><rect x="96" y="244" width="13" height="13" fill="rgb(45,90,162)"/><rect x="109" y="244" width="13" height="13" fill="rgb(46,91,162)"/><rect x="122" y="244" width="13" height="13" fill="rgb(42,88,163)"/><rect x="135" y="244" width="13" height="13" fill="rgb(45,90,162)"/><rect x="148" y="244" width="13" height="13" fill="rgb(39,86,163)"/><rect x="161" y="244" width="13" height="13" fill="rgb(43,89,163)"/><rect x="174" y="244" width="13" height="13" fill="rgb(42,89,163)"/><rect x="187" y="244" width="13" height="13" fill="rgb(43,89,163)"/><rect x="200" y="244" width="13" height="13" fill="rgb(43,89,162)"/><rect x="213" y="244" width="13" height="13" fill="rgb(43,89,162)"/><rect x="226" y="244" width="13" height="13" fill="rgb(43,89,162)"/><rect x="239" y="244" width="13" height="13" fill="rgb(42,89,163)"/><rect x="252" y="244" width="13" height="13" fill="rgb(36,85,164)"/><rect x="265" y="244" width="13" height="13" fill="rgb(42,88,163)"/><rect x="70" y="257" width="13" height="13" fill="rgb(43,89,163)"/><rect x="83" y="257" width="13" height="13" fill="rgb(43,89,163)"/><rect x="96" y="257" width="13" height="13" fill="rgb(43,89,162)"/><rect x="109" y="257" width="13" height="13" fill="rgb(40,87,163)"/><rect x="122" y="257" width="13" height="13" fill="rgb(43,89,162)"/><rect x="135" y="257" width="13" height="13" fill="rgb(43,89,162)"/><rect x="148" y="257" width="13" height="13" fill="rgb(43,89,162)"/><rect x="161" y="257" width="13" height="13" fill="rgb(43,89,163)"/><rect x="174" y="257" width="13" height="13" fill="rgb(42,88,163)"/><rect x="187" y="257" width="13" height="13" fill="rgb(45,90,162)"/><rect x="200" y="257" width="13" height="13" fill="rgb(44,90,162)"/><rect x="213" y="257" width="13" height="13" fill="rgb(43,89,162)"/><rect x="226" y="257" width="13" height="13" fill="rgb(44,89,162)"/><rect x="239" y="257" width="13" height="13" fill="rgb(42,88,163)"/><rect x="252" y="257" width="13" height="13" fill="rgb(42,88,163)"/><rect x="265" y="257" width="13" height="13" fill="rgb(36,85,164)"/>
+<line x1="122" y1="62" x2="122" y2="270" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="70" y1="114" x2="278" y2="114" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="174" y1="62" x2="174" y2="270" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="70" y1="166" x2="278" y2="166" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="226" y1="62" x2="226" y2="270" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="70" y1="218" x2="278" y2="218" stroke="var(--surface)" stroke-width="1.5"/>
+<rect x="70" y="62" width="208" height="208" fill="none" stroke="var(--border2)" stroke-width="1"/>
+<text x="174.0" y="288" text-anchor="middle" font-size="11.5" fill="var(--text3)" font-family="'DM Sans',sans-serif" font-weight="600">differences too small to see</text>
+<text x="315" y="166" text-anchor="middle" dominant-baseline="middle" font-size="18" fill="var(--text3)">→</text>
+<text x="499.0" y="5" text-anchor="middle" font-size="14" font-weight="700" fill="#1A7A4E" font-family="'DM Sans',sans-serif">Layer 11</text>
+<text x="499.0" y="22" text-anchor="middle" font-size="11.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">sentences spread apart</text>
+<text x="499.0" y="37" text-anchor="middle" font-size="11.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">topic blocks, with overlap</text>
+<text x="390" y="88" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Food</text>
+<text x="421" y="56" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Food</text>
+<text x="390" y="140" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Sport</text>
+<text x="473" y="56" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Sport</text>
+<text x="390" y="192" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Weather</text>
+<text x="525" y="56" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Weather</text>
+<text x="390" y="244" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Politics</text>
+<text x="577" y="56" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">Politics</text>
+<rect x="395" y="62" width="13" height="13" fill="rgb(36,85,164)"/><rect x="408" y="62" width="13" height="13" fill="rgb(111,128,148)"/><rect x="421" y="62" width="13" height="13" fill="rgb(111,128,148)"/><rect x="434" y="62" width="13" height="13" fill="rgb(119,132,146)"/><rect x="447" y="62" width="13" height="13" fill="rgb(155,153,138)"/><rect x="460" y="62" width="13" height="13" fill="rgb(163,157,136)"/><rect x="473" y="62" width="13" height="13" fill="rgb(140,144,141)"/><rect x="486" y="62" width="13" height="13" fill="rgb(179,166,133)"/><rect x="499" y="62" width="13" height="13" fill="rgb(165,159,136)"/><rect x="512" y="62" width="13" height="13" fill="rgb(141,145,141)"/><rect x="525" y="62" width="13" height="13" fill="rgb(118,132,146)"/><rect x="538" y="62" width="13" height="13" fill="rgb(164,158,136)"/><rect x="551" y="62" width="13" height="13" fill="rgb(226,193,123)"/><rect x="564" y="62" width="13" height="13" fill="rgb(189,172,131)"/><rect x="577" y="62" width="13" height="13" fill="rgb(194,175,130)"/><rect x="590" y="62" width="13" height="13" fill="rgb(192,174,130)"/><rect x="395" y="75" width="13" height="13" fill="rgb(111,128,148)"/><rect x="408" y="75" width="13" height="13" fill="rgb(36,85,164)"/><rect x="421" y="75" width="13" height="13" fill="rgb(140,144,141)"/><rect x="434" y="75" width="13" height="13" fill="rgb(108,126,148)"/><rect x="447" y="75" width="13" height="13" fill="rgb(192,174,130)"/><rect x="460" y="75" width="13" height="13" fill="rgb(166,159,136)"/><rect x="473" y="75" width="13" height="13" fill="rgb(190,173,130)"/><rect x="486" y="75" width="13" height="13" fill="rgb(172,163,134)"/><rect x="499" y="75" width="13" height="13" fill="rgb(160,155,137)"/><rect x="512" y="75" width="13" height="13" fill="rgb(135,141,143)"/><rect x="525" y="75" width="13" height="13" fill="rgb(151,150,139)"/><rect x="538" y="75" width="13" height="13" fill="rgb(159,155,137)"/><rect x="551" y="75" width="13" height="13" fill="rgb(217,188,125)"/><rect x="564" y="75" width="13" height="13" fill="rgb(208,183,126)"/><rect x="577" y="75" width="13" height="13" fill="rgb(189,172,131)"/><rect x="590" y="75" width="13" height="13" fill="rgb(212,185,126)"/><rect x="395" y="88" width="13" height="13" fill="rgb(111,128,148)"/><rect x="408" y="88" width="13" height="13" fill="rgb(140,144,141)"/><rect x="421" y="88" width="13" height="13" fill="rgb(36,85,164)"/><rect x="434" y="88" width="13" height="13" fill="rgb(147,148,140)"/><rect x="447" y="88" width="13" height="13" fill="rgb(169,161,135)"/><rect x="460" y="88" width="13" height="13" fill="rgb(163,157,136)"/><rect x="473" y="88" width="13" height="13" fill="rgb(164,158,136)"/><rect x="486" y="88" width="13" height="13" fill="rgb(188,172,131)"/><rect x="499" y="88" width="13" height="13" fill="rgb(175,164,134)"/><rect x="512" y="88" width="13" height="13" fill="rgb(146,147,140)"/><rect x="525" y="88" width="13" height="13" fill="rgb(172,162,134)"/><rect x="538" y="88" width="13" height="13" fill="rgb(155,153,138)"/><rect x="551" y="88" width="13" height="13" fill="rgb(188,172,131)"/><rect x="564" y="88" width="13" height="13" fill="rgb(228,195,122)"/><rect x="577" y="88" width="13" height="13" fill="rgb(220,190,124)"/><rect x="590" y="88" width="13" height="13" fill="rgb(189,172,131)"/><rect x="395" y="101" width="13" height="13" fill="rgb(119,132,146)"/><rect x="408" y="101" width="13" height="13" fill="rgb(108,126,148)"/><rect x="421" y="101" width="13" height="13" fill="rgb(147,148,140)"/><rect x="434" y="101" width="13" height="13" fill="rgb(36,85,164)"/><rect x="447" y="101" width="13" height="13" fill="rgb(173,163,134)"/><rect x="460" y="101" width="13" height="13" fill="rgb(182,168,132)"/><rect x="473" y="101" width="13" height="13" fill="rgb(159,155,137)"/><rect x="486" y="101" width="13" height="13" fill="rgb(169,161,135)"/><rect x="499" y="101" width="13" height="13" fill="rgb(178,166,133)"/><rect x="512" y="101" width="13" height="13" fill="rgb(128,138,144)"/><rect x="525" y="101" width="13" height="13" fill="rgb(171,162,135)"/><rect x="538" y="101" width="13" height="13" fill="rgb(179,167,133)"/><rect x="551" y="101" width="13" height="13" fill="rgb(214,186,125)"/><rect x="564" y="101" width="13" height="13" fill="rgb(176,165,133)"/><rect x="577" y="101" width="13" height="13" fill="rgb(210,184,126)"/><rect x="590" y="101" width="13" height="13" fill="rgb(186,170,131)"/><rect x="395" y="114" width="13" height="13" fill="rgb(155,153,138)"/><rect x="408" y="114" width="13" height="13" fill="rgb(192,174,130)"/><rect x="421" y="114" width="13" height="13" fill="rgb(169,161,135)"/><rect x="434" y="114" width="13" height="13" fill="rgb(173,163,134)"/><rect x="447" y="114" width="13" height="13" fill="rgb(36,85,164)"/><rect x="460" y="114" width="13" height="13" fill="rgb(166,159,136)"/><rect x="473" y="114" width="13" height="13" fill="rgb(167,159,136)"/><rect x="486" y="114" width="13" height="13" fill="rgb(159,155,137)"/><rect x="499" y="114" width="13" height="13" fill="rgb(155,153,138)"/><rect x="512" y="114" width="13" height="13" fill="rgb(158,155,137)"/><rect x="525" y="114" width="13" height="13" fill="rgb(187,171,131)"/><rect x="538" y="114" width="13" height="13" fill="rgb(152,151,139)"/><rect x="551" y="114" width="13" height="13" fill="rgb(186,170,131)"/><rect x="564" y="114" width="13" height="13" fill="rgb(186,171,131)"/><rect x="577" y="114" width="13" height="13" fill="rgb(170,161,135)"/><rect x="590" y="114" width="13" height="13" fill="rgb(224,192,123)"/><rect x="395" y="127" width="13" height="13" fill="rgb(163,157,136)"/><rect x="408" y="127" width="13" height="13" fill="rgb(166,159,136)"/><rect x="421" y="127" width="13" height="13" fill="rgb(163,157,136)"/><rect x="434" y="127" width="13" height="13" fill="rgb(182,168,132)"/><rect x="447" y="127" width="13" height="13" fill="rgb(166,159,136)"/><rect x="460" y="127" width="13" height="13" fill="rgb(36,85,164)"/><rect x="473" y="127" width="13" height="13" fill="rgb(156,153,138)"/><rect x="486" y="127" width="13" height="13" fill="rgb(198,177,129)"/><rect x="499" y="127" width="13" height="13" fill="rgb(129,138,144)"/><rect x="512" y="127" width="13" height="13" fill="rgb(125,136,145)"/><rect x="525" y="127" width="13" height="13" fill="rgb(190,173,130)"/><rect x="538" y="127" width="13" height="13" fill="rgb(183,169,132)"/><rect x="551" y="127" width="13" height="13" fill="rgb(170,161,135)"/><rect x="564" y="127" width="13" height="13" fill="rgb(175,164,134)"/><rect x="577" y="127" width="13" height="13" fill="rgb(138,143,142)"/><rect x="590" y="127" width="13" height="13" fill="rgb(163,157,136)"/><rect x="395" y="140" width="13" height="13" fill="rgb(140,144,141)"/><rect x="408" y="140" width="13" height="13" fill="rgb(190,173,130)"/><rect x="421" y="140" width="13" height="13" fill="rgb(164,158,136)"/><rect x="434" y="140" width="13" height="13" fill="rgb(159,155,137)"/><rect x="447" y="140" width="13" height="13" fill="rgb(167,159,136)"/><rect x="460" y="140" width="13" height="13" fill="rgb(156,153,138)"/><rect x="473" y="140" width="13" height="13" fill="rgb(36,85,164)"/><rect x="486" y="140" width="13" height="13" fill="rgb(133,140,143)"/><rect x="499" y="140" width="13" height="13" fill="rgb(166,159,136)"/><rect x="512" y="140" width="13" height="13" fill="rgb(188,172,131)"/><rect x="525" y="140" width="13" height="13" fill="rgb(171,162,135)"/><rect x="538" y="140" width="13" height="13" fill="rgb(178,166,133)"/><rect x="551" y="140" width="13" height="13" fill="rgb(162,157,137)"/><rect x="564" y="140" width="13" height="13" fill="rgb(167,160,135)"/><rect x="577" y="140" width="13" height="13" fill="rgb(178,166,133)"/><rect x="590" y="140" width="13" height="13" fill="rgb(170,161,135)"/><rect x="395" y="153" width="13" height="13" fill="rgb(179,166,133)"/><rect x="408" y="153" width="13" height="13" fill="rgb(172,163,134)"/><rect x="421" y="153" width="13" height="13" fill="rgb(188,172,131)"/><rect x="434" y="153" width="13" height="13" fill="rgb(169,161,135)"/><rect x="447" y="153" width="13" height="13" fill="rgb(159,155,137)"/><rect x="460" y="153" width="13" height="13" fill="rgb(198,177,129)"/><rect x="473" y="153" width="13" height="13" fill="rgb(133,140,143)"/><rect x="486" y="153" width="13" height="13" fill="rgb(36,85,164)"/><rect x="499" y="153" width="13" height="13" fill="rgb(196,176,129)"/><rect x="512" y="153" width="13" height="13" fill="rgb(152,151,139)"/><rect x="525" y="153" width="13" height="13" fill="rgb(208,183,126)"/><rect x="538" y="153" width="13" height="13" fill="rgb(150,150,139)"/><rect x="551" y="153" width="13" height="13" fill="rgb(197,177,129)"/><rect x="564" y="153" width="13" height="13" fill="rgb(160,156,137)"/><rect x="577" y="153" width="13" height="13" fill="rgb(209,184,126)"/><rect x="590" y="153" width="13" height="13" fill="rgb(179,166,133)"/><rect x="395" y="166" width="13" height="13" fill="rgb(165,159,136)"/><rect x="408" y="166" width="13" height="13" fill="rgb(160,155,137)"/><rect x="421" y="166" width="13" height="13" fill="rgb(175,164,134)"/><rect x="434" y="166" width="13" height="13" fill="rgb(178,166,133)"/><rect x="447" y="166" width="13" height="13" fill="rgb(155,153,138)"/><rect x="460" y="166" width="13" height="13" fill="rgb(129,138,144)"/><rect x="473" y="166" width="13" height="13" fill="rgb(166,159,136)"/><rect x="486" y="166" width="13" height="13" fill="rgb(196,176,129)"/><rect x="499" y="166" width="13" height="13" fill="rgb(36,85,164)"/><rect x="512" y="166" width="13" height="13" fill="rgb(126,136,144)"/><rect x="525" y="166" width="13" height="13" fill="rgb(133,140,143)"/><rect x="538" y="166" width="13" height="13" fill="rgb(105,125,149)"/><rect x="551" y="166" width="13" height="13" fill="rgb(166,159,136)"/><rect x="564" y="166" width="13" height="13" fill="rgb(147,148,140)"/><rect x="577" y="166" width="13" height="13" fill="rgb(212,185,126)"/><rect x="590" y="166" width="13" height="13" fill="rgb(173,163,134)"/><rect x="395" y="179" width="13" height="13" fill="rgb(141,145,141)"/><rect x="408" y="179" width="13" height="13" fill="rgb(135,141,143)"/><rect x="421" y="179" width="13" height="13" fill="rgb(146,147,140)"/><rect x="434" y="179" width="13" height="13" fill="rgb(128,138,144)"/><rect x="447" y="179" width="13" height="13" fill="rgb(158,155,137)"/><rect x="460" y="179" width="13" height="13" fill="rgb(125,136,145)"/><rect x="473" y="179" width="13" height="13" fill="rgb(188,172,131)"/><rect x="486" y="179" width="13" height="13" fill="rgb(152,151,139)"/><rect x="499" y="179" width="13" height="13" fill="rgb(126,136,144)"/><rect x="512" y="179" width="13" height="13" fill="rgb(36,85,164)"/><rect x="525" y="179" width="13" height="13" fill="rgb(106,125,149)"/><rect x="538" y="179" width="13" height="13" fill="rgb(118,131,146)"/><rect x="551" y="179" width="13" height="13" fill="rgb(228,194,122)"/><rect x="564" y="179" width="13" height="13" fill="rgb(153,151,139)"/><rect x="577" y="179" width="13" height="13" fill="rgb(193,174,130)"/><rect x="590" y="179" width="13" height="13" fill="rgb(180,167,133)"/><rect x="395" y="192" width="13" height="13" fill="rgb(118,132,146)"/><rect x="408" y="192" width="13" height="13" fill="rgb(151,150,139)"/><rect x="421" y="192" width="13" height="13" fill="rgb(172,162,134)"/><rect x="434" y="192" width="13" height="13" fill="rgb(171,162,135)"/><rect x="447" y="192" width="13" height="13" fill="rgb(187,171,131)"/><rect x="460" y="192" width="13" height="13" fill="rgb(190,173,130)"/><rect x="473" y="192" width="13" height="13" fill="rgb(171,162,135)"/><rect x="486" y="192" width="13" height="13" fill="rgb(208,183,126)"/><rect x="499" y="192" width="13" height="13" fill="rgb(133,140,143)"/><rect x="512" y="192" width="13" height="13" fill="rgb(106,125,149)"/><rect x="525" y="192" width="13" height="13" fill="rgb(36,85,164)"/><rect x="538" y="192" width="13" height="13" fill="rgb(129,138,144)"/><rect x="551" y="192" width="13" height="13" fill="rgb(151,151,139)"/><rect x="564" y="192" width="13" height="13" fill="rgb(179,167,133)"/><rect x="577" y="192" width="13" height="13" fill="rgb(204,181,127)"/><rect x="590" y="192" width="13" height="13" fill="rgb(219,189,124)"/><rect x="395" y="205" width="13" height="13" fill="rgb(164,158,136)"/><rect x="408" y="205" width="13" height="13" fill="rgb(159,155,137)"/><rect x="421" y="205" width="13" height="13" fill="rgb(155,153,138)"/><rect x="434" y="205" width="13" height="13" fill="rgb(179,167,133)"/><rect x="447" y="205" width="13" height="13" fill="rgb(152,151,139)"/><rect x="460" y="205" width="13" height="13" fill="rgb(183,169,132)"/><rect x="473" y="205" width="13" height="13" fill="rgb(178,166,133)"/><rect x="486" y="205" width="13" height="13" fill="rgb(150,150,139)"/><rect x="499" y="205" width="13" height="13" fill="rgb(105,125,149)"/><rect x="512" y="205" width="13" height="13" fill="rgb(118,131,146)"/><rect x="525" y="205" width="13" height="13" fill="rgb(129,138,144)"/><rect x="538" y="205" width="13" height="13" fill="rgb(36,85,164)"/><rect x="551" y="205" width="13" height="13" fill="rgb(220,190,124)"/><rect x="564" y="205" width="13" height="13" fill="rgb(170,161,135)"/><rect x="577" y="205" width="13" height="13" fill="rgb(189,172,131)"/><rect x="590" y="205" width="13" height="13" fill="rgb(185,170,131)"/><rect x="395" y="218" width="13" height="13" fill="rgb(226,193,123)"/><rect x="408" y="218" width="13" height="13" fill="rgb(217,188,125)"/><rect x="421" y="218" width="13" height="13" fill="rgb(188,172,131)"/><rect x="434" y="218" width="13" height="13" fill="rgb(214,186,125)"/><rect x="447" y="218" width="13" height="13" fill="rgb(186,170,131)"/><rect x="460" y="218" width="13" height="13" fill="rgb(170,161,135)"/><rect x="473" y="218" width="13" height="13" fill="rgb(162,157,137)"/><rect x="486" y="218" width="13" height="13" fill="rgb(197,177,129)"/><rect x="499" y="218" width="13" height="13" fill="rgb(166,159,136)"/><rect x="512" y="218" width="13" height="13" fill="rgb(228,194,122)"/><rect x="525" y="218" width="13" height="13" fill="rgb(151,151,139)"/><rect x="538" y="218" width="13" height="13" fill="rgb(220,190,124)"/><rect x="551" y="218" width="13" height="13" fill="rgb(36,85,164)"/><rect x="564" y="218" width="13" height="13" fill="rgb(119,132,146)"/><rect x="577" y="218" width="13" height="13" fill="rgb(118,132,146)"/><rect x="590" y="218" width="13" height="13" fill="rgb(162,157,136)"/><rect x="395" y="231" width="13" height="13" fill="rgb(189,172,131)"/><rect x="408" y="231" width="13" height="13" fill="rgb(208,183,126)"/><rect x="421" y="231" width="13" height="13" fill="rgb(228,195,122)"/><rect x="434" y="231" width="13" height="13" fill="rgb(176,165,133)"/><rect x="447" y="231" width="13" height="13" fill="rgb(186,171,131)"/><rect x="460" y="231" width="13" height="13" fill="rgb(175,164,134)"/><rect x="473" y="231" width="13" height="13" fill="rgb(167,160,135)"/><rect x="486" y="231" width="13" height="13" fill="rgb(160,156,137)"/><rect x="499" y="231" width="13" height="13" fill="rgb(147,148,140)"/><rect x="512" y="231" width="13" height="13" fill="rgb(153,151,139)"/><rect x="525" y="231" width="13" height="13" fill="rgb(179,167,133)"/><rect x="538" y="231" width="13" height="13" fill="rgb(170,161,135)"/><rect x="551" y="231" width="13" height="13" fill="rgb(119,132,146)"/><rect x="564" y="231" width="13" height="13" fill="rgb(36,85,164)"/><rect x="577" y="231" width="13" height="13" fill="rgb(152,151,139)"/><rect x="590" y="231" width="13" height="13" fill="rgb(144,147,140)"/><rect x="395" y="244" width="13" height="13" fill="rgb(194,175,130)"/><rect x="408" y="244" width="13" height="13" fill="rgb(189,172,131)"/><rect x="421" y="244" width="13" height="13" fill="rgb(220,190,124)"/><rect x="434" y="244" width="13" height="13" fill="rgb(210,184,126)"/><rect x="447" y="244" width="13" height="13" fill="rgb(170,161,135)"/><rect x="460" y="244" width="13" height="13" fill="rgb(138,143,142)"/><rect x="473" y="244" width="13" height="13" fill="rgb(178,166,133)"/><rect x="486" y="244" width="13" height="13" fill="rgb(209,184,126)"/><rect x="499" y="244" width="13" height="13" fill="rgb(212,185,126)"/><rect x="512" y="244" width="13" height="13" fill="rgb(193,174,130)"/><rect x="525" y="244" width="13" height="13" fill="rgb(204,181,127)"/><rect x="538" y="244" width="13" height="13" fill="rgb(189,172,131)"/><rect x="551" y="244" width="13" height="13" fill="rgb(118,132,146)"/><rect x="564" y="244" width="13" height="13" fill="rgb(152,151,139)"/><rect x="577" y="244" width="13" height="13" fill="rgb(36,85,164)"/><rect x="590" y="244" width="13" height="13" fill="rgb(172,162,134)"/><rect x="395" y="257" width="13" height="13" fill="rgb(192,174,130)"/><rect x="408" y="257" width="13" height="13" fill="rgb(212,185,126)"/><rect x="421" y="257" width="13" height="13" fill="rgb(189,172,131)"/><rect x="434" y="257" width="13" height="13" fill="rgb(186,170,131)"/><rect x="447" y="257" width="13" height="13" fill="rgb(224,192,123)"/><rect x="460" y="257" width="13" height="13" fill="rgb(163,157,136)"/><rect x="473" y="257" width="13" height="13" fill="rgb(170,161,135)"/><rect x="486" y="257" width="13" height="13" fill="rgb(179,166,133)"/><rect x="499" y="257" width="13" height="13" fill="rgb(173,163,134)"/><rect x="512" y="257" width="13" height="13" fill="rgb(180,167,133)"/><rect x="525" y="257" width="13" height="13" fill="rgb(219,189,124)"/><rect x="538" y="257" width="13" height="13" fill="rgb(185,170,131)"/><rect x="551" y="257" width="13" height="13" fill="rgb(162,157,136)"/><rect x="564" y="257" width="13" height="13" fill="rgb(144,147,140)"/><rect x="577" y="257" width="13" height="13" fill="rgb(172,162,134)"/><rect x="590" y="257" width="13" height="13" fill="rgb(36,85,164)"/>
+<line x1="447" y1="62" x2="447" y2="270" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="395" y1="114" x2="603" y2="114" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="499" y1="62" x2="499" y2="270" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="395" y1="166" x2="603" y2="166" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="551" y1="62" x2="551" y2="270" stroke="var(--surface)" stroke-width="1.5"/>
+<line x1="395" y1="218" x2="603" y2="218" stroke="var(--surface)" stroke-width="1.5"/>
+<rect x="395" y="62" width="208" height="208" fill="none" stroke="var(--border2)" stroke-width="1"/>
+<text x="499.0" y="288" text-anchor="middle" font-size="11.5" fill="#1A7A4E" font-family="'DM Sans',sans-serif" font-weight="600">weather tightest · sport loosest</text>
+<text x="775.0" y="5" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text2)" font-family="'DM Sans',sans-serif">Within vs between topic</text>
+<text x="775.0" y="22" text-anchor="middle" font-size="11.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">each dot = one sentence pair</text>
+<line x1="680" y1="270.0" x2="870" y2="270.0" stroke="var(--border)" stroke-width="0.8"/>
+<text x="675" y="270.0" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">0.00</text>
+<line x1="680" y1="195.71428571428572" x2="870" y2="195.71428571428572" stroke="var(--border)" stroke-width="0.8"/>
+<text x="675" y="195.71428571428572" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">0.05</text>
+<line x1="680" y1="121.42857142857142" x2="870" y2="121.42857142857142" stroke="var(--border)" stroke-width="0.8"/>
+<text x="675" y="121.42857142857142" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">0.10</text>
+<g transform="translate(646,166.0) rotate(-90)"><text text-anchor="middle" font-size="10.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">1 − r</text></g>
+<rect x="691" y="263.8777014598848" width="28" height="6.122298540115196" fill="#2455A4" opacity="0.25"/>
+<line x1="691" y1="263.8777014598848" x2="719" y2="263.8777014598848" stroke="#2455A4" stroke-width="2"/>
+<circle cx="703.5" cy="263.9" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="704.5" cy="262.4" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="710.5" cy="265.3" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="695.0" cy="264.6" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="696.1" cy="265.8" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="697.5" cy="266.8" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="697.5" cy="264.0" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="696.4" cy="264.3" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="714.5" cy="261.4" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="712.1" cy="263.1" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="696.7" cy="261.2" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="705.0" cy="263.9" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="701.3" cy="261.6" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="701.3" cy="263.5" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="702.0" cy="265.5" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="707.9" cy="263.8" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="706.7" cy="265.3" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="702.2" cy="264.8" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="698.8" cy="265.3" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="701.6" cy="262.9" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="697.5" cy="261.9" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="706.1" cy="263.5" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="709.3" cy="264.1" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="702.6" cy="264.1" r="1.8" fill="#2455A4" opacity="0.8"/>
+<rect x="725" y="262.83465789556817" width="28" height="7.165342104431829" fill="#A06010" opacity="0.25"/>
+<line x1="725" y1="262.83465789556817" x2="753" y2="262.83465789556817" stroke="#A06010" stroke-width="2"/>
+<circle cx="730.6" cy="261.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="732.6" cy="262.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="736.5" cy="262.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="741.1" cy="260.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.7" cy="262.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="736.6" cy="262.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="745.0" cy="261.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="741.5" cy="261.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="737.6" cy="262.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="736.4" cy="261.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="738.9" cy="263.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="743.1" cy="263.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="737.4" cy="264.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="742.9" cy="264.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="738.2" cy="262.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="733.9" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="739.7" cy="263.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="742.9" cy="262.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="730.4" cy="264.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="737.5" cy="262.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="737.5" cy="262.3" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="746.6" cy="261.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="747.7" cy="263.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="736.5" cy="263.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="747.0" cy="263.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.8" cy="265.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="734.2" cy="264.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="738.3" cy="261.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="731.5" cy="265.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="745.3" cy="261.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="742.2" cy="262.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="746.7" cy="263.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.8" cy="262.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="742.4" cy="261.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="743.7" cy="261.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="740.3" cy="262.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="731.1" cy="263.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="740.8" cy="263.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="729.1" cy="263.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="731.9" cy="262.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.5" cy="263.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="729.9" cy="261.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="730.8" cy="265.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="731.0" cy="264.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="746.6" cy="263.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="732.6" cy="265.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="729.5" cy="260.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="745.8" cy="265.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="731.4" cy="265.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="745.9" cy="261.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="742.5" cy="263.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="745.7" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="748.0" cy="263.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="740.6" cy="261.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="745.0" cy="264.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="729.7" cy="262.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.3" cy="265.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="739.2" cy="260.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="743.3" cy="261.3" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="731.1" cy="263.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.0" cy="262.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="747.7" cy="263.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="730.2" cy="260.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="735.5" cy="262.3" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="740.3" cy="262.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="745.6" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="733.8" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="732.6" cy="263.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="734.0" cy="259.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="741.3" cy="265.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.1" cy="267.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="736.9" cy="262.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="736.3" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="736.9" cy="262.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="736.0" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="737.4" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="730.7" cy="262.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="739.0" cy="261.3" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="748.5" cy="263.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="737.3" cy="263.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="743.9" cy="259.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="732.2" cy="261.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="742.8" cy="263.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.1" cy="264.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="742.5" cy="264.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="739.3" cy="264.3" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="738.7" cy="263.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="741.9" cy="261.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="746.9" cy="264.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="732.0" cy="261.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="730.9" cy="262.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="744.0" cy="261.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="747.3" cy="261.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="739.3" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="737.9" cy="262.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="743.4" cy="262.6" r="1.8" fill="#A06010" opacity="0.8"/>
+<text x="722" y="286" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">Layer 0</text>
+<rect x="797" y="165.51409946404954" width="28" height="104.48590053595046" fill="#2455A4" opacity="0.25"/>
+<line x1="797" y1="165.51409946404954" x2="825" y2="165.51409946404954" stroke="#2455A4" stroke-width="2"/>
+<circle cx="804.7" cy="192.6" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="806.3" cy="193.1" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="805.0" cy="184.7" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="812.7" cy="162.8" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="807.3" cy="195.5" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="805.6" cy="155.9" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="814.8" cy="136.3" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="820.1" cy="135.6" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="806.9" cy="143.7" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="815.1" cy="146.7" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="809.3" cy="103.5" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="818.1" cy="169.7" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="812.7" cy="177.0" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="806.3" cy="169.8" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="805.4" cy="198.5" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="801.5" cy="197.6" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="810.6" cy="186.0" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="808.7" cy="174.3" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="804.4" cy="184.2" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="808.2" cy="185.6" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="807.4" cy="139.9" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="816.5" cy="150.5" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="803.9" cy="158.6" r="1.8" fill="#2455A4" opacity="0.8"/><circle cx="820.8" cy="130.3" r="1.8" fill="#2455A4" opacity="0.8"/>
+<rect x="831" y="125.27590965946223" width="28" height="144.72409034053777" fill="#A06010" opacity="0.25"/>
+<line x1="831" y1="125.27590965946223" x2="859" y2="125.27590965946223" stroke="#A06010" stroke-width="2"/>
+<circle cx="844.6" cy="147.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="847.0" cy="139.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="844.4" cy="163.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="851.7" cy="123.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="851.4" cy="136.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="846.1" cy="161.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="844.6" cy="185.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.4" cy="137.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="852.1" cy="74.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="843.0" cy="112.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.7" cy="107.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="854.2" cy="109.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="844.3" cy="109.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="839.6" cy="136.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="839.7" cy="111.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.4" cy="129.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="848.5" cy="142.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="854.2" cy="168.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="852.1" cy="152.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="839.8" cy="143.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="838.8" cy="83.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="840.2" cy="92.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="838.7" cy="112.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.1" cy="89.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="852.2" cy="133.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="853.0" cy="139.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="840.1" cy="138.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="852.3" cy="113.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="841.3" cy="126.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="843.5" cy="157.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.6" cy="130.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="836.7" cy="147.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="836.9" cy="113.3" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="851.7" cy="71.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="840.8" cy="80.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="842.1" cy="112.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="846.6" cy="128.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="848.5" cy="119.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="835.1" cy="143.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="841.7" cy="132.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="843.7" cy="123.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="844.7" cy="175.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="839.2" cy="131.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="846.7" cy="122.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="854.1" cy="87.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="842.8" cy="125.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="845.9" cy="91.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="837.4" cy="115.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="840.5" cy="147.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="848.3" cy="144.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="837.3" cy="114.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="852.7" cy="150.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="853.2" cy="115.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="836.9" cy="115.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="853.8" cy="131.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="842.5" cy="76.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="850.4" cy="173.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="850.1" cy="178.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="840.9" cy="111.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="848.5" cy="118.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="848.1" cy="132.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="851.1" cy="127.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="840.3" cy="165.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="850.1" cy="139.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="854.2" cy="136.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="848.5" cy="113.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="845.7" cy="130.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="837.3" cy="124.1" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="844.9" cy="140.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="842.0" cy="134.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.4" cy="123.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="848.6" cy="131.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="846.3" cy="105.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="838.6" cy="150.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="847.9" cy="92.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="847.6" cy="152.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="838.6" cy="103.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="852.8" cy="142.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="848.1" cy="91.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="837.5" cy="123.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="853.6" cy="135.7" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="837.8" cy="156.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="841.6" cy="88.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.4" cy="128.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="846.9" cy="72.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="846.1" cy="150.0" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="847.9" cy="108.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="844.2" cy="122.2" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="841.2" cy="151.4" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="838.5" cy="122.3" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="836.4" cy="96.5" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.3" cy="81.6" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="850.1" cy="80.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="845.9" cy="131.8" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="849.8" cy="112.9" r="1.8" fill="#A06010" opacity="0.8"/><circle cx="842.2" cy="116.3" r="1.8" fill="#A06010" opacity="0.8"/>
+<text x="828" y="286" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">Layer 11</text>
+<line x1="680" y1="270" x2="870" y2="270" stroke="var(--border2)" stroke-width="1"/>
+<rect x="698" y="297" width="10" height="10" fill="#2455A4" opacity="0.6"/><text x="712" y="302" dominant-baseline="middle" font-size="10.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">within</text>
+<rect x="778" y="297" width="10" height="10" fill="#A06010" opacity="0.6"/><text x="792" y="302" dominant-baseline="middle" font-size="10.5" fill="var(--text3)" font-family="'DM Sans',sans-serif">between</text>
+<defs><linearGradient id="cleg5" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgb(36,85,164)"/><stop offset="100%" stop-color="rgb(238,200,120)"/></linearGradient></defs>
+<rect x="250" y="318" width="140" height="8" rx="3" fill="url(#cleg5)"/>
+<text x="246" y="322" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">1 − r = 0 (same)</text>
+<text x="394" y="322" text-anchor="start" dominant-baseline="middle" font-size="10" fill="var(--text3)" font-family="'DM Sans',sans-serif">0.14</text>
+</svg>
+    </div>
+  </div><!-- /widget Fig.4 -->
+
+  <h3>Difference-in-Means</h3>
+  <p>The simplest path to a feature direction needs no trained classifier. Pick a layer <i>l</i> and two contrasting input classes — say, prompts where the model continues in French vs. English. Run each prompt through the model, pull out the residual stream vector at layer <i>l</i> (one vector per prompt, e.g. 768 numbers in GPT-2 small), and average within each class. The result is two centroids — one for where French inputs cluster in that layer, one for English. Subtract:</p>
+  <div class="eq">f = mean(x<sub><i>l</i></sub> | class A) &minus; mean(x<sub><i>l</i></sub> | class B)</div>
+  <p>The resulting vector connects the two centroids: it points from "where English inputs cluster" toward "where French inputs cluster" in that 768-dimensional space. No optimization step — only labeled examples and arithmetic.</p>
+  <p>The intuition is geometric. French and English inputs don't occupy the same region of activation space at layer <i>l</i> — they form two clouds. The mean subtraction finds the vector connecting the centers of those clouds. That direction <em>f</em> is the feature direction for "French vs. English" at that layer.</p>
+  <p>Crucially, the subtraction also removes the shared baseline. <strong>Everything the two classes have in common — sentence structure, token statistics, general topic — cancels out.</strong> What remains is only what distinguishes them. That's why using a single class mean alone (mean(x<sub><i>l</i></sub> | class A)) makes a poor steering target: it points toward wherever class A sits in activation space, carrying all its incidental properties along. The subtraction isolates the contrast.</p>
+
+</section>
+
+<!-- ──────────────────────────────── TAB 5: Neuro Parallels -->
+<section class="tab-panel" id="tab-neuro">
+  <h2>Neuro Parallels</h2>
+  <p>LLMs and biological neural systems solve related computational problems — and the methods neuroscientists use to study brains turn out to be surprisingly well-suited for studying transformers.</p>
+
+  <h3>The fundamental analogy</h3>
+  <p>In systems neuroscience, you record from neurons during behavior to understand computation. In an LLM, you can record every activation at every layer during any task — with perfect resolution, no noise, and full repeatability. The residual stream vector at each layer and token position is the equivalent of a multi-electrode recording: a high-dimensional snapshot of the system's internal state mid-computation.</p>
+
+  <div class="insight insight-pos">
+    <strong>What LLMs offer that brains don't</strong>
+    <p>The full "connectome" — all weights — is accessible. You can run the exact same input an unlimited number of times. You can perform surgical interventions (activation patching) with no ethical constraints and perfect reproducibility. This is a massive experimental advantage.</p>
+  </div>
+
+  <h3>Causal interventions as optogenetics</h3>
+  <p>Activation patching is the analogue of optogenetics or microstimulation: perturb a specific component and measure the effect on the output distribution. Rather than stimulating a neuron and observing behavior, you patch a residual stream vector and observe the change in output probabilities. Both establish causality rather than merely correlating activity with outcome.</p>
+
+  <h3>Representational geometry</h3>
+  <p>RSA, PCA, and UMAP (a technique for projecting high-dimensional activation vectors into 2D so their structure can be visualized as a scatter plot) applied to LLM activation spaces reveal the geometry of internal representations — directly analogous to neural geometry analyses in neural circuits. The RDM visualizations in <a href="#probing" onclick="goTab('probing');return false">Tab 4</a> are the same technique used to compare neural population codes across brain areas.</p>
+
+  <h3>Population dynamics</h3>
+  <p>Do activations across layers exhibit low-dimensional structure? <a href="https://arxiv.org/abs/2502.12131" target="_blank" rel="noopener">Fernando &amp; Guitchounts (2025)</a> treat the residual stream of Llama 3.1 8B (32 layers) as a dynamical system evolving across layers. Activations change faster and become denser with depth, and individual units trace unstable periodic orbits. When they perturbed the stream and tracked its trajectory, it recovered well after perturbations at layers 7, 15 and 23, while perturbations at layer 0 and at layer 31 gave highly variable trajectories. The authors call this attractor-like dynamics and place it mainly in the lower layers. The vocabulary is borrowed directly from dynamical systems neuroscience (see <a href="lesson8.html#fernando">Lesson 8, Tab 3</a>).</p>
+
+  <div class="insight insight-warn">
+    <strong>What's different from neuroscience</strong>
+    <p>Biological neurons are nonlinear dynamical systems with rich temporal structure, spike timing, and neuromodulation. Artificial neurons are static functions evaluated once per forward pass. The analogy is productive but should not be pushed too far — the underlying substrate is fundamentally different, and concepts like "firing rate" or "membrane potential" do not map cleanly onto transformer activations.</p>
+  </div>
+
+  <div class="insight">
+    <h3 style="margin-top:0;">Open questions</h3>
+    <p>What is the right unit of analysis for LLM dynamics — the token, the layer, the attention head, the circuit? Do dynamical systems concepts (fixed points, limit cycles, bifurcations) apply meaningfully to generation? How does the context window act as a "stimulus" shaping the computational trajectory? These questions live at the intersection of mechanistic interpretability and computational neuroscience — and they are genuinely open not just in content but in <em>method</em>. How to study LLMs rigorously is itself an unsettled question.</p>
+    <p style="margin-top:12px;margin-bottom:0;">Two recent surveys take stock of where the field stands. <a href="https://arxiv.org/abs/2207.13243" target="_blank" rel="noopener">Räuker et al. (IEEE SaTML, 2023)</a>, surveying more than 300 interpretability works, find that widely-accepted benchmarks do not yet exist and that current practice too often treats hypotheses as conclusions — many techniques succeed only in the toy settings where they were developed, with best-case results standing in for comprehensive evaluation. <a href="https://arxiv.org/abs/2404.14082" target="_blank" rel="noopener">Bereska &amp; Bhatt (TMLR, 2024)</a> catalogue specific open challenges: methods developed on small models and narrow tasks have not been shown to scale; foundational assumptions — including the linear representation hypothesis and the superposition framework — still await systematic corroboration or refutation at scale; and fully automated, comprehensive interpretation of frontier models remains out of reach. Both surveys argue the field must transition from isolated empirical findings to rigorous evaluation standards and overarching theory — a challenge that systems neuroscience has not yet fully solved even after decades of progress.</p>
+  </div>
+</section>
+
+<script>
+function getCSS(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function C(id){return document.getElementById(id);}
+
+// ─────────── Tab switching ───────────
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    C('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='linear') setTimeout(drawVecs,60);
+  });
+});
+
+
+// ─────────── Feature Vector Visualization ───────────
+function drawVecs(){
+  const canvas=C('vec-canvas');
+  const W=canvas.offsetWidth||700;canvas.width=W*devicePixelRatio;canvas.height=260*devicePixelRatio;
+  canvas.style.height='260px';
+  const ctx=canvas.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);
+  const acc=getCSS('--accent'),pos=getCSS('--pos'),neg=getCSS('--neg'),
+        surf=getCSS('--surface'),border=getCSS('--border'),text2=getCSS('--text2'),text3=getCSS('--text3');
+  ctx.fillStyle=surf;ctx.fillRect(0,0,W,260);
+
+  // Layout: pad.l leaves room for labels; pad.r for French labels + f label
+  const padL=72,padR=90,padT=28,padB=42;
+  const gW=W-padL-padR, gH=260-padT-padB;
+  const toX=nx=>padL+(nx+1)/2*gW;  // nx ∈ [-1,1]
+  const toY=ny=>padT+(1-ny)/2*gH;  // ny ∈ [-1,1]
+
+  // Axes
+  ctx.strokeStyle=border;ctx.lineWidth=0.6;
+  ctx.beginPath();ctx.moveTo(toX(-1),toY(0));ctx.lineTo(toX(1),toY(0));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(toX(0),padT);ctx.lineTo(toX(0),padT+gH);ctx.stroke();
+
+  // x-axis label: French direction f
+  ctx.fillStyle=acc;ctx.font=`600 11px 'DM Sans',sans-serif`;ctx.textAlign='right';
+  ctx.fillText('French direction f →',toX(1)+padR-6,toY(0)+15);
+
+  // y-axis label: animacy
+  ctx.fillStyle=pos;ctx.font=`500 11px 'DM Sans',sans-serif`;ctx.textAlign='center';
+  ctx.save();ctx.translate(padL-16,toY(0.35));ctx.rotate(-Math.PI/2);ctx.fillText('animacy →',0,0);ctx.restore();
+
+  // Token pairs: [ny, english, french]
+  const pairs=[
+    [ 0.62,'cat','chat'],
+    [ 0.22,'dog','chien'],
+    [-0.22,'city','ville'],
+    [-0.62,'house','maison'],
+  ];
+  const enX=-0.72, frX=0.72;
+
+  // Parallel translation arrows (English → French) — semi-transparent accent
+  ctx.strokeStyle=acc;ctx.fillStyle=acc;ctx.lineWidth=1.8;ctx.globalAlpha=0.38;
+  pairs.forEach(([ny])=>{
+    const y=toY(ny), x1=toX(enX)+9, x2=toX(frX)-9;
+    ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x2,y-3.5);ctx.lineTo(x2+7,y);ctx.lineTo(x2,y+3.5);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  // English tokens (neg/red)
+  pairs.forEach(([ny,en])=>{
+    const px=toX(enX),py=toY(ny);
+    ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fillStyle=neg;ctx.fill();
+    ctx.fillStyle=text2;ctx.font=`600 12px 'DM Sans',sans-serif`;ctx.textAlign='right';
+    ctx.fillText(en,px-12,py+4);
+  });
+
+  // French tokens (pos/green)
+  pairs.forEach(([ny,,fr])=>{
+    const px=toX(frX),py=toY(ny);
+    ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fillStyle=pos;ctx.fill();
+    ctx.fillStyle=text2;ctx.font=`600 12px 'DM Sans',sans-serif`;ctx.textAlign='left';
+    ctx.fillText(fr,px+12,py+4);
+  });
+
+  // f bracket annotation on one representative arrow
+  const fY=toY(0.62), fX1=toX(enX)+9, fX2=toX(frX)-9;
+  ctx.strokeStyle=acc;ctx.lineWidth=1.2;ctx.globalAlpha=0.8;
+  ctx.beginPath();ctx.moveTo(fX1,fY-16);ctx.lineTo(fX2,fY-16);ctx.stroke();
+  ctx.fillStyle=acc;ctx.font=`600 11px 'DM Sans',sans-serif`;ctx.textAlign='center';
+  ctx.fillText('f',( fX1+fX2)/2,fY-20);
+  ctx.globalAlpha=1;
+
+  // Bottom equation
+  ctx.fillStyle=acc;ctx.font=`400 10px 'JetBrains Mono',monospace`;ctx.textAlign='center';
+  ctx.fillText('chat − cat  ≈  chien − dog  ≈  ville − city  ≈  f',W/2,253);
+
+  // Schematic note
+  ctx.fillStyle=text3;ctx.font=`400 10px 'DM Sans',sans-serif`;ctx.textAlign='right';
+  ctx.fillText('schematic',W-8,16);
+
+  C('vec-info').textContent='Each arrow shows the offset from an English token to its French equivalent. All four arrows are parallel — they all point in the same direction f. That consistent direction is the "is-French" feature. For any French token x, the dot product x · f / ‖f‖ is large; for English tokens, it is small.';
+}
+
+</script>
+
+<script>
+// Open a tab from the link, e.g. ...#tabid
+window.addEventListener('load', () => {
+  const h = location.hash.slice(1);
+  if (!h) return;
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === h || b.dataset.tab === 'tab-' + h ||
+    (b.getAttribute('onclick') || '').includes("'" + h + "'"));
+  if (b) b.click();
+});
+function goTab(id) {
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === id || b.dataset.tab === 'tab-' + id ||
+    (b.getAttribute('onclick') || '').includes("'" + id + "'"));
+  if (b) { b.click(); window.scrollTo(0, 0); }
+}
+</script>
+</body>
+</html>

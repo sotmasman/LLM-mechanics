@@ -1,0 +1,14 @@
+# Large local files: models, data and outputs (see README.md, "Folder layout")
+GPT-2 small model/
+GPT-2 medium model/
+GPT-2 large model/
+GPT-2 XL model/
+Pythia 160M model/
+Datasets/
+runs/
+rome_cov/
+Activations/
+*.mat
+*.bin
+*.pt
+__pycache__/

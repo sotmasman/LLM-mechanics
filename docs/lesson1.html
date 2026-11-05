@@ -1,0 +1,2744 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lesson 1 · Foundations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* ── tokens ── */
+:root {
+  --bg: #F7F5F0;
+  --surface: #EDEAE2;
+  --surface2: #E0DDD4;
+  --text: #1A1916;
+  --text2: #504E48;
+  --text3: #7A7870;
+  --accent: #2455A4;
+  --accent-light: #D8E4F7;
+  --pos: #1A7A4E;
+  --pos-light: #D2EFE2;
+  --neg: #B83030;
+  --neg-light: #F7DEDE;
+  --warn: #A06010;
+  --warn-light: #FDF0DC;
+  --border: #D4D1C8;
+  --border2: #C0BDB4;
+  --radius: 10px;
+  --radius-sm: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171715;
+    --surface: #1F1F1C;
+    --surface2: #2A2A27;
+    --text: #F0EDE6;
+    --text2: #B8B5AE;
+    --text3: #6E6C66;
+    --accent: #6B9EF8;
+    --accent-light: #1A2A4A;
+    --pos: #4ABA82;
+    --pos-light: #0D2E1E;
+    --neg: #F08080;
+    --neg-light: #2E0E0E;
+    --warn: #F0C060;
+    --warn-light: #2A1E08;
+    --border: #38362E;
+    --border2: #4A4840;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+  --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+  --accent: #6B9EF8; --accent-light: #1A2A4A;
+  --pos: #4ABA82; --pos-light: #0D2E1E;
+  --neg: #F08080; --neg-light: #2E0E0E;
+  --warn: #F0C060; --warn-light: #2A1E08;
+  --border: #38362E; --border2: #4A4840;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.65;
+  min-height: 100%;
+}
+
+/* ── layout ── */
+.page-header {
+  padding: 32px 24px 0;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.lesson-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.lesson-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(26px, 5vw, 38px);
+  line-height: 1.15;
+  color: var(--text);
+  text-wrap: balance;
+  margin-bottom: 12px;
+}
+.lesson-intro {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 680px;
+  margin-bottom: 28px;
+  font-weight: 300;
+}
+
+/* ── tab nav ── */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  padding: 0 24px;
+  max-width: 860px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: 10px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── tab content ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.content {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+/* ── typography ── */
+.section-heading {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(20px, 3.5vw, 26px);
+  color: var(--text);
+  margin-bottom: 12px;
+  text-wrap: balance;
+}
+.section-heading em {
+  font-style: italic;
+  color: var(--text2);
+}
+p {
+  color: var(--text2);
+  margin-bottom: 16px;
+  font-size: 15.5px;
+}
+p strong { color: var(--text); font-weight: 600; }
+
+/* ── equation block ── */
+.eq-block {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px;
+  margin: 20px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  color: var(--text);
+  overflow-x: auto;
+}
+.eq-block .eq-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* ── insight callout ── */
+.insight {
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 24px 0;
+  font-size: 14.5px;
+  color: var(--text);
+}
+.insight strong { color: var(--accent); }
+.insight-neurosci {
+  background: var(--pos-light);
+  border-color: var(--pos);
+}
+.insight-neurosci strong { color: var(--pos); }
+.insight-warn {
+  background: var(--warn-light);
+  border-color: var(--warn);
+}
+.insight-warn strong { color: var(--warn); }
+
+/* ── widget card ── */
+.widget {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 28px 0;
+}
+.widget-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 20px;
+}
+
+/* ── sliders ── */
+.slider-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 56px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.slider-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text2);
+  text-align: right;
+}
+input[type=range] {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.slider-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.slider-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin: 16px 0 8px;
+}
+
+/* ── bar chart ── */
+.bar-chart { margin: 20px 0 4px; }
+.bar-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 60px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+.bar-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  text-align: right;
+}
+.bar-track {
+  height: 18px;
+  background: var(--surface2);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  position: absolute;
+  top: 0; bottom: 0;
+  border-radius: 3px;
+  transition: width 0.1s, left 0.1s, background 0.1s;
+}
+.bar-fill.pos { background: var(--pos); left: 50%; }
+.bar-fill.neg { background: var(--neg); right: 50%; }
+.bar-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── output cards ── */
+.output-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 20px;
+}
+@media (max-width: 480px) { .output-cards { grid-template-columns: 1fr; } }
+.output-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.output-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.output-card-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-top: 6px;
+}
+.badge-fire { background: var(--pos-light); color: var(--pos); }
+.badge-silent { background: var(--surface2); color: var(--text3); }
+
+/* ── activation chart ── */
+#act-canvas {
+  width: 100%;
+  height: 240px;
+  display: block;
+  border-radius: var(--radius-sm);
+}
+.act-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.act-btn {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border2);
+  background: var(--bg);
+  color: var(--text2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.act-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.act-info {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  color: var(--text2);
+  margin-top: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── network diagram ── */
+#net-canvas { width: 100%; height: 280px; display: block; }
+.net-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.net-control-group { display: flex; align-items: center; gap: 8px; }
+.net-control-label { font-size: 13px; color: var(--text2); }
+.net-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  min-width: 18px;
+  text-align: center;
+}
+.btn-small {
+  width: 28px; height: 28px;
+  border: 1.5px solid var(--border2);
+  background: var(--bg);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s;
+}
+.btn-small:hover { background: var(--surface2); }
+.net-info-row {
+  display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;
+}
+.net-stat {
+  font-size: 13px; color: var(--text2);
+}
+.net-stat strong {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* ── loss landscape ── */
+#loss-canvas { width: 100%; height: 260px; display: block; border-radius: var(--radius-sm); cursor: crosshair; }
+.loss-controls { margin-bottom: 14px; }
+.loss-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+@media (max-width: 500px) { .loss-info { grid-template-columns: 1fr; } }
+.loss-stat {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text2);
+}
+.loss-stat span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.loss-stat strong { color: var(--text); }
+
+/* ── distributed rep ── */
+.distrib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+  margin: 16px 0;
+}
+.distrib-item {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.distrib-item:hover { border-color: var(--accent); background: var(--accent-light); }
+.distrib-item.selected { border-color: var(--accent); background: var(--accent-light); }
+.distrib-item-label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.distrib-neurons {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+}
+.dn {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  background: var(--bg);
+  transition: background 0.15s;
+}
+.dn.on { background: var(--accent); border-color: var(--accent); }
+.dn.dim { background: var(--surface2); border-color: var(--border); }
+
+.rep-display {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-top: 12px;
+}
+.rep-title { font-size: 13px; color: var(--text3); margin-bottom: 10px; }
+.rep-vector {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.rep-bars {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 50px;
+}
+.rep-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+}
+.rep-bar {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  transition: height 0.2s, background 0.2s;
+}
+.rep-bar-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+}
+
+/* ── Toy Network Step Widget ── */
+.toy-net-widget {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 20px 0;
+  background: var(--surface);
+}
+.tn-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.tn-widget-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+}
+.tn-step-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+.tn-dots { display: flex; gap: 5px; align-items: center; }
+.tn-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--border); transition: background 0.2s;
+}
+.tn-dot.active { background: var(--accent); }
+.tn-svg-wrap { padding: 6px 10px 0; }
+#tn-svg { width: 100%; display: block; }
+.tn-content { padding: 10px 14px 12px; }
+.tn-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--text); margin-bottom: 5px;
+}
+.tn-desc {
+  font-size: 13.5px; color: var(--text2);
+  line-height: 1.6; margin: 0 0 10px;
+}
+.tn-math {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px; line-height: 1.75;
+  background: var(--bg); border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 10px 14px; white-space: pre; overflow-x: auto;
+  color: var(--text); margin: 0;
+}
+.tn-nav {
+  display: flex; justify-content: space-between;
+  padding: 9px 14px; border-top: 1px solid var(--border);
+  gap: 8px;
+}
+.tn-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600;
+  padding: 5px 18px; border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg); color: var(--text);
+  cursor: pointer; transition: opacity 0.15s;
+}
+.tn-btn:hover:not(:disabled) { opacity: 0.8; }
+.tn-btn:disabled { opacity: 0.3; cursor: default; }
+.tn-btn-next {
+  background: var(--accent); color: #fff;
+  border-color: var(--accent);
+}
+/* ── lesson switcher ── */
+.lesson-switcher{display:flex;align-items:center;gap:12px;padding:12px 24px 4px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border);}
+.ls-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text3); white-space: nowrap;
+}
+.ls-links { display: flex; gap: 6px; flex-wrap: wrap; }
+.ls-btn {
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+  padding: 4px 13px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--text2); text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.ls-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.ls-active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+  cursor: default; pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --bg: #F7F5F0; --surface: #EDEAE2; --surface2: #E0DDD4;
+  --text: #1A1916; --text2: #504E48; --text3: #7A7870;
+  --accent: #2455A4; --accent-light: #D8E4F7;
+  --pos: #1A7A4E; --pos-light: #D2EFE2;
+  --neg: #B83030; --neg-light: #F7DEDE;
+  --warn: #A06010; --warn-light: #FDF0DC;
+  --border: #D4D1C8; --border2: #C0BDB4;
+  --radius: 10px; --radius-sm: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+    --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+    --accent: #6B9EF8; --accent-light: #1A2A4A;
+    --pos: #4ABA82; --pos-light: #0D2E1E;
+    --neg: #F08080; --neg-light: #2E0E0E;
+    --warn: #F0C060; --warn-light: #2A1E08;
+    --border: #38362E; --border2: #4A4840;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+  --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+  --accent: #6B9EF8; --accent-light: #1A2A4A;
+  --pos: #4ABA82; --pos-light: #0D2E1E;
+  --neg: #F08080; --neg-light: #2E0E0E;
+  --warn: #F0C060; --warn-light: #2A1E08;
+  --border: #38362E; --border2: #4A4840;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.65; min-height: 100%; }
+
+.page-header { padding: 32px 24px 0; max-width: 860px; margin: 0 auto; }
+.lesson-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.lesson-title { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(26px,5vw,38px); line-height: 1.15; margin-bottom: 12px; text-wrap: balance; }
+.lesson-intro { font-size: 16px; color: var(--text2); max-width: 680px; margin-bottom: 28px; font-weight: 300; }
+
+.tab-nav { display: flex; border-bottom: 2px solid var(--border); padding: 0 24px; max-width: 860px; margin: 0 auto; overflow-x: auto; scrollbar-width: none; }
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn { background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; padding: 10px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--text3); cursor: pointer; white-space: nowrap; transition: color .15s, border-color .15s; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.content { max-width: 860px; margin: 0 auto; padding: 32px 24px 64px; }
+
+.section-heading { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(20px,3.5vw,26px); margin-bottom: 12px; text-wrap: balance; }
+.section-heading em { font-style: italic; color: var(--text2); }
+p { color: var(--text2); margin-bottom: 16px; font-size: 15.5px; }
+p strong { color: var(--text); font-weight: 600; }
+code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--surface2); padding: 1px 5px; border-radius: 3px; }
+
+.eq-block { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 14px 18px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); overflow-x: auto; line-height: 1.8; }
+.eq-block .eq-label { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); display: block; margin-bottom: 6px; }
+
+.insight { background: var(--accent-light); border: 1px solid var(--accent); border-radius: var(--radius); padding: 14px 18px; margin: 24px 0; font-size: 14.5px; color: var(--text); }
+.insight strong { color: var(--accent); }
+.insight-neurosci { background: var(--pos-light); border-color: var(--pos); }
+.insight-neurosci strong { color: var(--pos); }
+.insight-warn { background: var(--warn-light); border-color: var(--warn); }
+.insight-warn strong { color: var(--warn); }
+
+.widget { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 28px 0; }
+.widget-title { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 18px; }
+
+/* ── probability bars ── */
+.prob-context { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 15px; color: var(--text); margin-bottom: 18px; line-height: 1.5; }
+.prob-context .blank { display: inline-block; min-width: 80px; border-bottom: 2px solid var(--accent); color: var(--accent); font-weight: 600; text-align: center; padding: 0 4px; }
+.context-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.ctx-btn { padding: 6px 12px; border-radius: 20px; border: 1.5px solid var(--border2); background: var(--bg); color: var(--text2); font-size: 13px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.ctx-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.prob-bars { display: flex; flex-direction: column; gap: 7px; }
+.prob-row { display: grid; grid-template-columns: 100px 1fr 48px; align-items: center; gap: 10px; }
+.prob-token { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); background: var(--surface2); padding: 2px 7px; border-radius: 4px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prob-track { height: 22px; background: var(--surface2); border-radius: 4px; position: relative; overflow: hidden; }
+.prob-fill { position: absolute; top: 0; left: 0; bottom: 0; background: var(--accent); border-radius: 4px; transition: width .35s ease; opacity: 0.82; }
+.prob-pct { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text2); text-align: right; font-variant-numeric: tabular-nums; }
+.prob-note { font-size: 12px; color: var(--text3); margin-top: 10px; font-style: italic; }
+
+/* ── chain rule display ── */
+.chain-eq { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; overflow-x: auto; }
+.chain-token { display: inline-block; background: var(--accent-light); color: var(--accent); padding: 1px 6px; border-radius: 3px; font-weight: 500; }
+.chain-given { color: var(--text3); }
+
+/* ── tokenizer ── */
+.tok-input { width: 100%; padding: 10px 14px; background: var(--bg); border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); outline: none; transition: border-color .15s; margin-bottom: 14px; }
+.tok-input:focus { border-color: var(--accent); }
+.tok-output { display: flex; flex-wrap: wrap; gap: 6px; min-height: 44px; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 14px; }
+.tok-chip { padding: 4px 9px; border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 13px; border: 1.5px solid; transition: transform .1s; cursor: default; display: inline-flex; flex-direction: column; align-items: center; line-height: 1.3; }
+.tok-chip .tok-id { font-size: 10px; color: var(--text3); }
+.tok-stats { display: flex; gap: 20px; font-size: 13px; color: var(--text3); flex-wrap: wrap; }
+.tok-stats strong { font-family: 'JetBrains Mono', monospace; color: var(--text); }
+.tok-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.tok-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text2); }
+.tok-legend-swatch { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid; }
+
+/* ── embedding canvas ── */
+#emb-canvas { width: 100%; height: 340px; display: block; border-radius: var(--radius-sm); cursor: crosshair; }
+.emb-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+.emb-btn { padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border2); background: var(--bg); color: var(--text2); font-size: 13px; cursor: pointer; transition: all .15s; }
+.emb-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.emb-tooltip { position: absolute; background: var(--text); color: var(--bg); font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 8px; border-radius: 4px; pointer-events: none; white-space: nowrap; display: none; z-index: 10; }
+.emb-wrap { position: relative; }
+.emb-note { font-size: 12px; color: var(--text3); margin-top: 8px; }
+
+/* ── softmax / logits ── */
+.logit-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.logit-row { display: grid; grid-template-columns: 80px 1fr 60px 60px; align-items: center; gap: 10px; }
+.logit-token { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--surface2); padding: 2px 8px; border-radius: 4px; text-align: center; }
+.logit-bar-wrap { position: relative; height: 24px; background: var(--surface2); border-radius: 4px; overflow: visible; }
+.logit-bar { position: absolute; top: 0; left: 0; bottom: 0; background: var(--accent); border-radius: 4px; transition: width .3s ease; opacity: .75; }
+.logit-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text2); text-align: right; font-variant-numeric: tabular-nums; }
+.logit-num.prob { color: var(--pos); font-weight: 500; }
+.logit-slider-row { display: grid; grid-template-columns: 80px 1fr 50px; align-items: center; gap: 10px; margin-bottom: 8px; }
+.logit-label { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text2); text-align: right; }
+input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+.slider-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
+.temp-control { display: flex; align-items: center; gap: 12px; margin: 16px 0 8px; padding: 12px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.temp-label { font-size: 13px; color: var(--text2); white-space: nowrap; }
+.temp-note { font-size: 12px; color: var(--text3); margin-top: 10px; }
+.col-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text3); }
+
+/* ── cross entropy ── */
+.ce-scenario { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; margin: 10px 0; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
+.ce-scenario-text { font-size: 14px; color: var(--text2); }
+.ce-scenario-text strong { color: var(--text); }
+.ce-loss-badge { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; padding: 4px 12px; border-radius: 20px; }
+.ce-loss-low { background: var(--pos-light); color: var(--pos); }
+.ce-loss-mid { background: var(--warn-light); color: var(--warn); }
+.ce-loss-high { background: var(--neg-light); color: var(--neg); }
+
+/* ── embedding visualizations ── */
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 28px 0; }
+.viz-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .09em; color: var(--text3); margin-bottom: 16px; }
+.viz-caption { font-size: 12.5px; color: var(--text3); margin-top: 14px; line-height: 1.55; }
+/* Fig 1 — matrix lookup */
+.viz-emb-lookup { display: flex; align-items: center; gap: 16px; overflow-x: auto; flex-wrap: wrap; }
+.viz-emb-vocab { display: flex; flex-direction: column; gap: 3px; min-width: 88px; }
+.viz-emb-vocab-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); margin-bottom: 4px; }
+.viz-emb-row-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); padding: 3px 7px; border-radius: 3px; line-height: 1.9; }
+.viz-emb-row-selected { background: var(--accent-light); color: var(--accent); font-weight: 600; border: 1px solid var(--accent); }
+.viz-emb-matrix-wrap { flex: 1; min-width: 170px; }
+.viz-emb-matrix-label { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3); margin-bottom: 5px; }
+.viz-emb-matrix { display: flex; flex-direction: column; gap: 3px; }
+.viz-emb-matrix-row { display: flex; gap: 3px; }
+.viz-emb-cell { width: 22px; height: 22px; border-radius: 3px; flex-shrink: 0; }
+.viz-emb-dim-label { font-size: 10px; color: var(--text3); margin-top: 5px; }
+.viz-emb-arrow { font-size: 28px; color: var(--accent); align-self: center; padding: 0 4px; flex-shrink: 0; }
+.viz-emb-result { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.viz-emb-result-label { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 600; }
+.viz-emb-vec { display: flex; gap: 3px; align-items: flex-end; height: 52px; }
+.viz-emb-result-note { font-size: 10.5px; color: var(--text3); text-align: center; line-height: 1.4; }
+/* Fig 2 — positional embeddings */
+.viz-pos-wrap { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
+.viz-pos-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.viz-pos-label { font-size: 12.5px; font-weight: 600; color: var(--text); text-align: center; }
+.viz-pos-sublabel { font-size: 11px; color: var(--text3); text-align: center; font-family: 'JetBrains Mono', monospace; }
+.viz-pos-vec { display: flex; gap: 3px; align-items: flex-end; height: 52px; }
+.viz-pos-plus { font-size: 26px; color: var(--text3); }
+/* Fig 3 — vector arithmetic */
+.viz-vec-svg { width: 100%; border-radius: 8px; display: block; }
+/* ── lesson switcher ── */
+.lesson-switcher{display:flex;align-items:center;gap:12px;padding:12px 24px 4px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border);}
+.ls-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text3); white-space: nowrap;
+}
+.ls-links { display: flex; gap: 6px; flex-wrap: wrap; }
+.ls-btn {
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+  padding: 4px 13px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--text2); text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.ls-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.ls-active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+  cursor: default; pointer-events: none;
+}
+</style>
+<style>
+/* merged lesson: 10 tabs in two rows of 5 */
+.tab-nav.tab-nav-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); overflow-x: visible; }
+.tab-nav-grid .tab-btn { white-space: normal; text-align: center; line-height: 1.3; padding: 8px 6px; }
+@media (max-width: 560px) { .tab-nav.tab-nav-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.content a { color: var(--accent); }
+</style>
+
+<!-- LESSON NAV -->
+<nav class="lesson-switcher" aria-label="Course navigation">
+  <a class="ls-label" href="index.html" style="text-decoration:none">LLM Mechanics</a>
+  <div class="ls-links">
+    <span class="ls-btn ls-active">1 · Foundations</span>
+    <a href="lesson2.html" class="ls-btn">2 · Architecture</a>
+    <a href="lesson3.html" class="ls-btn">3 · Forward Pass</a>
+    <a href="lesson4.html" class="ls-btn">4 · Training</a>
+    <a href="lesson5.html" class="ls-btn">5 · Representations</a>
+        <a href="lesson6.html" class="ls-btn">6 · Limitations</a>
+        <a href="lesson7.html" class="ls-btn">7 · Mech Interp</a>
+    <a href="lesson8.html" class="ls-btn">8 · Neural Systems</a>
+    <a href="lesson9.html" class="ls-btn">9 · Hands-On</a>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="lesson-label">Lesson 1 · Foundations</div>
+  <h1 class="lesson-title">Neural Networks and Language as Probability</h1>
+  <p class="lesson-intro">
+    <a href="#neuron" onclick="goTab('neuron');return false">Tabs 1–5</a> cover the substrate underlying every LLM: what a neural network computes, how it learns, and
+    how it represents information. <a href="#prob" onclick="goTab('prob');return false">Tabs 6–10</a> cover the framing that turns such a network into a language
+    model: text as tokens, tokens as vectors, and the probability of the next token given everything so far.
+  </p>
+</header>
+
+<nav class="tab-nav tab-nav-grid" role="tablist">
+  <button class="tab-btn active" role="tab" onclick="switchTab('neuron')">1 · The Neuron</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('activation')">2 · Activation Functions</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('network')">3 · Neural Networks</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('learning')">4 · How Networks Learn</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('distributed')">5 · Distributed Coding</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('prob')">6 · Language as Probability</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('tokens')">7 · Tokenization</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('embed')">8 · Embeddings</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('predict')">9 · Next-Token Prediction</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('why')">10 · Why This Works</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     TAB 1 · THE ARTIFICIAL NEURON
+══════════════════════════════════════════════ -->
+<div id="tab-neuron" class="tab-panel active">
+<div class="content">
+  <h2 class="section-heading">The Artificial Neuron</h2>
+  <p>
+    An artificial neuron takes several numerical inputs, multiplies each by a <strong>weight</strong>, adds a <strong>bias</strong>,
+    and passes the result through a nonlinear function called an <strong>activation function</strong>.
+    That's it. Most of the computation in a neural network — including GPT-2 — is this one repeated operation;
+    the transformer adds a few others (attention, which multiplies activations together, softmax and LayerNorm), covered in <a href="lesson2.html#attention">Lesson 2</a>.
+  </p>
+  <p>
+    The weight on each input encodes how much that input should influence the output, and its sign encodes
+    whether the influence is excitatory or inhibitory — an analogy to biological synaptic strength that is
+    more than superficial.
+  </p>
+
+  <div class="eq-block">
+    <span class="eq-label">Computation</span>
+    z = w₁·x₁ + w₂·x₂ + w₃·x₃ + b<br>
+    output = ReLU(z) = max(0, z)
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel.</strong> The weighted sum z is a linear integration of inputs — analogous to
+    dendritic summation. The nonlinearity (ReLU here) models the threshold-like firing behavior: no output below
+    threshold, linear output above it. Unlike a real neuron, there is no refractory period, no spike timing,
+    and no temporal dynamics — just an instantaneous scalar transformation.
+  </div>
+
+  <!-- INTERACTIVE WIDGET -->
+  <div class="widget">
+    <div class="widget-title">Fig. 1 · Single Neuron</div>
+
+    <div class="slider-group-label">Inputs</div>
+    <div class="slider-row">
+      <span class="slider-label">x₁</span>
+      <input type="range" id="x1" min="-2" max="2" step="0.1" value="1.0" oninput="updateNeuron()">
+      <span class="slider-val" id="x1v">1.00</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">x₂</span>
+      <input type="range" id="x2" min="-2" max="2" step="0.1" value="0.5" oninput="updateNeuron()">
+      <span class="slider-val" id="x2v">0.50</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">x₃</span>
+      <input type="range" id="x3" min="-2" max="2" step="0.1" value="-1.0" oninput="updateNeuron()">
+      <span class="slider-val" id="x3v">−1.00</span>
+    </div>
+
+    <div class="slider-group-label">Weights</div>
+    <div class="slider-row">
+      <span class="slider-label">w₁</span>
+      <input type="range" id="w1" min="-2" max="2" step="0.1" value="1.5" oninput="updateNeuron()">
+      <span class="slider-val" id="w1v">1.50</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">w₂</span>
+      <input type="range" id="w2" min="-2" max="2" step="0.1" value="0.8" oninput="updateNeuron()">
+      <span class="slider-val" id="w2v">0.80</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">w₃</span>
+      <input type="range" id="w3" min="-2" max="2" step="0.1" value="-0.5" oninput="updateNeuron()">
+      <span class="slider-val" id="w3v">−0.50</span>
+    </div>
+
+    <div class="slider-group-label">Bias</div>
+    <div class="slider-row">
+      <span class="slider-label">b</span>
+      <input type="range" id="b" min="-2" max="2" step="0.1" value="0.2" oninput="updateNeuron()">
+      <span class="slider-val" id="bv">0.20</span>
+    </div>
+
+    <div class="slider-group-label">Contribution of each term (wᵢxᵢ)</div>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label">w₁x₁</span><div class="bar-track"><div class="bar-fill pos" id="bar1"></div></div><span class="bar-val" id="bv1"></span></div>
+      <div class="bar-row"><span class="bar-label">w₂x₂</span><div class="bar-track"><div class="bar-fill pos" id="bar2"></div></div><span class="bar-val" id="bv2"></span></div>
+      <div class="bar-row"><span class="bar-label">w₃x₃</span><div class="bar-track"><div class="bar-fill pos" id="bar3"></div></div><span class="bar-val" id="bv3"></span></div>
+      <div class="bar-row"><span class="bar-label">b</span><div class="bar-track"><div class="bar-fill pos" id="barb"></div></div><span class="bar-val" id="bvb"></span></div>
+    </div>
+
+    <div class="output-cards">
+      <div class="output-card">
+        <div class="output-card-label">Pre-activation z</div>
+        <div class="output-card-val" id="zval">—</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:4px;">weighted sum + bias</div>
+      </div>
+      <div class="output-card">
+        <div class="output-card-label">Output ReLU(z)</div>
+        <div class="output-card-val" id="relu-val">—</div>
+        <span class="badge" id="fire-badge">—</span>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Try pulling <code>w₁</code> negative while keeping <code>x₁</code> positive — you'll see that input actively
+    suppress the output. Try making all inputs large and positive but setting the bias to a large negative value —
+    the neuron requires a strong collective signal before it fires, like a high-threshold cell.
+  </p>
+
+  <div class="insight insight-warn">
+    <strong>Critical point.</strong> A single neuron can only compute a <em>linear</em> decision boundary —
+    it fires or not based on whether a hyperplane in input space is crossed. All the expressive power
+    of neural networks comes from stacking many of these, with nonlinearities in between. That's next.
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 2 · ACTIVATION FUNCTIONS
+══════════════════════════════════════════════ -->
+<div id="tab-activation" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Activation Functions — <em>the nonlinearity</em></h2>
+  <p>
+    The activation function is what separates neural networks from simple linear algebra. Without it,
+    a stack of layers collapses to a single matrix multiplication — no matter how deep the network.
+    The activation function breaks this, allowing the network to carve curved, non-linear boundaries through input space.
+  </p>
+  <p>
+    Different functions have different tradeoffs. <strong>ReLU</strong> is the workhorse of many modern networks
+    and was used in the original Transformer's MLP layers. <strong>Sigmoid</strong> squashes output to (0,1) and was historically
+    popular for gating and output probabilities. <strong>GELU</strong> (used in GPT-2 and GPT-3) is a smooth
+    approximation to ReLU with a slight negative lobe; most current LLMs use <strong>SwiGLU</strong>.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 2 · Activation Functions</div>
+    <div class="act-controls">
+      <button class="act-btn active" onclick="setActFn('relu')">ReLU</button>
+      <button class="act-btn" onclick="setActFn('gelu')">GELU</button>
+      <button class="act-btn" onclick="setActFn('sigmoid')">Sigmoid</button>
+      <button class="act-btn" onclick="setActFn('tanh')">Tanh</button>
+      <button class="act-btn" onclick="setActFn('swiglu')">SwiGLU / SiLU</button>
+      <button class="act-btn" onclick="setActFn('none')">None (linear)</button>
+    </div>
+    <canvas id="act-canvas"></canvas>
+    <div class="act-info" id="act-info">ReLU(z) = max(0, z) — zero for negative inputs, identity for positive. Gradient is 0 or 1.</div>
+  </div>
+
+  <div class="eq-block">
+    <span class="eq-label">Definitions</span>
+    ReLU(z)    = max(0, z)<br>
+    GELU(z)    ≈ z · σ(1.702z)   where σ is sigmoid<br>
+    Sigmoid(z) = 1 / (1 + e<sup>−z</sup>)<br>
+    Tanh(z)    = (e<sup>z</sup> − e<sup>−z</sup>) / (e<sup>z</sup> + e<sup>−z</sup>)
+  </div>
+
+  <div class="insight">
+    <strong>Why ReLU became dominant.</strong> It is cheap to compute, its gradient is either 0 or 1 (no
+    saturation for positive inputs), and it induces natural sparsity — many neurons output exactly zero.
+    Modern LLMs use variants like GELU or SwiGLU, which are smoother and slightly outperform ReLU empirically.
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel.</strong> The sigmoid was originally motivated by the sigmoidal shape of
+    neural firing-rate curves (f-I curves). ReLU is a better fit for a linear-threshold model. Neither
+    captures spiking, adaptation, or neuromodulation — but both are far cheaper to differentiate through.
+  </div>
+
+  <p>
+    The "linear" option shows what happens with no nonlinearity — the curve is just the identity.
+    A network of these, no matter how deep, computes only linear functions. All representation power
+    is lost.
+  </p>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 3 · NETWORKS OF NEURONS
+══════════════════════════════════════════════ -->
+<div id="tab-network" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Neural Networks</h2>
+  <p>
+    A <strong>layer</strong> is just many neurons receiving the same input vector and each producing one output
+    — their outputs become the next layer's input. A <strong>feedforward network</strong> stacks these layers
+    left to right. Every layer applies: <strong>output = activation(W · input + b)</strong> where W is a weight
+    matrix and b is a bias vector.
+  </p>
+  <p>
+    The number of neurons per layer is the layer's <strong>width</strong>. The number of layers is the
+    <strong>depth</strong>. Both matter: width controls how much information can be represented at once;
+    depth controls how many sequential transformations are applied.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 3 · Feedforward Network Architecture</div>
+    <svg viewBox="0 0 720 285" role="img" aria-label="Toy feedforward network: 4 inputs, 4 hidden units, 4 outputs, fully connected, 40 parameters" style="width:100%;display:block"><text x="14" y="22" text-anchor="start" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:13px">a. Toy network: 2 layers, 4 units wide</text><line x1="164" y1="70" x2="346" y2="70" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="70" x2="346" y2="115" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="70" x2="346" y2="160" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="70" x2="346" y2="205" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="115" x2="346" y2="70" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="115" x2="346" y2="115" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="115" x2="346" y2="160" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="115" x2="346" y2="205" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="160" x2="346" y2="70" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="160" x2="346" y2="115" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="160" x2="346" y2="160" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="160" x2="346" y2="205" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="205" x2="346" y2="70" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="205" x2="346" y2="115" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="205" x2="346" y2="160" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="164" y1="205" x2="346" y2="205" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="70" x2="556" y2="70" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="70" x2="556" y2="115" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="70" x2="556" y2="160" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="70" x2="556" y2="205" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="115" x2="556" y2="70" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="115" x2="556" y2="115" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="115" x2="556" y2="160" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="115" x2="556" y2="205" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="160" x2="556" y2="70" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="160" x2="556" y2="115" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="160" x2="556" y2="160" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="160" x2="556" y2="205" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="205" x2="556" y2="70" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="205" x2="556" y2="115" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="205" x2="556" y2="160" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="374" y1="205" x2="556" y2="205" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><circle cx="150" cy="70" r="14" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="150" cy="115" r="14" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="150" cy="160" r="14" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="150" cy="205" r="14" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="360" cy="70" r="14" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="360" cy="115" r="14" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="360" cy="160" r="14" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="360" cy="205" r="14" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="570" cy="70" r="14" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="570" cy="115" r="14" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="570" cy="160" r="14" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="570" cy="205" r="14" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><text x="150" y="245" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:12px">input h<tspan baseline-shift="super" font-size="9">(0)</tspan> (4)</text><text x="360" y="245" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:12px">hidden h<tspan baseline-shift="super" font-size="9">(1)</tspan> (4)</text><text x="570" y="245" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:12px">output h<tspan baseline-shift="super" font-size="9">(2)</tspan> (4)</text><text x="255" y="52" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">layer 1: W<tspan baseline-shift="super" font-size="9">(1)</tspan>, b<tspan baseline-shift="super" font-size="9">(1)</tspan> · 4 × 4 + 4 = 20</text><text x="465" y="52" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">layer 2: W<tspan baseline-shift="super" font-size="9">(2)</tspan>, b<tspan baseline-shift="super" font-size="9">(2)</tspan> · 4 × 4 + 4 = 20</text><text x="360" y="272" text-anchor="middle" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:12px">12 neurons · 32 connections · 40 parameters</text></svg>
+    <svg viewBox="0 0 720 330" role="img" aria-label="GPT-2 small: token embedding, 12 transformer blocks with attention and MLP on a 768-wide residual stream, unembedding to 50,257 token probabilities; each MLP is a 768 to 3,072 to 768 two-layer network; 124M parameters" style="width:100%;display:block;margin-top:14px"><text x="14" y="22" text-anchor="start" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:13px">b. GPT-2 small: 12 blocks, residual stream 768 wide</text><defs><marker id="f3arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0.5 L7,4 L0,7.5 Z" style="fill:var(--accent)"/></marker></defs><line x1="70" y1="110" x2="588" y2="110" style="stroke:var(--accent);stroke-width:2.5;opacity:1"/><line x1="570" y1="110" x2="588" y2="110" style="stroke:var(--accent);stroke-width:2.5" marker-end="url(#f3arr)"/><rect x="8" y="88" width="58" height="44" rx="6" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><text x="37" y="114" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">tokens</text><rect x="80" y="76" width="76" height="68" rx="6" style="fill:var(--surface);stroke:var(--border2);stroke-width:1.5"/><text x="118" y="96" text-anchor="middle" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:11px">embedding</text><text x="118" y="112" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:10px">50,257 → 768</text><text x="118" y="127" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:10px">+ position</text><rect x="172" y="76" width="72" height="68" rx="6" style="fill:var(--surface);stroke:var(--border2);stroke-width:1.5"/><text x="208" y="68" text-anchor="middle" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:11px">Block 0</text><rect x="178" y="84" width="28" height="52" rx="4" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><text x="192" y="114" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:9px">Attn</text><rect x="210" y="84" width="28" height="52" rx="4" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><text x="224" y="114" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:9px">MLP</text><rect x="256" y="76" width="72" height="68" rx="6" style="fill:var(--surface);stroke:var(--border2);stroke-width:1.5"/><text x="292" y="68" text-anchor="middle" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:11px">Block 1</text><rect x="262" y="84" width="28" height="52" rx="4" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><text x="276" y="114" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:9px">Attn</text><rect x="294" y="84" width="28" height="52" rx="4" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><text x="308" y="114" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:9px">MLP</text><rect x="378" y="76" width="72" height="68" rx="6" style="fill:var(--surface);stroke:var(--border2);stroke-width:1.5"/><text x="414" y="68" text-anchor="middle" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:11px">Block 11</text><rect x="384" y="84" width="28" height="52" rx="4" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><text x="398" y="114" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:9px">Attn</text><rect x="416" y="84" width="28" height="52" rx="4" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><text x="430" y="114" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:9px">MLP</text><text x="353" y="116" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:22px">⋯</text><rect x="466" y="76" width="102" height="68" rx="6" style="fill:var(--surface);stroke:var(--border2);stroke-width:1.5"/><text x="517" y="96" text-anchor="middle" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:11px">LayerNorm +</text><text x="517" y="112" text-anchor="middle" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:11px">unembedding</text><text x="517" y="128" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:10px">768 → 50,257</text><rect x="598" y="88" width="114" height="44" rx="6" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><text x="655" y="107" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">next-token</text><text x="655" y="122" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">probabilities</text><text x="505" y="164" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">residual stream: one 768-dim vector per token; each block reads it and adds to it</text><line x1="222" y1="136" x2="150" y2="200" style="stroke:var(--accent);stroke-width:1;opacity:0.6" stroke-dasharray="3,3"/><line x1="238" y1="136" x2="330" y2="200" style="stroke:var(--accent);stroke-width:1;opacity:0.6" stroke-dasharray="3,3"/><line x1="174.5" y1="212" x2="235.5" y2="202" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="212" x2="235.5" y2="214" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="212" x2="235.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="212" x2="235.5" y2="238" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="212" x2="235.5" y2="250" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="212" x2="235.5" y2="262" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="212" x2="235.5" y2="274" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="212" x2="235.5" y2="286" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="226" x2="235.5" y2="202" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="226" x2="235.5" y2="214" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="226" x2="235.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="226" x2="235.5" y2="238" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="226" x2="235.5" y2="250" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="226" x2="235.5" y2="262" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="226" x2="235.5" y2="274" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="226" x2="235.5" y2="286" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="240" x2="235.5" y2="202" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="240" x2="235.5" y2="214" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="240" x2="235.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="240" x2="235.5" y2="238" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="240" x2="235.5" y2="250" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="240" x2="235.5" y2="262" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="240" x2="235.5" y2="274" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="240" x2="235.5" y2="286" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="254" x2="235.5" y2="202" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="254" x2="235.5" y2="214" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="254" x2="235.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="254" x2="235.5" y2="238" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="254" x2="235.5" y2="250" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="254" x2="235.5" y2="262" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="254" x2="235.5" y2="274" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="254" x2="235.5" y2="286" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="268" x2="235.5" y2="202" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="268" x2="235.5" y2="214" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="268" x2="235.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="268" x2="235.5" y2="238" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="268" x2="235.5" y2="250" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="268" x2="235.5" y2="262" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="268" x2="235.5" y2="274" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="174.5" y1="268" x2="235.5" y2="286" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="202" x2="305.5" y2="212" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="202" x2="305.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="202" x2="305.5" y2="240" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="202" x2="305.5" y2="254" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="202" x2="305.5" y2="268" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="214" x2="305.5" y2="212" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="214" x2="305.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="214" x2="305.5" y2="240" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="214" x2="305.5" y2="254" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="214" x2="305.5" y2="268" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="226" x2="305.5" y2="212" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="226" x2="305.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="226" x2="305.5" y2="240" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="226" x2="305.5" y2="254" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="226" x2="305.5" y2="268" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="238" x2="305.5" y2="212" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="238" x2="305.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="238" x2="305.5" y2="240" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="238" x2="305.5" y2="254" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="238" x2="305.5" y2="268" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="250" x2="305.5" y2="212" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="250" x2="305.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="250" x2="305.5" y2="240" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="250" x2="305.5" y2="254" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="250" x2="305.5" y2="268" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="262" x2="305.5" y2="212" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="262" x2="305.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="262" x2="305.5" y2="240" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="262" x2="305.5" y2="254" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="262" x2="305.5" y2="268" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="274" x2="305.5" y2="212" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="274" x2="305.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="274" x2="305.5" y2="240" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="274" x2="305.5" y2="254" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="274" x2="305.5" y2="268" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="286" x2="305.5" y2="212" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="286" x2="305.5" y2="226" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="286" x2="305.5" y2="240" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="286" x2="305.5" y2="254" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><line x1="244.5" y1="286" x2="305.5" y2="268" style="stroke:var(--accent);stroke-width:1;opacity:0.35"/><circle cx="170" cy="212" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="170" cy="226" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="170" cy="240" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="170" cy="254" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="170" cy="268" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="240" cy="202" r="4.5" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="240" cy="214" r="4.5" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="240" cy="226" r="4.5" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="240" cy="238" r="4.5" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="240" cy="250" r="4.5" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="240" cy="262" r="4.5" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="240" cy="274" r="4.5" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="240" cy="286" r="4.5" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1.5"/><circle cx="310" cy="212" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="310" cy="226" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="310" cy="240" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="310" cy="254" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><circle cx="310" cy="268" r="4.5" style="fill:var(--accent);stroke:var(--border2);stroke-width:1.5"/><text x="170" y="300" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:10px">768</text><text x="240" y="300" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:10px">3,072</text><text x="310" y="300" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:10px">768</text><text x="240" y="318" text-anchor="middle" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">each MLP is a 2-layer network like (a), only wider</text><text x="400" y="214" text-anchor="start" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:11px">Per block:</text><text x="400" y="232" text-anchor="start" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">attention: 12 heads × 64 dims, 4 × 768² ≈ 2.4M weights</text><text x="400" y="250" text-anchor="start" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">MLP: 2 × 768 × 3,072 ≈ 4.7M weights</text><text x="400" y="276" text-anchor="start" style="fill:var(--text2);font-family:DM Sans,sans-serif;font-size:11px">12 blocks ≈ 85M + embeddings ≈ 39M</text><text x="400" y="294" text-anchor="start" style="fill:var(--text);font-family:DM Sans,sans-serif;font-weight:600;font-size:11px">≈ 124M parameters in total</text></svg>
+    <p style="font-size:12.5px;color:var(--text3);margin:12px 0 0;line-height:1.55;"><strong>a.</strong> A toy feedforward network with two layers of weights, each 4 units wide: every unit of one layer connects to every unit of the next, and each layer adds a bias per unit. <strong>b.</strong> GPT-2 small at the same level of description: tokens are embedded as 768-dimensional vectors that pass through 12 blocks, each adding the outputs of an attention layer and an MLP; the final vector is mapped to a probability for each of the 50,257 tokens. Each MLP is the same kind of two-layer network as in a, 768 → 3,072 → 768 units wide.</p>
+  </div>
+
+  <p>
+    The parameter count grows quadratically with width. A layer
+    of width 512 (512 inputs → 512 outputs) has 512 × 512 = 262,144 weights, plus 512 biases.
+    GPT-2 XL has 1.5 billion such parameters across 48 layers with width 1,600 (GPT-2 small: 124 million, 12 layers, width 768). Fig. 3 compares the toy
+    network's 40 parameters with that scale.
+  </p>
+
+  <div class="eq-block">
+    <span class="eq-label">Layer operation (vectorized)</span>
+    h<sup>(<i>l</i>)</sup> = activation( W<sup>(<i>l</i>)</sup> · h<sup>(<i>l</i>−1)</sup> + b<sup>(<i>l</i>)</sup> )<br>
+    W<sup>(<i>l</i>)</sup> ∈ ℝ<sup>d<sub>out</sub>×d<sub>in</sub></sup>,  b<sup>(<i>l</i>)</sup> ∈ ℝ<sup>d<sub>out</sub></sup>
+  </div>
+  <p style="font-size:13.5px;color:var(--text3)">
+    Note: from Lesson 2 on, the transformer lessons write the same operation with row vectors, h W + b with
+    W ∈ ℝ<sup>d<sub>in</sub>×d<sub>out</sub></sup> (the convention of GPT-2's code). The two forms are transposes of each other.
+  </p>
+
+  <div class="insight" style="margin-top:0.5rem">
+    <strong>Reading the equation.</strong>
+    This is just the single-neuron formula applied to an entire layer at once.
+    A layer has many neurons, all reading the same input vector h<sup>(<i>l</i>−1)</sup>.
+    Instead of computing each neuron's dot product separately, stack all their weight rows into
+    a matrix W<sup>(<i>l</i>)</sup> and do one matrix–vector multiply:
+    <ul style="margin:0.5rem 0 0.25rem 1.2rem;line-height:1.7">
+      <li><strong>h<sup>(<i>l</i>−1)</sup></strong> — input vector (activations from previous layer), length d<sub>in</sub></li>
+      <li><strong>W<sup>(<i>l</i>)</sup> · h<sup>(<i>l</i>−1)</sup></strong> — matrix multiply: d<sub>out</sub> rows × d<sub>in</sub> columns times d<sub>in</sub> vector → d<sub>out</sub> pre-activations z, one per output neuron</li>
+      <li><strong>b<sup>(<i>l</i>)</sup></strong> — bias vector; one scalar added to each neuron's z</li>
+      <li><strong>activation(…)</strong> — applied element-wise (ReLU, GELU, SiLU…) → final output h<sup>(<i>l</i>)</sup></li>
+      <li><strong>Superscript (<i>l</i>)</strong> — layer index; W<sup>(1)</sup> is layer 1's weights, W<sup>(2)</sup> is layer 2's, etc. (h<sup>(0)</sup> is the input). (These superscripts count weight layers from 1, with h<sup>(0)</sup> the input; GPT-2's transformer blocks are numbered from 0, Block 0–Block 11.)</li>
+    </ul>
+    GPUs are extremely fast at this matrix multiply, which is why inference can run in milliseconds despite hundreds of millions to billions of parameters (GPT-2 small: 124M; XL: 1.5B).
+  </div>
+
+  <!-- INTERACTIVE WORKED EXAMPLE -->
+  <div class="toy-net-widget">
+    <div class="tn-header">
+      <span class="tn-widget-title">Fig. 4 · 3→2→1 Network</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="tn-dots" id="tn-dots"></div>
+        <span class="tn-step-label" id="tn-step-label">1 / 6</span>
+      </div>
+    </div>
+
+    <div class="tn-svg-wrap">
+      <svg id="tn-svg" viewBox="0 0 440 215" style="max-height:215px">
+        <defs>
+          <marker id="tn-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="var(--accent)" opacity="0.7"/>
+          </marker>
+        </defs>
+
+        <!-- ── EDGES: input → A ── -->
+        <g id="tn-eg-toA">
+          <line id="tn-e-x1A" x1="65" y1="55"  x2="220" y2="82"  class="tn-edge"/>
+          <line id="tn-e-x2A" x1="65" y1="115" x2="220" y2="82"  class="tn-edge"/>
+          <line id="tn-e-x3A" x1="65" y1="175" x2="220" y2="82"  class="tn-edge"/>
+        </g>
+        <!-- ── EDGES: input → B ── -->
+        <g id="tn-eg-toB">
+          <line id="tn-e-x1B" x1="65" y1="55"  x2="220" y2="152" class="tn-edge"/>
+          <line id="tn-e-x2B" x1="65" y1="115" x2="220" y2="152" class="tn-edge"/>
+          <line id="tn-e-x3B" x1="65" y1="175" x2="220" y2="152" class="tn-edge"/>
+        </g>
+        <!-- ── EDGES: hidden → output ── -->
+        <g id="tn-eg-toOut">
+          <line id="tn-e-Aout"  x1="220" y1="82"  x2="375" y2="117" class="tn-edge"/>
+          <line id="tn-e-Bout"  x1="220" y1="152" x2="375" y2="117" class="tn-edge" id="tn-e-Bout"/>
+        </g>
+
+        <!-- ── WEIGHT LABELS (hidden until edge group active) ── -->
+        <g id="tn-wl-toA" style="display:none">
+          <rect x="145" y="58"  width="28" height="14" rx="3" fill="var(--surface)" opacity="0.9"/>
+          <rect x="148" y="90"  width="22" height="14" rx="3" fill="var(--surface)" opacity="0.9"/>
+          <rect x="142" y="122" width="32" height="14" rx="3" fill="var(--surface)" opacity="0.9"/>
+          <text x="159" y="69"  class="tn-wlabel">0.5</text>
+          <text x="159" y="101" class="tn-wlabel">0.3</text>
+          <text x="158" y="133" class="tn-wlabel">−0.2</text>
+        </g>
+        <g id="tn-wl-toB" style="display:none">
+          <rect x="142" y="82"  width="32" height="14" rx="3" fill="var(--surface)" opacity="0.9"/>
+          <rect x="145" y="114" width="28" height="14" rx="3" fill="var(--surface)" opacity="0.9"/>
+          <rect x="145" y="148" width="22" height="14" rx="3" fill="var(--surface)" opacity="0.9"/>
+          <text x="158" y="93"  class="tn-wlabel">−0.4</text>
+          <text x="159" y="125" class="tn-wlabel">0.7</text>
+          <text x="159" y="159" class="tn-wlabel">0.6</text>
+        </g>
+        <g id="tn-wl-toOut" style="display:none">
+          <rect x="280" y="89"  width="22" height="14" rx="3" fill="var(--surface)" opacity="0.9"/>
+          <rect x="280" y="119" width="28" height="14" rx="3" fill="var(--surface)" opacity="0.9"/>
+          <text x="291" y="100" class="tn-wlabel">0.8</text>
+          <text x="291" y="130" class="tn-wlabel">−0.6</text>
+        </g>
+
+        <!-- ── INPUT NODES ── -->
+        <g id="tn-n-x1" class="tn-node-g">
+          <circle id="tn-c-x1" cx="65" cy="55"  r="22" class="tn-node"/>
+          <text   id="tn-t-x1" x="65"  y="51"   class="tn-nlabel">x₁</text>
+          <text   id="tn-v-x1" x="65"  y="64"   class="tn-nval" style="display:none">1.0</text>
+        </g>
+        <g id="tn-n-x2" class="tn-node-g">
+          <circle id="tn-c-x2" cx="65" cy="115" r="22" class="tn-node"/>
+          <text   id="tn-t-x2" x="65"  y="111"  class="tn-nlabel">x₂</text>
+          <text   id="tn-v-x2" x="65"  y="124"  class="tn-nval" style="display:none">0.5</text>
+        </g>
+        <g id="tn-n-x3" class="tn-node-g">
+          <circle id="tn-c-x3" cx="65" cy="175" r="22" class="tn-node"/>
+          <text   id="tn-t-x3" x="65"  y="171"  class="tn-nlabel">x₃</text>
+          <text   id="tn-v-x3" x="65"  y="184"  class="tn-nval" style="display:none">−1.0</text>
+        </g>
+
+        <!-- ── HIDDEN NODES ── -->
+        <g id="tn-n-A" class="tn-node-g">
+          <circle id="tn-c-A" cx="220" cy="82"  r="22" class="tn-node"/>
+          <text   id="tn-t-A" x="220"  y="78"   class="tn-nlabel">A</text>
+          <text   id="tn-v-A" x="220"  y="91"   class="tn-nval" style="display:none"></text>
+        </g>
+        <g id="tn-n-B" class="tn-node-g">
+          <circle id="tn-c-B" cx="220" cy="152" r="22" class="tn-node"/>
+          <text   id="tn-t-B" x="220"  y="148"  class="tn-nlabel">B</text>
+          <text   id="tn-v-B" x="220"  y="161"  class="tn-nval" style="display:none"></text>
+        </g>
+
+        <!-- ── OUTPUT NODE ── -->
+        <g id="tn-n-out" class="tn-node-g">
+          <circle id="tn-c-out" cx="375" cy="117" r="22" class="tn-node"/>
+          <text   id="tn-t-out" x="375"  y="113"  class="tn-nlabel">y</text>
+          <text   id="tn-v-out" x="375"  y="126"  class="tn-nval" style="display:none"></text>
+        </g>
+
+        <!-- ── LAYER LABELS ── -->
+        <text x="65"  y="208" class="tn-layer-lbl">Input</text>
+        <text x="220" y="208" class="tn-layer-lbl">Hidden (ReLU)</text>
+        <text x="375" y="208" class="tn-layer-lbl">Output</text>
+      </svg>
+
+      <style>
+        .tn-edge { stroke: var(--border); stroke-width: 1.5; fill: none; transition: stroke 0.25s, opacity 0.25s; }
+        .tn-edge.active { stroke: var(--accent); stroke-width: 2.5; }
+        .tn-edge.dimmed { stroke: var(--border); opacity: 0.2; stroke-dasharray: 4 3; }
+        .tn-node { fill: var(--bg); stroke: var(--border); stroke-width: 1.5; transition: fill 0.25s, stroke 0.25s, opacity 0.25s; }
+        .tn-node.active { fill: var(--accent); stroke: var(--accent); }
+        .tn-node.dimmed { opacity: 0.35; }
+        .tn-nlabel { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; fill:var(--text); text-anchor:middle; dominant-baseline:middle; transition:fill 0.25s; pointer-events:none; }
+        .tn-nlabel.active { fill:#fff; }
+        .tn-nlabel.dimmed { fill:var(--text3); }
+        .tn-nval { font-family:'JetBrains Mono',monospace; font-size:9.5px; fill:var(--accent); text-anchor:middle; dominant-baseline:middle; font-weight:600; }
+        .tn-wlabel { font-family:'JetBrains Mono',monospace; font-size:10px; fill:var(--accent); text-anchor:middle; dominant-baseline:middle; font-weight:600; }
+        .tn-layer-lbl { font-family:'DM Sans',sans-serif; font-size:10px; fill:var(--text3); text-anchor:middle; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
+      </style>
+    </div>
+
+    <div class="tn-content">
+      <div class="tn-title" id="tn-title"></div>
+      <p class="tn-desc" id="tn-desc"></p>
+      <pre class="tn-math" id="tn-math"></pre>
+    </div>
+
+    <div class="tn-nav">
+      <button class="tn-btn" id="tn-prev" onclick="tnGo(-1)">← Prev</button>
+      <button class="tn-btn tn-btn-next" id="tn-next" onclick="tnGo(1)">Next →</button>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const STEPS = [
+      {
+        title: 'The architecture',
+        desc: 'A 3→2→1 network: 3 input nodes, a hidden layer of 2 neurons (with ReLU activation), and 1 output neuron. Every node connects to every node in the next layer — fully connected.',
+        math: 'Parameters: (3×2 weights + 2 biases) + (2×1 weights + 1 bias) = 11 total\n\nWeights layer 1:  W⁽¹⁾ = [ 0.5   0.3  −0.2 ]  b⁽¹⁾ = [ 0.1  ]\n                         [−0.4   0.7   0.6 ]       [−0.1 ]\nWeights layer 2:  W⁽²⁾ = [ 0.8  −0.6 ]             b⁽²⁾ = [ 0.2 ]',
+        edgeGroup: null, inputs: false, hiddenA: null, hiddenB: null, output: null, dimB: false,
+      },
+      {
+        title: 'Step 1 — Inputs arrive',
+        desc: 'Feed the input vector x into the network. Each node receives one value. These are h⁽⁰⁾ — the "output" of the imaginary layer 0.',
+        math: 'x = h⁽⁰⁾ = [ x₁,  x₂,  x₃ ]\n           = [ 1.0,  0.5, −1.0 ]',
+        edgeGroup: null, inputs: true, hiddenA: null, hiddenB: null, output: null, dimB: false, hlInputs: true,
+      },
+      {
+        title: 'Step 2 — Neuron A computes z<sub>A</sub>',
+        desc: 'Neuron A takes a weighted sum of all inputs plus its bias. The numbers on each edge are the weights. This produces the pre-activation z<sub>A</sub>.',
+        math: 'z<sub>A</sub> = w₁x₁  +  w₂x₂  +  w₃x₃  +  b\n   = (0.5)(1.0) + (0.3)(0.5) + (−0.2)(−1.0) + 0.1\n   = 0.50  +  0.15  +  0.20  +  0.10\n   = 0.95',
+        edgeGroup: 'toA', inputs: true, hiddenA: 'z=0.95', hiddenB: null, output: null, dimB: false, hlA: true,
+      },
+      {
+        title: 'Step 3 — Neuron B computes z<sub>B</sub>',
+        desc: 'Neuron B does the same with its own (different) weights. This time the result is negative.',
+        math: 'z<sub>B</sub> = (−0.4)(1.0) + (0.7)(0.5) + (0.6)(−1.0) + (−0.1)\n   = −0.40  +  0.35  −  0.60  −  0.10\n   = −0.75',
+        edgeGroup: 'toB', inputs: true, hiddenA: 'z=0.95', hiddenB: 'z=−0.75', output: null, dimB: false, hlB: true,
+      },
+      {
+        title: 'Step 4 — ReLU fires',
+        desc: 'ReLU(z) = max(0, z). Neuron A passes through unchanged. Neuron B had a negative pre-activation — ReLU clips it to zero. B is silenced: it outputs nothing.',
+        math: 'h⁽¹⁾ = [ ReLU(z<sub>A</sub>),    ReLU(z<sub>B</sub>)  ]\n     = [ ReLU(0.95),  ReLU(−0.75) ]\n     = [ max(0, 0.95), max(0, −0.75) ]\n     = [ 0.95,         0.0 ]          ← B is silent',
+        edgeGroup: null, inputs: false, hiddenA: '0.95', hiddenB: '0.0', output: null, dimB: true, hlA: true,
+      },
+      {
+        title: 'Step 5 — Output layer',
+        desc: 'The output neuron reads h⁽¹⁾. Since h<sub>B</sub> = 0, the B→output edge contributes nothing despite having weight −0.6. Only neuron A\'s signal flows through.',
+        math: 'z<sub>out</sub> = (0.8)(0.95)  +  (−0.6)(0.0)  +  0.2\n    = 0.76  +  0.00  +  0.20\n    = 0.96',
+        edgeGroup: 'toOut', inputs: false, hiddenA: '0.95', hiddenB: '0.0', output: '0.96', dimB: true, hlOut: true,
+      },
+    ];
+
+    let cur = 0;
+
+    // Build dots
+    const dotsEl = document.getElementById('tn-dots');
+    STEPS.forEach((_,i) => {
+      const d = document.createElement('span');
+      d.className = 'tn-dot'; d.id = 'tn-d-'+i;
+      dotsEl.appendChild(d);
+    });
+
+    function setEdge(id, state) { // state: 'active','dimmed','default'
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('active','dimmed');
+      if (state !== 'default') el.classList.add(state);
+    }
+    function setNode(id, active, dimmed, val) {
+      const c = document.getElementById('tn-c-'+id);
+      const t = document.getElementById('tn-t-'+id);
+      const v = document.getElementById('tn-v-'+id);
+      if (c) { c.classList.remove('active','dimmed'); if(active) c.classList.add('active'); if(dimmed) c.classList.add('dimmed'); }
+      if (t) { t.classList.remove('active','dimmed'); if(active) t.classList.add('active'); if(dimmed) t.classList.add('dimmed'); }
+      if (v) {
+        if (val !== null && val !== undefined) {
+          v.textContent = val; v.style.display = '';
+        } else { v.style.display = 'none'; }
+      }
+    }
+
+    function render(idx) {
+      const s = STEPS[idx];
+      // header
+      document.getElementById('tn-step-label').textContent = (idx+1)+' / '+STEPS.length;
+      document.querySelectorAll('.tn-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
+      // content
+      document.getElementById('tn-title').innerHTML = s.title;
+      document.getElementById('tn-desc').innerHTML = s.desc;
+      document.getElementById('tn-math').innerHTML = s.math;
+
+      // edges
+      const groups = { toA: ['tn-e-x1A','tn-e-x2A','tn-e-x3A'], toB: ['tn-e-x1B','tn-e-x2B','tn-e-x3B'], toOut: ['tn-e-Aout','tn-e-Bout'] };
+      Object.entries(groups).forEach(([g, ids]) => {
+        const isActive = s.edgeGroup === g;
+        const isOther  = s.edgeGroup && !isActive;
+        ids.forEach(id => {
+          const isBout = id === 'tn-e-Bout';
+          if (isActive && isBout && s.dimB) setEdge(id, 'dimmed');
+          else if (isActive) setEdge(id, 'active');
+          else if (isOther) setEdge(id, 'dimmed');
+          else setEdge(id, isBout && s.dimB ? 'dimmed' : 'default');
+        });
+      });
+      // weight labels
+      ['toA','toB','toOut'].forEach(g => {
+        document.getElementById('tn-wl-'+g).style.display = s.edgeGroup === g ? '' : 'none';
+      });
+
+      // nodes
+      setNode('x1', !!s.hlInputs, false, s.inputs ? '1.0' : null);
+      setNode('x2', !!s.hlInputs, false, s.inputs ? '0.5' : null);
+      setNode('x3', !!s.hlInputs, false, s.inputs ? '−1.0': null);
+      setNode('A',  !!(s.hlA || s.edgeGroup==='toA'), false, s.hiddenA);
+      setNode('B',  !!(s.hlB || s.edgeGroup==='toB'), s.dimB, s.hiddenB);
+      setNode('out', !!(s.hlOut || s.edgeGroup==='toOut'), false, s.output);
+
+      // nav
+      document.getElementById('tn-prev').disabled = idx === 0;
+      const nxt = document.getElementById('tn-next');
+      nxt.disabled = idx === STEPS.length-1;
+      nxt.textContent = idx === STEPS.length-1 ? '✓ Done' : 'Next →';
+    }
+
+    window.tnGo = function(dir) {
+      cur = Math.max(0, Math.min(STEPS.length-1, cur+dir));
+      render(cur);
+    };
+
+    render(0);
+  })();
+  </script>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel.</strong> A layer is like a cortical area: a population of neurons all
+    receiving the same upstream projection and sending outputs downstream in parallel. Depth maps loosely
+    to the cortical hierarchy — V1→V2→V4→IT in vision, for example. Key difference: feedforward networks
+    have no recurrence within a layer, and in a transformer, "layers" are residual rather than replacing
+    the representation entirely.
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>What "deep" actually means.</strong> The word "deep" in deep learning just means more than
+    one hidden layer. A two-layer network (one hidden layer) can already approximate any continuous
+    function on a bounded input range to arbitrary precision given enough width — but enormous depth is empirically far more
+    parameter-efficient for complex structured tasks.
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 4 · HOW NETWORKS LEARN
+══════════════════════════════════════════════ -->
+<div id="tab-learning" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">How Networks Learn</h2>
+  <p>
+    The weights of a network are not programmed — they are <strong>optimized</strong>. Given a dataset of
+    (input, desired output) pairs, training adjusts every weight so the network's predictions match the
+    targets. The machinery that does this is <strong>gradient descent</strong> applied to a <strong>loss function</strong>.
+  </p>
+  <p>
+    The <strong>loss</strong> measures how wrong the network currently is — for language modeling, it's
+    cross-entropy between the predicted probability distribution over tokens and the actual next token.
+    The <strong>gradient</strong> of the loss with respect to every weight tells us which direction to
+    move each weight to reduce the loss. We take a small step in that direction, then repeat — hundreds of thousands of times in a typical LLM training run.
+  </p>
+
+  <div class="eq-block">
+    <span class="eq-label">Gradient descent update rule</span>
+    w ← w − η · ∂Loss/∂w<br><br>
+    η = learning rate (step size)<br>
+    ∂Loss/∂w = gradient of the loss w.r.t. weight w
+  </div>
+
+  <p>
+    The loss landscape below visualizes the loss as a function of two hypothetical weights.
+    <strong>Click anywhere</strong> to place the current position, then watch gradient descent
+    find a local minimum.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 5 · Loss Landscape &amp; Gradient Descent</div>
+    <div class="loss-controls">
+      <div class="slider-row" style="max-width:400px">
+        <span class="slider-label" style="width:80px;font-size:13px;color:var(--text2)">Learn rate η</span>
+        <input type="range" id="lr-slider" min="0.01" max="0.5" step="0.01" value="0.1" oninput="updateLR()">
+        <span class="slider-val" id="lr-val">0.10</span>
+      </div>
+    </div>
+    <canvas id="loss-canvas"></canvas>
+    <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:6px;">Click to set starting position · then press Run</div>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <button class="act-btn active" id="run-btn" onclick="runGD()">▶ Run gradient descent</button>
+      <button class="act-btn" onclick="resetGD()">↺ Reset</button>
+    </div>
+    <div class="loss-info">
+      <div class="loss-stat"><span>Step</span><strong id="gd-step">—</strong></div>
+      <div class="loss-stat"><span>Loss</span><strong id="gd-loss">—</strong></div>
+      <div class="loss-stat"><span>|gradient|</span><strong id="gd-grad">—</strong></div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Backpropagation</strong> is the algorithm that computes the gradient of the loss with respect
+    to <em>every single weight</em> in the network simultaneously, using the chain rule of calculus.
+    For a network with hundreds of millions of parameters (124M in GPT-2 small) or more, this is computed in one backwards pass through the network —
+    costing about twice as much as one forward pass. Without backprop, training modern networks would be computationally
+    intractable. <em>The full mechanics — chain rule, computational graphs, vanishing gradients — are covered
+    in <a href="lesson4.html#backprop">Lesson 4: Training, tab 3</a>.</em>
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel 1 — plasticity.</strong> Gradient descent is often compared to synaptic plasticity, but
+    the analogy is loose at best. Backprop requires a global error signal to be propagated backwards through
+    the network — the "credit assignment problem." Biological synapses use local Hebbian-style rules, not
+    global error backpropagation, though there are ongoing debates about biologically plausible approximations.
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel 2 — the connectome.</strong> Once training ends, the full set of weights W<sup>(<i>l</i>)</sup>
+    and b<sup>(<i>l</i>)</sup> is saved as a fixed checkpoint and frozen. Every forward pass during deployment reads the same
+    numbers — nothing about a user's conversation changes them. Think of it as the model's
+    <strong>connectome</strong>: the complete wiring diagram, fixed at a particular moment. Just as your
+    connectome supports context-dependent, flexible computation without rewiring — different activation
+    patterns, same synapses — a deployed LLM produces wildly different outputs from the same frozen weights
+    by attending to different parts of the input. The key difference: biological synapses are locally plastic
+    (LTP/LTD, neuromodulation, consolidation during sleep), so your connectome shifts slowly over time. A
+    deployed model's weights are genuinely static between training runs — no usage, no feedback, no passage
+    of time alters them.
+  </div>
+
+  <p>
+    Notice that with a high learning rate η, gradient descent can overshoot and oscillate. With a very
+    low rate, it converges slowly. Real training uses <strong>Adam</strong>, an adaptive optimizer that
+    maintains per-weight learning rates — effectively navigating the loss landscape much more efficiently.
+  </p>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 5 · DISTRIBUTED REPRESENTATIONS
+══════════════════════════════════════════════ -->
+<div id="tab-distributed" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Distributed Coding</h2>
+  <p>
+    In a neural network, information is not stored in single neurons — it is <strong>distributed across
+    many neurons simultaneously</strong>. A concept is represented as a pattern of activations across a
+    population, not a single "grandmother cell."
+  </p>
+  <p>
+    This is both a strength and a challenge for interpretability. The strength: distributed representations
+    are far more expressive than local ones — d neurons can represent 2<sup>d</sup> distinct binary patterns,
+    not just d concepts. The challenge: you cannot read off what a network "knows" by looking at one neuron.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 6 · Concept Representations</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:12px">
+      Click a concept to see how it is represented as a pattern across 8 neurons.
+      Notice that concepts share neurons — a single neuron participates in many concepts.
+    </p>
+    <div class="distrib-grid" id="distrib-grid"></div>
+    <div class="rep-display" id="rep-display">
+      <div class="rep-title">Select a concept above to see its activation vector</div>
+      <div class="rep-bars" id="rep-bars"></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px;text-align:center;">bar height = activation strength (0 → 1)</div>
+    </div>
+  </div>
+
+  <div class="eq-block">
+    <span class="eq-label">Representational capacity</span>
+    Local code: N neurons → N concepts<br>
+    Sparse code: N neurons, k active → C(N,k) concepts<br>
+    Dense code: N neurons → 2<sup>N</sup> binary patterns (exponential)
+  </div>
+
+  <p>
+    Modern networks appear to use <strong>sparse, overcomplete</strong> representations — each input
+    activates only a small fraction of a large set of <em>features</em> (directions in activation space),
+    and the number of features exceeds the neuron count. The neurons themselves are not sparse: because
+    many features must share them, individual neurons become <strong>polysemantic</strong> — responding to
+    many unrelated concepts. This is called <strong>superposition</strong>, and it is believed to be a key
+    reason interpretability is hard. <a href="lesson5.html#super">Lesson 5, tab 3</a> returns to this in detail, and <a href="lesson7.html#saes">Lesson 7, tab 8</a> covers the tool used to untangle it.
+  </p>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel.</strong> Population coding is a fundamental concept in systems
+    neuroscience — place cells, grid cells, and orientation-selective cells all use distributed
+    population codes, and the geometry of activity patterns in high-dimensional space is directly
+    analogous to what mechanistic interpretability calls "representational geometry." Methods like
+    PCA and RSA — standard tools in systems neuroscience — apply directly to LLM activations.
+    <br><br>
+    One note on terminology: population codes span a density spectrum, from fully dense (all neurons
+    respond graded to every stimulus) to fully sparse (only a handful of neurons fire for any given
+    input). In LLMs the sparsity is in <em>features</em>, not neurons: neurons respond densely, but each
+    input is thought to use only a few directions from a much larger dictionary. That is the
+    <em>sparse coding</em> model of primary visual cortex: <a href="https://doi.org/10.1038/381607a0" target="_blank" rel="noopener">Olshausen &amp; Field (1996)</a>
+    showed that learning a sparse code for natural images gives V1-like receptive fields, and
+    <a href="https://doi.org/10.1016/S0042-6989(97)00169-7" target="_blank" rel="noopener">Olshausen &amp; Field (1997)</a> extended it to an
+    <em>overcomplete</em> dictionary, with more features than input dimensions, kept tractable by sparsity. The direct LLM analogue is the dictionary learned by a sparse autoencoder
+    (SAE) on a layer's activations, covered in <a href="lesson7.html#saes">Lesson 7, tab 8</a>. One difference matters: in V1 each
+    dictionary element is thought to be a neuron of its own, so cortex has many more neurons than input
+    fibres. An LLM is the reverse: it is thought to hold more features than it has neurons, so features
+    must share neurons (<em>superposition</em>, <a href="lesson5.html#super">Lesson 5, tab 3</a>). Only the SAE, an analysis tool, gives each
+    feature a unit of its own.
+  </div>
+
+  <div class="insight">
+    <strong>This is where systems and computational neuroscience expertise is directly relevant.</strong> The study of population dynamics,
+    dimensionality, and representational geometry in neural recordings is the same mathematical framework
+    applied to LLM activations. The difference: LLM activations are noiseless, perfectly reproducible,
+    and the "stimulus" is fully controlled text. Every technique in Lesson 7 builds
+    directly on this parallel.
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 6: LANGUAGE AS PROBABILITY ══ -->
+<div id="tab-prob" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Language as a Probability Distribution</h2>
+  <p>
+    A language model assigns a <strong>probability to every possible sequence of text</strong>. More
+    usefully, it computes the probability of the next word (or token) given all preceding words.
+    This conditional probability is the central object:
+  </p>
+
+  <div class="eq-block">
+    <span class="eq-label">Core objective</span>
+    P(token<sub>t</sub> | token<sub>0</sub>, token<sub>1</sub>, …, token<sub>t−1</sub>)<br><br>
+    "What is the probability of the next token, given everything so far?"
+  </div>
+
+  <p>
+    By the <strong>chain rule of probability</strong>, the probability of any full sequence factors
+    into a product of these conditional probabilities. A model that computes one also implicitly defines
+    a distribution over all possible texts.
+  </p>
+
+  <div class="chain-eq">
+    P(<span class="chain-token">The</span> <span class="chain-token">cat</span> <span class="chain-token">sat</span>) =<br>
+    &nbsp;&nbsp;P(<span class="chain-token">The</span>) ×<br>
+    &nbsp;&nbsp;P(<span class="chain-token">cat</span> <span class="chain-given">| The</span>) ×<br>
+    &nbsp;&nbsp;P(<span class="chain-token">sat</span> <span class="chain-given">| The cat</span>)
+  </div>
+
+  <p>
+    The widget below shows illustrative conditional distributions over next tokens for different contexts
+    (the numbers are made up to show the shapes, not read from a model). Notice how the context shapes
+    the distribution — some completions concentrate the probability on one token, others spread it over
+    many plausible options and a long tail.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 7 · Next-Token Probability Distribution (illustrative)</div>
+    <div class="context-picker" id="ctx-picker"></div>
+    <div class="prob-context" id="prob-ctx-display"></div>
+    <div class="prob-bars" id="prob-bars"></div>
+    <div class="prob-note" id="prob-note"></div>
+  </div>
+
+  <div class="insight">
+    <strong>This is not a lookup table.</strong> The model doesn't store precomputed probabilities for
+    every possible context — there are more possible sentences than atoms in the universe. Instead,
+    the network <em>computes</em> this distribution on the fly, using its parameters (124 million in GPT-2 small, hundreds of billions in the largest models) to
+    generalize from training data to any context it encounters.
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience framing.</strong> Think of the conditional distribution as the model's
+    "expectation" — the probabilistic prediction a sensory system makes before receiving the next
+    stimulus. Predictive coding frameworks in neuroscience model perception as exactly this: a
+    brain that continuously predicts its next input. The LLM makes this structure explicit and
+    mathematically precise.
+  </div>
+
+  <p>
+    The key insight: if you build a model that predicts the next token well across all possible contexts,
+    you have implicitly encoded an enormous amount about language structure, world knowledge, and
+    reasoning — because all of those things constrain what comes next. We'll return to this in <a href="#why" onclick="goTab('why');return false">tab 10</a>.
+  </p>
+</div>
+</div>
+
+<!-- ══ TAB 7: TOKENIZATION ══ -->
+<div id="tab-tokens" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Tokenization — <em>the atoms of language</em></h2>
+  <p>
+    Before a model can process text, the text must be converted into discrete units called <strong>tokens</strong>.
+    Tokens are not words — they are subword pieces learned from the training corpus using an algorithm
+    called <strong>Byte-Pair Encoding (BPE)</strong>.
+  </p>
+  <p>
+    BPE starts with individual characters (in GPT-2, individual bytes), then iteratively merges the most frequent adjacent pairs
+    into new tokens. Common words become single tokens (<code>the</code>, <code>is</code>, <code>cat</code>);
+    rarer words are split into pieces (<code>neuro</code> + <code>scient</code> + <code>ist</code>);
+    common prefixes and suffixes become reusable tokens. GPT-2 and Pythia use about <strong>50,000 tokens</strong>,
+    GPT-4 about 100,000.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 8 · GPT-2's tokenizer</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:12px;">The real GPT-2 tokenizer, running in your browser. Each box is one token; colours only alternate so neighbours are easy to tell apart. <code>·</code> marks a leading space, which is part of the token. The number under each token is its ID, the row of the embedding matrix it looks up.</p>
+    <input class="tok-input" id="tok-input" type="text" placeholder="Type or paste text here…" value="How many letter r's in the word strawberry?" oninput="tokenize()">
+    <div class="tok-output" id="tok-output"></div>
+    <div class="tok-stats" id="tok-stats"></div>
+  </div>
+
+  <div class="eq-block">
+    <span class="eq-label">Tokenization pipeline (GPT-2)</span>
+    raw text → [BPE tokenizer] → token ids → model<br><br>
+    "Hello world" → ["Hello", " world"] → [15496, 995]<br>
+    " neuroscientist" → [" neuro", "scient", "ist"] → [7669, 25346, 396]
+  </div>
+
+  <p>
+    Try typing <strong>scientific terms</strong> (neuroscientist, electrophysiology) and watch them split into
+    pieces; some, like <em>neuroscience</em> and <em>hippocampus</em>, are common enough in the training text
+    to be single tokens when preceded by a space, as they usually are mid-sentence (at the very start of the
+    text, without the space, they split). Try <strong>common words</strong> and see them stay whole. This design choice means
+    the vocabulary is compact (~50k for GPT-2) yet the model can handle any word — even made-up ones.
+  </p>
+
+  <div class="insight insight-warn">
+    <strong>Tokenization has real consequences.</strong> Numbers are often split in small chunks
+    ("1729" → ["17", "29"]), making arithmetic harder. Languages with different scripts tokenize less
+    efficiently — a Chinese character might cost 2–3 tokens where an English word costs 1.
+    Prompt sensitivity is partly a tokenization artifact: "cat" and " cat" (with a leading space)
+    are <em>different tokens</em>.
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel.</strong> Tokenization is a choice of the <em>unit of analysis</em>. Text is
+    already discrete (bytes or characters); the tokenizer decides which chunks count as the basic events the
+    model sees — much as an analysis of neural recordings must decide whether its unit is the single unit,
+    multi-unit activity or the population. The choice of granularity shapes what is easy to see and learn
+    in both cases.
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 8: EMBEDDINGS ══ -->
+<div id="tab-embed" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Embeddings — <em>tokens as vectors</em></h2>
+  <p>
+    Tokens are integers — discrete symbols with no inherent structure. Before the network can process
+    them, each token is converted to a <strong>dense vector in a high-dimensional space</strong> called
+    an <strong>embedding</strong>. GPT-2 small uses 768-dimensional embeddings (GPT-2 XL 1,600); the largest models use 12,000 or more.
+  </p>
+  <p>
+    The embedding matrix <strong>E</strong> is a learned parameter table with one row per vocabulary
+    token. Looking up token ID <em>i</em> selects row <em>i</em> from this matrix, producing a dense
+    vector <strong>e</strong> ∈ ℝ<sup>d</sup>. The geometry of this space is <em>meaningful</em> —
+    similar tokens tend to end up close together, and some semantic relationships become roughly consistent directions.
+  </p>
+
+  <div class="eq-block">
+    <span class="eq-label">Embedding lookup</span>
+    E ∈ ℝ<sup>|V|×d</sup>      [GPT-2: |V| = 50,257 tokens;  d = 768 (small) to 1,600 (XL)]<br><br>
+    e = E[id]              [select row id → vector e ∈ ℝ<sup>d</sup>]<br><br>
+    x<sub>t</sub> = E[id<sub>t</sub>] + P<sub>t</sub>   [token embedding + positional embedding]<br><br>
+    cos(a,b) = (a·b) / (‖a‖·‖b‖)   [similarity: 1 = same direction; higher = more similar]<br><br>
+    E["king"] − E["man"] + E["woman"] ≈ E["queen"]   [word2vec; see below]
+  </div>
+
+  <!-- Fig. 9: Embedding matrix lookup -->
+  <div class="viz-card">
+    <div class="viz-label">Fig. 9 · The Embedding Matrix Lookup</div>
+    <div class="viz-emb-lookup">
+      <div class="viz-emb-vocab">
+        <div class="viz-emb-vocab-label">Vocabulary</div>
+        <div class="viz-emb-row-label" style="opacity:.5">0 · the</div>
+        <div class="viz-emb-row-label" style="opacity:.5">1 · a</div>
+        <div class="viz-emb-row-label viz-emb-row-selected">2 · cat</div>
+        <div class="viz-emb-row-label" style="opacity:.5">3 · dog</div>
+        <div class="viz-emb-row-label" style="opacity:.35">⋮</div>
+        <div class="viz-emb-row-label" style="opacity:.35">|V|−1</div>
+      </div>
+      <div class="viz-emb-matrix-wrap">
+        <div class="viz-emb-matrix-label">E &nbsp;∈&nbsp; ℝ<sup>|V|×d</sup></div>
+        <div class="viz-emb-matrix" id="viz-emb-matrix"></div>
+        <div class="viz-emb-dim-label">d dimensions →</div>
+      </div>
+      <div class="viz-emb-arrow">→</div>
+      <div class="viz-emb-result">
+        <div class="viz-emb-result-label">e<sub>cat</sub>&nbsp;∈&nbsp;ℝ<sup>d</sup></div>
+        <div class="viz-emb-vec" id="viz-emb-vec"></div>
+        <div class="viz-emb-result-note">One learned value<br>per dimension</div>
+      </div>
+    </div>
+    <div class="viz-caption">
+      Row 2 of E is selected — the entire row becomes the embedding for "cat". All other rows are ignored.
+      In GPT-2 small d = 768, so each embedding holds 768 learned floating-point values.
+      (Toy vocabulary for illustration; in GPT-2, "cat" is row 9,246 and " cat" with a leading space is row 3,797.)
+      The cell intensities here represent schematic learned weights; bright = large positive, dim = near zero.
+    </div>
+  </div>
+
+  <!-- Fig. 10: Token + Positional embedding -->
+  <div class="viz-card">
+    <div class="viz-label">Fig. 10 · Building the Transformer Input x<sub>t</sub> = E[id<sub>t</sub>] + P<sub>t</sub></div>
+    <div class="viz-pos-wrap">
+      <div class="viz-pos-col">
+        <div class="viz-pos-label">Token embedding</div>
+        <div class="viz-pos-vec" id="viz-pos-tok"></div>
+        <div class="viz-pos-sublabel">E[id<sub>t</sub>] — what token</div>
+      </div>
+      <div class="viz-pos-plus">+</div>
+      <div class="viz-pos-col">
+        <div class="viz-pos-label">Positional embedding</div>
+        <div class="viz-pos-vec" id="viz-pos-pos"></div>
+        <div class="viz-pos-sublabel">P<sub>t</sub> — where in sequence</div>
+      </div>
+      <div class="viz-pos-plus">=</div>
+      <div class="viz-pos-col">
+        <div class="viz-pos-label">Transformer input x<sub>t</sub></div>
+        <div class="viz-pos-vec" id="viz-pos-comb"></div>
+        <div class="viz-pos-sublabel">identity + position, fused</div>
+      </div>
+    </div>
+    <div class="viz-caption">
+      Without a positional embedding, "the cat sat" and "sat cat the" produce the same set of token embeddings,
+      and attention by itself treats its inputs as an unordered set — a bidirectional model could not tell the
+      two apart. A causal (left-to-right) model like GPT-2 can still partly infer order, because each position
+      sees a different number of earlier tokens (<a href="https://arxiv.org/abs/2203.16634" target="_blank" rel="noopener">Haviv et al. 2022</a>),
+      but explicit positions make it much easier. P<sub>t</sub> injects position t into every vector before the
+      first attention layer. GPT-2 learns P from data; the original "Attention Is All You Need"
+      (<a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">Vaswani et al. 2017</a>) used fixed sinusoidal functions instead. Many recent models (e.g., Pythia, Llama)
+      add no position vector at all: they use rotary position embeddings (RoPE), which rotate the queries
+      and keys inside attention by a position-dependent angle. The element-wise sum x<sub>t</sub> = E[id<sub>t</sub>] + P<sub>t</sub>
+      means each dimension carries a blend of token identity and sequence position.
+    </div>
+  </div>
+
+  <p>
+    The schematic 2D map below places ~30 words by hand to show the kind of clustering seen when real
+    embeddings are projected to two dimensions (for example with PCA): points close together stand for
+    tokens the model represents similarly.
+    <strong>Hover over any point</strong> to see the word, or click a category to highlight a cluster.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 11 · Embedding Space (schematic 2D map)</div>
+    <div class="emb-controls">
+      <button class="emb-btn active" onclick="setEmbView('all')">All words</button>
+      <button class="emb-btn" onclick="setEmbView('animals')">Animals</button>
+      <button class="emb-btn" onclick="setEmbView('cities')">Cities</button>
+      <button class="emb-btn" onclick="setEmbView('science')">Science</button>
+      <button class="emb-btn" onclick="setEmbView('verbs')">Verbs</button>
+    </div>
+    <div class="emb-wrap">
+      <canvas id="emb-canvas"></canvas>
+      <div class="emb-tooltip" id="emb-tooltip"></div>
+    </div>
+    <div class="emb-note">Points are hand-placed schematic positions illustrating semantic clustering — not a projection of actual model weights.</div>
+  </div>
+
+  <!-- Fig. 12: Vector arithmetic -->
+  <div class="viz-card">
+    <div class="viz-label">Fig. 12 · Linear Structure: king − man + woman ≈ queen (schematic)</div>
+    <svg class="viz-vec-svg" viewBox="0 0 520 300" role="img" aria-label="Parallelogram diagram showing king minus man plus woman approximately equals queen">
+      <defs>
+        <marker id="arr-accent" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0.5 L8,3 L0,5.5 Z" style="fill:var(--accent)"/>
+        </marker>
+        <marker id="arr-pos" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0.5 L8,3 L0,5.5 Z" style="fill:var(--pos)"/>
+        </marker>
+      </defs>
+      <!-- background -->
+      <rect width="520" height="300" rx="8" style="fill:var(--surface)"/>
+      <!-- axes -->
+      <line x1="44" y1="262" x2="490" y2="262" style="stroke:var(--border);stroke-width:1"/>
+      <line x1="44" y1="262" x2="44" y2="22" style="stroke:var(--border);stroke-width:1"/>
+      <!-- grid -->
+      <line x1="44" y1="150" x2="490" y2="150" stroke-dasharray="3,5" style="stroke:var(--border);stroke-width:.7"/>
+      <line x1="215" y1="22" x2="215" y2="262" stroke-dasharray="3,5" style="stroke:var(--border);stroke-width:.7"/>
+      <!-- axis labels -->
+      <text x="267" y="291" text-anchor="middle" style="fill:var(--text3);font-size:11px;font-family:DM Sans,sans-serif">← gender direction (schematic) →</text>
+      <text x="14" y="148" text-anchor="middle" transform="rotate(-90,14,148)" style="fill:var(--text3);font-size:11px;font-family:DM Sans,sans-serif">← royalty direction (schematic) →</text>
+      <!-- parallelogram dashed outlines -->
+      <line x1="120" y1="210" x2="120" y2="90" stroke-dasharray="4,4" style="stroke:var(--border2);stroke-width:1.2"/>
+      <line x1="310" y1="210" x2="310" y2="90" stroke-dasharray="4,4" style="stroke:var(--border2);stroke-width:1.2"/>
+      <line x1="120" y1="210" x2="310" y2="210" stroke-dasharray="4,4" style="stroke:var(--border2);stroke-width:1.2"/>
+      <line x1="120" y1="90" x2="310" y2="90" stroke-dasharray="4,4" style="stroke:var(--border2);stroke-width:1.2"/>
+      <!-- royalty arrows: man→king, woman→queen (vertical, accent) -->
+      <line x1="120" y1="203" x2="120" y2="99" marker-end="url(#arr-accent)" style="stroke:var(--accent);stroke-width:2.5"/>
+      <line x1="310" y1="203" x2="310" y2="99" marker-end="url(#arr-accent)" style="stroke:var(--accent);stroke-width:2.5"/>
+      <!-- gender arrows: man→woman, king→queen (horizontal, green) -->
+      <line x1="129" y1="210" x2="301" y2="210" marker-end="url(#arr-pos)" style="stroke:var(--pos);stroke-width:2.5"/>
+      <line x1="129" y1="90" x2="301" y2="90" marker-end="url(#arr-pos)" style="stroke:var(--pos);stroke-width:2.5"/>
+      <!-- points -->
+      <circle cx="120" cy="210" r="9" style="fill:var(--neg-light);stroke:var(--neg);stroke-width:2"/>
+      <circle cx="310" cy="210" r="9" style="fill:var(--pos-light);stroke:var(--pos);stroke-width:2"/>
+      <circle cx="120" cy="90" r="9" style="fill:var(--accent-light);stroke:var(--accent);stroke-width:2"/>
+      <circle cx="310" cy="90" r="9" style="fill:var(--warn-light);stroke:var(--warn);stroke-width:2.5"/>
+      <!-- word labels -->
+      <text x="120" y="235" text-anchor="middle" style="fill:var(--text);font-size:13px;font-weight:600;font-family:DM Sans,sans-serif">man</text>
+      <text x="310" y="235" text-anchor="middle" style="fill:var(--text);font-size:13px;font-weight:600;font-family:DM Sans,sans-serif">woman</text>
+      <text x="120" y="75" text-anchor="middle" style="fill:var(--text);font-size:13px;font-weight:600;font-family:DM Sans,sans-serif">king</text>
+      <text x="310" y="75" text-anchor="middle" style="fill:var(--text);font-size:13px;font-weight:600;font-family:DM Sans,sans-serif">queen</text>
+      <!-- direction labels -->
+      <text x="75" y="152" text-anchor="middle" style="fill:var(--accent);font-size:11px;font-family:DM Sans,sans-serif;font-weight:600">+royalty</text>
+      <text x="355" y="152" text-anchor="middle" style="fill:var(--accent);font-size:11px;font-family:DM Sans,sans-serif;font-weight:600">+royalty</text>
+      <text x="215" y="232" text-anchor="middle" style="fill:var(--pos);font-size:11px;font-family:DM Sans,sans-serif;font-weight:600">+gender</text>
+      <text x="215" y="77" text-anchor="middle" style="fill:var(--pos);font-size:11px;font-family:DM Sans,sans-serif;font-weight:600">+gender</text>
+      <!-- equation box -->
+      <rect x="360" y="110" width="146" height="104" rx="6" style="fill:var(--surface2);stroke:var(--border2);stroke-width:1"/>
+      <text x="433" y="128" text-anchor="middle" style="fill:var(--text3);font-size:9.5px;font-family:DM Sans,sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.07em">The operation</text>
+      <text x="371" y="150" style="fill:var(--text);font-size:12.5px;font-family:JetBrains Mono,monospace">king</text>
+      <text x="371" y="168" style="fill:var(--neg);font-size:12.5px;font-family:JetBrains Mono,monospace">− man</text>
+      <text x="371" y="186" style="fill:var(--pos);font-size:12.5px;font-family:JetBrains Mono,monospace">+ woman</text>
+      <line x1="371" y1="193" x2="494" y2="193" style="stroke:var(--border2);stroke-width:1"/>
+      <text x="371" y="207" style="fill:var(--warn);font-size:12.5px;font-family:JetBrains Mono,monospace;font-weight:600">≈ queen  ✓</text>
+    </svg>
+    <div class="viz-caption">
+      The <span style="color:var(--accent);font-weight:600">royalty offset</span> (man→king) is
+      nearly identical to (woman→queen). The <span style="color:var(--pos);font-weight:600">gender offset</span>
+      (man→woman) is nearly identical to (king→queen), so the four points form a parallelogram. The axes are
+      schematic directions, not principal components. The example comes from word2vec
+      (<a href="https://arxiv.org/abs/1301.3781" target="_blank" rel="noopener">Mikolov et al. 2013</a>), where
+      similar offsets recur across many analogies and emerge from co-occurrence statistics in training text —
+      they are not hand-coded into the model.
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Linear structure in embedding space.</strong> One of the most striking findings in embedding
+    research: semantic relationships are encoded as roughly consistent <em>directions</em>. The classic example,
+    from word2vec: vec("king") − vec("man") + vec("woman") ≈ vec("queen"). This geometric regularity is not
+    programmed in — it emerges from training on language statistics. Two caveats: the analogy works only
+    when the input words are excluded from the answers (otherwise the nearest vector is usually "king" itself;
+    <a href="https://arxiv.org/abs/1905.09866" target="_blank" rel="noopener">Nissim et al. 2020</a>), and
+    GPT-2's representations are anisotropic — they share a common direction, so even unrelated tokens can
+    have clearly positive cosine similarity
+    (<a href="https://arxiv.org/abs/1909.00512" target="_blank" rel="noopener">Ethayarajh 2019</a>).
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel.</strong> Embeddings are the LLM analogue of a neural population code
+    in a sensory area: each token is represented as a point in a high-dimensional activity space,
+    where proximity encodes similarity. The structure of this space — its dimensionality, curvature,
+    cluster geometry — is precisely what representational similarity analysis (RSA) and PCA-based
+    methods characterize. The tools used on neural data apply here almost without modification.
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 9: NEXT-TOKEN PREDICTION ══ -->
+<div id="tab-predict" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Next-Token Prediction — <em>the training objective</em></h2>
+  <p>
+    The model outputs a vector of <strong>logits</strong> — one real number per token in the vocabulary.
+    These are converted to a probability distribution by the <strong>softmax</strong> function.
+    During training, the loss is the <strong>cross-entropy</strong> between this predicted distribution
+    and the true next token (a one-hot target).
+  </p>
+
+  <div class="eq-block">
+    <span class="eq-label">Softmax & cross-entropy loss</span>
+    softmax(z)<sub>i</sub> = exp(z<sub>i</sub>) / Σ<sub>j</sub> exp(z<sub>j</sub>)<br><br>
+    Loss = −log P(true token) = −log softmax(z)<sub>true</sub><br><br>
+    Perfect prediction: Loss → 0<br>
+    Random guess (GPT-2, 50,257 tokens): Loss = ln(50,257) ≈ 10.8
+  </div>
+
+  <p>
+    Adjust the logits below to see how softmax converts raw scores to probabilities, and how the
+    temperature parameter sharpens or flattens the distribution.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 13 · Logits → Softmax → Probabilities</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+      <div class="col-header" style="grid-column:1/3;padding-left:80px">Logit (raw score)</div>
+    </div>
+    <div id="logit-sliders"></div>
+    <div class="temp-control">
+      <span class="temp-label">Temperature τ</span>
+      <input type="range" id="temp-slider" min="0.1" max="3" step="0.1" value="1.0" oninput="updateLogits()" style="flex:1">
+      <span class="slider-val" id="temp-val">1.0</span>
+    </div>
+    <div style="display:grid;grid-template-columns:80px 1fr 60px 60px;gap:10px;margin-bottom:6px">
+      <div class="col-header">Token</div>
+      <div class="col-header">Probability</div>
+      <div class="col-header" style="text-align:right">Logit</div>
+      <div class="col-header" style="text-align:right">P(%)</div>
+    </div>
+    <div class="logit-rows" id="logit-bars"></div>
+    <div class="temp-note" id="temp-note"></div>
+
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <div class="widget-title" style="margin-bottom:12px">Cross-Entropy Loss Examples</div>
+      <div id="ce-scenarios"></div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Temperature controls randomness.</strong> Logits are divided by a temperature τ before
+    the softmax. At τ=1, softmax is unchanged. τ &lt; 1 sharpens
+    the distribution — the top token becomes more dominant, output becomes more predictable.
+    τ &gt; 1 flattens it — all tokens become more equally likely, output becomes more random/creative.
+    This is the "temperature" knob exposed in LLM APIs.
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel.</strong> The softmax with temperature is mathematically equivalent
+    to the <em>Boltzmann distribution</em> / Luce choice rule from decision neuroscience. Temperature
+    is τ = 1/β, where β is the "inverse temperature" parameter of softmax policies in
+    reinforcement learning models of neural decision-making. Low temperature = more deterministic
+    policy; high temperature = more stochastic exploration.
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 10: WHY THIS WORKS ══ -->
+<div id="tab-why" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Why Next-Token Prediction Works</h2>
+  <p>
+    It is not obvious that training a model to predict the next word should produce a system that
+    can reason, write poetry, solve math problems, and explain scientific concepts. Yet it does —
+    and understanding why is one of the deepest questions in the field.
+  </p>
+
+  <h3 style="font-family:'DM Serif Display',serif;font-size:19px;margin:24px 0 10px">The compression argument</h3>
+  <p>
+    To predict the next token well across a diverse corpus, the model must implicitly learn <em>everything
+    that constrains what comes next</em>: grammar, facts about the world, reasoning patterns, style,
+    social conventions. A model that learns to predict text must, at least partly, model the process that
+    generated the text — people writing about the world. Next-token prediction is, in this sense, a
+    <strong>proxy for world modeling</strong>, though how much of the world a model captures this way is debated.
+  </p>
+
+  <div class="insight">
+    <strong>Formal framing.</strong> Minimizing cross-entropy loss on text is equivalent to maximizing
+    the log-likelihood of the data under the model — which is equivalent to minimizing the KL
+    divergence between the model's distribution and the true data-generating distribution. A perfect
+    model would reproduce the data distribution exactly.
+  </div>
+
+  <h3 style="font-family:'DM Serif Display',serif;font-size:19px;margin:24px 0 10px">Scaling laws</h3>
+  <p>
+    Empirically, model performance improves as a <strong>power law</strong> with compute, data, and
+    parameters — across many orders of magnitude. This was established by <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener">Kaplan et al. (2020)</a> and
+    refined in the Chinchilla paper (<a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener">Hoffmann et al., 2022</a>), which showed the optimal compute
+    allocation: for a given compute budget, scale model size and data tokens roughly equally.
+  </p>
+
+  <div class="eq-block">
+    <span class="eq-label">Scaling law (Chinchilla form, Hoffmann et al. 2022)</span>
+    Loss(N, D) ≈ E + A/N<sup>α</sup> + B/D<sup>β</sup><br><br>
+    N = model parameters, D = training tokens<br>
+    E ≈ 1.69 (irreducible loss, nats/token), α ≈ 0.34, β ≈ 0.28<br><br>
+    Kaplan et al. (2020) fit separate power laws (N without embedding parameters):<br>
+    Loss(N) = (N<sub>c</sub>/N)<sup>α<sub>N</sub></sup>, α<sub>N</sub> ≈ 0.076   Loss(D) = (D<sub>c</sub>/D)<sup>α<sub>D</sub></sup>, α<sub>D</sub> ≈ 0.095
+  </div>
+
+  <h3 style="font-family:'DM Serif Display',serif;font-size:19px;margin:24px 0 10px">Emergent capabilities</h3>
+  <p>
+    As models scale, some capabilities have been reported to appear sharply — essentially absent
+    at smaller scales and present above a threshold. Examples include multi-step arithmetic,
+    in-context learning (few-shot prompting), chain-of-thought reasoning, and code generation.
+    Whether these jumps are real is debated: much of the apparent sharpness comes from all-or-nothing
+    metrics such as exact match, and with continuous metrics the same abilities often improve smoothly
+    (<a href="https://arxiv.org/abs/2304.15004" target="_blank" rel="noopener">Schaeffer et al. 2023</a>).
+  </p>
+
+  <div class="insight insight-warn">
+    <strong>The alignment question.</strong> A language model trained on next-token prediction does
+    not directly optimize for truthfulness, helpfulness, or factual accuracy — only for predicting
+    the distribution of its training text. Post-training then shapes the model's behavior: supervised
+    fine-tuning (SFT) on example responses, preference tuning (RLHF or DPO), and reinforcement learning
+    on verifiable rewards such as correct answers to math or code problems. This distinction matters
+    enormously for interpretation.
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Connection to studying LLMs like brains.</strong> If next-token prediction implicitly encodes
+    world models and reasoning, then the <em>dynamics</em> of this computation — how information
+    flows through the residual stream layer by layer as a token sequence is processed — should
+    reveal something about the internal structure of that world model. This is precisely the
+    electrophysiology analogy: record the "neural activity" of the model mid-computation
+    and study its geometry, not just its input-output behavior.
+  </div>
+
+  <p>
+    The <a href="lesson2.html">next lesson</a> moves inside the transformer architecture — the specific network design that
+    makes large-scale language modeling tractable and powerful.
+  </p>
+
+  <div style="margin-top:32px;padding:20px 22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px">Key formulas — Lesson 1</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text2);line-height:2.2">
+      Chain rule:&nbsp;&nbsp;&nbsp; P(x<sub>0</sub>…x<sub>T−1</sub>) = ∏<sub>t</sub> P(x<sub>t</sub> | x<sub>0</sub>…x<sub>t−1</sub>)<br>
+      Softmax:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P(i) = exp(z<sub>i</sub>/τ) / Σ<sub>j</sub> exp(z<sub>j</sub>/τ)   [τ = temperature]<br>
+      Cross-entropy: Loss = −log P(true token)<br>
+      Perplexity:&nbsp;&nbsp; PPL = exp(Loss)  [Loss averaged over tokens; effective branching factor]
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ───────────────────────────────────────────
+   TAB SWITCHING
+─────────────────────────────────────────── */
+
+/* ───────────────────────────────────────────
+   TAB 1 · NEURON WIDGET
+─────────────────────────────────────────── */
+function getf(id) { return parseFloat(document.getElementById(id).value); }
+function fmt(n) { return (n<0?'−':'')+Math.abs(n).toFixed(2); }
+function fmtSigned(n) { return (n>=0?'+':'−')+Math.abs(n).toFixed(2); }
+
+function setBar(barId, valId, product) {
+  const MAX = 4;
+  const el = document.getElementById(barId);
+  const vEl = document.getElementById(valId);
+  const frac = Math.min(Math.abs(product)/MAX, 0.5)*100;
+  const pos = product >= 0;
+  el.className = 'bar-fill '+(pos?'pos':'neg');
+  el.style.width = frac+'%';
+  if (pos) { el.style.left='50%'; el.style.right=''; }
+  else { el.style.right='50%'; el.style.left=''; }
+  vEl.textContent = fmtSigned(product);
+  vEl.style.color = pos?'var(--pos)':'var(--neg)';
+}
+
+function updateNeuron() {
+  const x1=getf('x1'),x2=getf('x2'),x3=getf('x3');
+  const w1=getf('w1'),w2=getf('w2'),w3=getf('w3'),b=getf('b');
+  document.getElementById('x1v').textContent=fmt(x1);
+  document.getElementById('x2v').textContent=fmt(x2);
+  document.getElementById('x3v').textContent=fmt(x3);
+  document.getElementById('w1v').textContent=fmt(w1);
+  document.getElementById('w2v').textContent=fmt(w2);
+  document.getElementById('w3v').textContent=fmt(w3);
+  document.getElementById('bv').textContent=fmt(b);
+  const t1=w1*x1, t2=w2*x2, t3=w3*x3;
+  setBar('bar1','bv1',t1);
+  setBar('bar2','bv2',t2);
+  setBar('bar3','bv3',t3);
+  setBar('barb','bvb',b);
+  const z=t1+t2+t3+b;
+  const relu=Math.max(0,z);
+  document.getElementById('zval').textContent=fmt(z);
+  document.getElementById('relu-val').textContent=fmt(relu);
+  const badge=document.getElementById('fire-badge');
+  if (relu>0){ badge.textContent='FIRING'; badge.className='badge badge-fire'; }
+  else { badge.textContent='SILENT'; badge.className='badge badge-silent'; }
+}
+updateNeuron();
+
+/* ───────────────────────────────────────────
+   TAB 2 · ACTIVATION FUNCTIONS
+─────────────────────────────────────────── */
+let actFn = 'relu';
+const ACT_INFO = {
+  relu: 'ReLU(z) = max(0, z) — zero for negative inputs, identity for positive. Gradient is 0 or 1. Used in the original Transformer (2017); GPT-2 uses GELU and most current LLMs use SwiGLU.',
+  gelu: 'GELU(z) ≈ z·σ(1.702z) — smooth approximation to ReLU with slight negative lobe. Used in GPT-2, GPT-3, BERT.',
+  sigmoid: 'σ(z) = 1/(1+e⁻ᶻ) — squashes output to (0,1). Saturates for large |z| (vanishing gradients). Used in gating and binary outputs.',
+  tanh: 'tanh(z) = (eᶻ−e⁻ᶻ)/(eᶻ+e⁻ᶻ) — like sigmoid but centered at 0, range (−1,1). Better gradient flow than sigmoid.',
+  none: 'Linear (no activation). No nonlinearity — any depth of layers collapses to a single linear transformation. Network expressivity is destroyed.',
+  swiglu: 'SiLU(z) = z·σ(z) — the "Swish" function, plotted here. SwiGLU multiplies SiLU of one linear projection by a second linear projection, element by element; the curve shows only the SiLU part. Smooth, non-monotonic, slight negative values for z < 0. Used in LLaMA and PaLM. The current frontier standard.'
+};
+
+function applyAct(z, fn) {
+  if (fn==='relu') return Math.max(0,z);
+  if (fn==='gelu') return z/(1+Math.exp(-1.702*z));
+  if (fn==='sigmoid') return 1/(1+Math.exp(-z));
+  if (fn==='tanh') return Math.tanh(z);
+  if (fn==='swiglu') return z * (1/(1+Math.exp(-z)));
+  return z;
+}
+
+function setActFn(fn) {
+  actFn=fn;
+  document.querySelectorAll('.act-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.textContent.toLowerCase().includes(fn) || (fn==='none'&&btn.textContent.includes('None')));
+  });
+  document.getElementById('act-info').textContent=ACT_INFO[fn];
+  drawActFn();
+}
+
+function drawActFn() {
+  const canvas=document.getElementById('act-canvas');
+  if(!canvas) return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth, H=canvas.clientHeight||240;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  const style=getComputedStyle(document.documentElement);
+  const bg=style.getPropertyValue('--surface').trim()||'#EDEAE2';
+  const accentColor=style.getPropertyValue('--accent').trim()||'#2455A4';
+  const textColor=style.getPropertyValue('--text3').trim()||'#7A7870';
+  const borderColor=style.getPropertyValue('--border').trim()||'#D4D1C8';
+
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  const pad={l:40,r:16,t:16,b:36};
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  const xMin=-4, xMax=4, yMin=-1.5, yMax=2;
+
+  function toX(v){ return pad.l + (v-xMin)/(xMax-xMin)*pw; }
+  function toY(v){ return pad.t + (1-(v-yMin)/(yMax-yMin))*ph; }
+
+  // grid
+  ctx.strokeStyle=borderColor; ctx.lineWidth=1;
+  for(let x=xMin;x<=xMax;x++){
+    ctx.beginPath(); ctx.moveTo(toX(x),pad.t); ctx.lineTo(toX(x),pad.t+ph); ctx.stroke();
+  }
+  for(let y=-1;y<=2;y++){
+    ctx.beginPath(); ctx.moveTo(pad.l,toY(y)); ctx.lineTo(pad.l+pw,toY(y)); ctx.stroke();
+  }
+
+  // axes
+  ctx.strokeStyle=textColor; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,toY(0)); ctx.lineTo(pad.l+pw,toY(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(toX(0),pad.t); ctx.lineTo(toX(0),pad.t+ph); ctx.stroke();
+
+  // labels
+  ctx.fillStyle=textColor; ctx.font='11px JetBrains Mono, monospace'; ctx.textAlign='center';
+  for(let x=xMin;x<=xMax;x+=2){
+    ctx.fillText(String(x).replace('-','−'), toX(x), pad.t+ph+18);
+  }
+  ctx.textAlign='right';
+  for(let y=-1;y<=2;y++){
+    ctx.fillText(String(y).replace('-','−'), pad.l-6, toY(y)+4);
+  }
+
+  // axis labels
+  ctx.textAlign='center'; ctx.font='12px DM Sans, sans-serif';
+  ctx.fillText('z (pre-activation)', pad.l+pw/2, H-4);
+  ctx.save(); ctx.translate(12, pad.t+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('output', 0, 0); ctx.restore();
+
+  // function curve
+  ctx.strokeStyle=accentColor; ctx.lineWidth=2.5;
+  ctx.shadowColor=accentColor+'80'; ctx.shadowBlur=6;
+  ctx.beginPath();
+  let first=true;
+  for(let px=0;px<=pw;px++){
+    const z=xMin+(px/pw)*(xMax-xMin);
+    const y=applyAct(z,actFn);
+    const cy=toY(y);
+    if(cy<pad.t-2||cy>pad.t+ph+2){ first=true; continue; }
+    if(first){ ctx.moveTo(pad.l+px,cy); first=false; }
+    else ctx.lineTo(pad.l+px,cy);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+}
+
+/* ───────────────────────────────────────────
+   TAB 4 · LOSS LANDSCAPE
+─────────────────────────────────────────── */
+let gdPos=null, gdRunning=false, gdSteps=0, gdTimer=null, gdLR=0.1;
+let lossW=0,lossH=0,lossImg=null,lossImgKey='',gdTrail=[];
+
+function lossAt(x,y){
+  // two-bowl landscape with a saddle
+  const nx=(x-0.5)*6, ny=(y-0.5)*6;
+  return 0.4*Math.sin(nx*0.8)*Math.cos(ny*0.7)+
+         0.6*Math.exp(-((nx-1.5)*(nx-1.5)+(ny-1.2)*(ny-1.2))/3)+
+         0.5*Math.exp(-((nx+1.8)*(nx+1.8)+(ny+1.5)*(ny+1.5))/4)+
+         0.3*Math.exp(-((nx-0.5)*(nx-0.5)+(ny-0.5)*(ny-0.5))/1.5)+
+         0.15*(nx*nx+ny*ny)*0.02+0.5;
+}
+
+function gradAt(x,y){
+  // gradient with respect to the landscape's own weights (nx, ny = 6 × the canvas fraction), as in lossAt
+  const eps=0.002;
+  return {dx:(lossAt(x+eps,y)-lossAt(x-eps,y))/(2*eps)/6,
+          dy:(lossAt(x,y+eps)-lossAt(x,y-eps))/(2*eps)/6};
+}
+
+function updateLR(){
+  gdLR=parseFloat(document.getElementById('lr-slider').value);
+  document.getElementById('lr-val').textContent=gdLR.toFixed(2);
+}
+
+function initLoss(){
+  const canvas=document.getElementById('loss-canvas');
+  if(!canvas) return;
+  const dpr=window.devicePixelRatio||1;
+  lossW=canvas.clientWidth; lossH=canvas.clientHeight||260;
+  canvas.width=lossW*dpr; canvas.height=lossH*dpr;
+  canvas.onclick=function(e){
+    const rect=canvas.getBoundingClientRect();
+    const x=(e.clientX-rect.left)/rect.width;
+    const y=(e.clientY-rect.top)/rect.height;
+    gdPos={x,y}; gdSteps=0; gdTrail=[{x,y}];
+    clearInterval(gdTimer); gdRunning=false;
+    document.getElementById('run-btn').textContent='▶ Run gradient descent';
+    drawLoss();
+  };
+  drawLoss();
+}
+
+function drawLoss(){
+  const canvas=document.getElementById('loss-canvas');
+  if(!canvas) return;
+  const dpr=window.devicePixelRatio||1;
+  const W=lossW,H=lossH;
+  const CW=canvas.width,CH=canvas.height;   // integer pixel size (the CSS size times dpr can be fractional)
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,CW,CH);
+
+  const style=getComputedStyle(document.documentElement);
+  const isDark=style.getPropertyValue('--bg').trim().startsWith('#17')||style.getPropertyValue('--bg').trim().startsWith('#1');
+  // the landscape is computed once per size/theme and reused for every animation frame
+  const key=[CW,CH,isDark].join(',');
+  if(lossImgKey!==key){
+  const imgData=ctx.createImageData(CW,CH);
+  for(let py=0;py<CH;py++){
+    for(let px=0;px<CW;px++){
+      const x=px/CW, y=py/CH;
+      const v=Math.min(1,Math.max(0,(lossAt(x,y)-0.2)/1.5));
+      let r,g,b;
+      if(isDark){
+        // dark: deep blue (low) → teal → yellow (high)
+        if(v<0.5){ r=10+(v/0.5)*20; g=30+(v/0.5)*80; b=80+(v/0.5)*40; }
+        else{ const t=(v-0.5)/0.5; r=30+t*200; g=110-t*30; b=120-t*110; }
+      } else {
+        // light: dark blue (low) → white → orange (high)
+        if(v<0.5){ r=20+(v/0.5)*220; g=40+(v/0.5)*200; b=120+(v/0.5)*120; }
+        else{ const t=(v-0.5)/0.5; r=240; g=240-t*150; b=240-t*230; }
+      }
+      const idx=(py*CW+px)*4;
+      imgData.data[idx]=r; imgData.data[idx+1]=g; imgData.data[idx+2]=b; imgData.data[idx+3]=255;
+    }
+  }
+  lossImg=imgData; lossImgKey=key;
+  }
+  ctx.putImageData(lossImg,0,0);
+  ctx.scale(CW/W,CH/H);
+
+  // path taken so far
+  if(gdTrail.length>1){
+    ctx.strokeStyle='rgba(255,255,255,0.85)'; ctx.lineWidth=1.5;
+    ctx.beginPath();
+    gdTrail.forEach((p,i)=>i?ctx.lineTo(p.x*W,p.y*H):ctx.moveTo(p.x*W,p.y*H));
+    ctx.stroke();
+  }
+
+  // gradient path
+  if(gdPos){
+    const L=lossAt(gdPos.x,gdPos.y);
+    const G=gradAt(gdPos.x,gdPos.y);
+    const gradMag=Math.sqrt(G.dx*G.dx+G.dy*G.dy);
+
+    // dot
+    ctx.beginPath();
+    ctx.arc(gdPos.x*W, gdPos.y*H, 7,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.5)'; ctx.lineWidth=1.5; ctx.stroke();
+
+    // gradient arrow
+    if(gradMag>0.001){
+      const arrowLen=40*Math.min(1,gradMag*12);
+      const ax=G.dx/gradMag*arrowLen, ay=G.dy/gradMag*arrowLen;
+      ctx.strokeStyle='rgba(255,100,80,0.9)'; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(gdPos.x*W, gdPos.y*H);
+      ctx.lineTo(gdPos.x*W+ax, gdPos.y*H+ay);
+      ctx.stroke();
+    }
+
+    document.getElementById('gd-step').textContent=gdSteps;
+    document.getElementById('gd-loss').textContent=L.toFixed(4);
+    document.getElementById('gd-grad').textContent=gradMag.toFixed(4);
+  } else {
+    document.getElementById('gd-step').textContent='—';
+    document.getElementById('gd-loss').textContent='—';
+    document.getElementById('gd-grad').textContent='—';
+  }
+}
+
+function runGD(){
+  if(!gdPos){ gdPos={x:0.15,y:0.2}; gdSteps=0; gdTrail=[{x:0.15,y:0.2}]; }   // no start clicked yet: use a default one
+  if(gdRunning){ clearInterval(gdTimer); gdRunning=false; document.getElementById('run-btn').textContent='▶ Run gradient descent'; return; }
+  gdRunning=true;
+  document.getElementById('run-btn').textContent='⏸ Pause';
+  gdTimer=setInterval(()=>{
+    const G=gradAt(gdPos.x,gdPos.y);
+    gdPos.x-=gdLR*G.dx/6;            // step of η × gradient in weight units, converted back to the canvas
+    gdPos.y-=gdLR*G.dy/6;
+    gdPos.x=Math.max(0.01,Math.min(0.99,gdPos.x));
+    gdPos.y=Math.max(0.01,Math.min(0.99,gdPos.y));
+    gdSteps++;  gdTrail.push({x:gdPos.x,y:gdPos.y});
+    const gradMag=Math.sqrt(G.dx*G.dx+G.dy*G.dy);
+    drawLoss();
+    if(gdLR*gradMag/6<0.0004||gdSteps>500){   // stop once the steps become too small to see
+      clearInterval(gdTimer); gdRunning=false;
+      document.getElementById('run-btn').textContent='▶ Run gradient descent';
+    }
+  },40);
+}
+
+function resetGD(){
+  clearInterval(gdTimer); gdRunning=false; gdPos=null; gdSteps=0; gdTrail=[];
+  document.getElementById('run-btn').textContent='▶ Run gradient descent';
+  drawLoss();
+}
+
+/* ───────────────────────────────────────────
+   TAB 5 · DISTRIBUTED REPRESENTATIONS
+─────────────────────────────────────────── */
+// 8-neuron activation patterns for concepts
+const CONCEPTS=[
+  {name:'cat',        vec:[0.9,0.1,0.8,0.05,0.7,0.2,0.6,0.1]},
+  {name:'dog',        vec:[0.8,0.2,0.7,0.1,0.3,0.9,0.5,0.2]},
+  {name:'bird',       vec:[0.2,0.9,0.6,0.1,0.8,0.1,0.3,0.7]},
+  {name:'Paris',      vec:[0.1,0.3,0.2,0.9,0.1,0.4,0.8,0.6]},
+  {name:'London',     vec:[0.15,0.25,0.1,0.85,0.2,0.3,0.9,0.5]},
+  {name:'running',    vec:[0.7,0.1,0.3,0.05,0.9,0.6,0.1,0.8]},
+  {name:'happy',      vec:[0.3,0.8,0.1,0.3,0.2,0.7,0.4,0.9]},
+  {name:'science',    vec:[0.1,0.6,0.9,0.7,0.1,0.2,0.5,0.3]},
+];
+
+let selectedConcept=null;
+
+function initDistrib(){
+  const grid=document.getElementById('distrib-grid');
+  if(grid.children.length) return; // already built
+  CONCEPTS.forEach((c,ci)=>{
+    const el=document.createElement('div');
+    el.className='distrib-item';
+    el.innerHTML=`<div class="distrib-item-label">${c.name}</div>
+      <div class="distrib-neurons">${c.vec.map((_,i)=>`<div class="dn" id="dn-${ci}-${i}"></div>`).join('')}</div>`;
+    el.onclick=()=>selectConcept(ci);
+    grid.appendChild(el);
+  });
+  // draw all neuron previews
+  CONCEPTS.forEach((c,ci)=>{
+    c.vec.forEach((v,i)=>{
+      const dn=document.getElementById(`dn-${ci}-${i}`);
+      if(dn) dn.className='dn '+(v>0.6?'on':v>0.3?'dim':'');
+    });
+  });
+
+  // init rep bars
+  const bars=document.getElementById('rep-bars');
+  bars.innerHTML=Array.from({length:8},(_,i)=>`
+    <div class="rep-bar-col">
+      <div class="rep-bar" id="rb-${i}" style="height:0px;background:var(--accent)"></div>
+      <div class="rep-bar-lbl">n${i}</div>
+    </div>`).join('');
+}
+
+function selectConcept(ci){
+  document.querySelectorAll('.distrib-item').forEach((el,i)=>el.classList.toggle('selected',i===ci));
+  const c=CONCEPTS[ci];
+  selectedConcept=ci;
+
+  // update rep display
+  const dispEl=document.getElementById('rep-display');
+  const titleEl=dispEl.querySelector('.rep-title');
+  titleEl.innerHTML=`Activation vector for <strong>"${c.name}"</strong> — 8 neurons`;
+
+  // bars
+  const maxH=44;
+  c.vec.forEach((v,i)=>{
+    const bar=document.getElementById('rb-'+i);
+    if(bar){
+      bar.style.height=(v*maxH)+'px';
+      bar.style.background='var(--accent)';
+    }
+  });
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gpt-tokenizer@2.9.0/dist/r50k_base.js"></script>
+<script>
+/* ── TABS ── */
+
+/* ── TAB 1: PROBABILITY ── */
+const CONTEXTS=[
+  {
+    label:'The cat sat on the…',
+    before:'The cat sat on the ',
+    note:'Strong contextual constraint — surfaces, objects near cats.',
+    tokens:[{t:'mat',p:.18},{t:'floor',p:.12},{t:'bed',p:.08},{t:'couch',p:.06},{t:'chair',p:.04},{t:'sofa',p:.04},{t:'windowsill',p:.03},{t:'rug',p:.03},{t:'lap',p:.02},{t:'table',p:.02}]
+  },
+  {
+    label:'The capital of France is…',
+    before:'The capital of France is ',
+    note:'Low entropy — factual recall concentrates probability on one answer, but continuations like "the" or "located" keep some.',
+    tokens:[{t:'Paris',p:.55},{t:'the',p:.08},{t:'located',p:.04},{t:'a',p:.03},{t:'one',p:.02},{t:'Lyon',p:.01},{t:'famous',p:.01},{t:'known',p:.01},{t:'an',p:.005},{t:'internationally',p:.005}]
+  },
+  {
+    label:'She picked up the…',
+    before:'She picked up the ',
+    note:'High entropy — many objects are plausible with no prior context; most of the probability sits in the long tail.',
+    tokens:[{t:'phone',p:.06},{t:'book',p:.05},{t:'ball',p:.04},{t:'pen',p:.03},{t:'cup',p:.03},{t:'bag',p:.03},{t:'keys',p:.03},{t:'remote',p:.02},{t:'child',p:.02},{t:'glass',p:.02}]
+  },
+  {
+    label:'2 + 2 =…',
+    before:'2 + 2 = ',
+    note:'Arithmetic: models learn from patterns in training data, not symbolic rules.',
+    tokens:[{t:'4',p:.55},{t:'2',p:.05},{t:'3',p:.03},{t:'5',p:.03},{t:'6',p:.02},{t:'four',p:.01},{t:'8',p:.01},{t:'0',p:.01},{t:'1',p:.01},{t:'seven',p:.005}]
+  }
+];
+let ctxIdx=0;
+function initProb(){
+  const picker=document.getElementById('ctx-picker');
+  CONTEXTS.forEach((c,i)=>{
+    const btn=document.createElement('button');
+    btn.className='ctx-btn'+(i===0?' active':'');
+    btn.textContent=c.label;
+    btn.onclick=()=>setCtx(i);
+    picker.appendChild(btn);
+  });
+  renderProb();
+}
+function setCtx(i){
+  ctxIdx=i;
+  document.querySelectorAll('.ctx-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  renderProb();
+}
+function renderProb(){
+  const c=CONTEXTS[ctxIdx];
+  const disp=document.getElementById('prob-ctx-display');
+  disp.innerHTML=c.before+'<span class="blank">?</span>';
+  const barsEl=document.getElementById('prob-bars');
+  barsEl.innerHTML='';
+  const other=Math.max(0,1-c.tokens.reduce((s,k)=>s+k.p,0));   // remaining probability, spread over the rest of the vocabulary
+  const rows=c.tokens.concat([{t:'(other)',p:other}]);
+  const maxP=Math.max(...rows.map(k=>k.p));
+  rows.forEach(({t,p})=>{
+    const row=document.createElement('div'); row.className='prob-row';
+    const pct=Math.round(p*100);
+    const barW=Math.round((p/maxP)*100);
+    row.innerHTML=`<div class="prob-token">${t}</div>
+      <div class="prob-track"><div class="prob-fill" style="width:${barW}%"></div></div>
+      <div class="prob-pct">${pct<1?'<1':pct}%</div>`;
+    barsEl.appendChild(row);
+  });
+  document.getElementById('prob-note').textContent=c.note;
+}
+initProb();
+
+/* ── TAB 2: TOKENIZER (GPT-2's real BPE tokenizer, r50k_base, via gpt-tokenizer) ── */
+const TOK_STYLES=[
+  {bg:'var(--accent-light)',border:'var(--accent)'},
+  {bg:'var(--pos-light)',border:'var(--pos)'},
+  {bg:'var(--warn-light)',border:'var(--warn)'},
+];
+function tokenize(){
+  const text=document.getElementById('tok-input').value;
+  const out=document.getElementById('tok-output');
+  const stats=document.getElementById('tok-stats');
+  const T=window.GPTTokenizer_r50k_base;
+  if(!T){ out.textContent='Loading GPT-2 tokenizer…'; stats.innerHTML=''; return; }
+  out.innerHTML='';
+  if(!text){ stats.innerHTML=''; return; }
+  const ids=T.encode(text);
+  ids.forEach((id,k)=>{
+    const s=TOK_STYLES[k%TOK_STYLES.length];
+    const chip=document.createElement('span');
+    chip.className='tok-chip';
+    chip.style.background=s.bg;
+    chip.style.borderColor=s.border;
+    const piece=document.createElement('span');                 // the token's text
+    piece.textContent=T.decode([id]).replace(/ /g,'·').replace(/\n/g,'↵');
+    const idEl=document.createElement('span');                  // its ID, on the line below
+    idEl.className='tok-id';  idEl.textContent=id;
+    chip.append(piece,idEl);
+    chip.title=`Token ID: ${id}`;
+    out.appendChild(chip);
+  });
+  stats.innerHTML=`<span><strong>${ids.length}</strong> tokens</span>
+    <span><strong>${text.length}</strong> characters</span>
+    <span>Compression: <strong>${(text.length/ids.length).toFixed(1)}</strong> chars/token</span>`;
+}
+if(window.GPTTokenizer_r50k_base) setTimeout(tokenize,0);
+else window.addEventListener('load',tokenize);
+
+/* ── TAB 3: EMBEDDINGS ── */
+const EMB_WORDS=[
+  {w:'cat',x:.18,y:.72,cat:'animals'},{w:'dog',x:.22,y:.60,cat:'animals'},
+  {w:'horse',x:.30,y:.65,cat:'animals'},{w:'bird',x:.25,y:.82,cat:'animals'},
+  {w:'fish',x:.14,y:.55,cat:'animals'},{w:'lion',x:.35,y:.70,cat:'animals'},
+  {w:'Paris',x:.72,y:.22,cat:'cities'},{w:'London',x:.80,y:.18,cat:'cities'},
+  {w:'Tokyo',x:.88,y:.28,cat:'cities'},{w:'Berlin',x:.76,y:.12,cat:'cities'},
+  {w:'Rome',x:.68,y:.30,cat:'cities'},{w:'Madrid',x:.62,y:.20,cat:'cities'},
+  {w:'neuron',x:.55,y:.62,cat:'science'},{w:'synapse',x:.60,y:.70,cat:'science'},
+  {w:'cortex',x:.50,y:.72,cat:'science'},{w:'DNA',x:.65,y:.55,cat:'science'},
+  {w:'protein',x:.70,y:.62,cat:'science'},{w:'genome',x:.68,y:.48,cat:'science'},
+  {w:'run',x:.22,y:.28,cat:'verbs'},{w:'jump',x:.28,y:.22,cat:'verbs'},
+  {w:'walk',x:.18,y:.18,cat:'verbs'},{w:'think',x:.35,y:.15,cat:'verbs'},
+  {w:'see',x:.12,y:.30,cat:'verbs'},{w:'hear',x:.14,y:.42,cat:'verbs'},
+  {w:'king',x:.80,y:.72,cat:'royalty'},{w:'queen',x:.88,y:.78,cat:'royalty'},
+  {w:'man',x:.75,y:.62,cat:'royalty'},{w:'woman',x:.82,y:.60,cat:'royalty'},
+  {w:'happy',x:.48,y:.28,cat:'emotion'},{w:'sad',x:.42,y:.38,cat:'emotion'},
+  {w:'fear',x:.38,y:.28,cat:'emotion'},{w:'love',x:.52,y:.20,cat:'emotion'},
+];
+const CAT_COLORS={animals:'var(--pos)',cities:'var(--accent)',science:'var(--warn)',verbs:'var(--neg)',royalty:'#8B5CF6',emotion:'#EC4899',other:'var(--text3)'};
+let embView='all';
+
+function setEmbView(v){
+  embView=v;
+  document.querySelectorAll('.emb-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase()===v||(v==='all'&&b.textContent==='All words')));
+  drawEmb();
+}
+
+function drawEmb(){
+  const canvas=document.getElementById('emb-canvas');
+  if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth, H=canvas.clientHeight||340;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  const style=getComputedStyle(document.documentElement);
+  ctx.fillStyle=style.getPropertyValue('--surface').trim(); ctx.fillRect(0,0,W,H);
+
+  const pad=40;
+  function tx(x){return pad+x*(W-2*pad);}
+  function ty(y){return pad+y*(H-2*pad);}
+
+  ctx.strokeStyle=style.getPropertyValue('--border').trim(); ctx.lineWidth=0.5;
+  for(let i=0;i<=4;i++){
+    const xg=pad+i*(W-2*pad)/4, yg=pad+i*(H-2*pad)/4;
+    ctx.beginPath();ctx.moveTo(xg,pad);ctx.lineTo(xg,H-pad);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad,yg);ctx.lineTo(W-pad,yg);ctx.stroke();
+  }
+
+  ctx.fillStyle=style.getPropertyValue('--text3').trim();
+  ctx.font=`11px DM Sans,sans-serif`; ctx.textAlign='center';
+  ctx.fillText('← schematic axis 1 →',W/2,H-8);
+  ctx.save();ctx.translate(12,H/2);ctx.rotate(-Math.PI/2);ctx.fillText('← schematic axis 2 →',0,0);ctx.restore();
+
+  const cats=Object.keys(CAT_COLORS).filter(c=>c!=='other');
+  cats.forEach(cat=>{
+    const pts=EMB_WORDS.filter(w=>w.cat===cat);
+    if(pts.length<2)return;
+    if(embView!=='all'&&embView!==cat)return;
+    const cx=pts.reduce((s,p)=>s+tx(p.x),0)/pts.length;
+    const cy=pts.reduce((s,p)=>s+ty(p.y),0)/pts.length;
+    const r=pts.reduce((mx,p)=>Math.max(mx,Math.hypot(tx(p.x)-cx,ty(p.y)-cy)),0)+22;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+    const base=CAT_COLORS[cat]||'var(--text3)';
+    ctx.fillStyle=base.startsWith('var')?style.getPropertyValue(base.slice(4,-1)).trim()+'22':base+'22';
+    ctx.fill();
+  });
+
+  EMB_WORDS.forEach(({w,x,y,cat})=>{
+    const dimmed=embView!=='all'&&embView!==cat;
+    const color=CAT_COLORS[cat]||CAT_COLORS.other;
+    const resolved=color.startsWith('var')?style.getPropertyValue(color.slice(4,-1)).trim():color;
+    ctx.beginPath();ctx.arc(tx(x),ty(y),dimmed?4:6,0,Math.PI*2);
+    ctx.fillStyle=dimmed?style.getPropertyValue('--border2').trim():resolved;
+    ctx.globalAlpha=dimmed?0.3:1;
+    ctx.fill();
+    ctx.globalAlpha=1;
+
+    if(!dimmed){
+      ctx.font=`${cat===embView||embView==='all'?12:10}px DM Sans,sans-serif`;
+      ctx.fillStyle=dimmed?style.getPropertyValue('--text3').trim():style.getPropertyValue('--text').trim();
+      ctx.textAlign='left';
+      ctx.fillText(w,tx(x)+9,ty(y)+4);
+    }
+  });
+
+  canvas._words=EMB_WORDS; canvas._W=W; canvas._H=H; canvas._pad=pad; canvas._dpr=dpr;
+}
+
+document.addEventListener('mousemove',e=>{
+  const canvas=document.getElementById('emb-canvas');
+  if(!canvas||!canvas._words)return;
+  const rect=canvas.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const pad=canvas._pad,W=canvas._W,H=canvas._H;
+  const tooltip=document.getElementById('emb-tooltip');
+  let found=null;
+  canvas._words.forEach(({w,x,y})=>{
+    const px=pad+x*(W-2*pad), py=pad+y*(H-2*pad);
+    if(Math.hypot(mx-px,my-py)<10) found={w,px,py};
+  });
+  if(found){
+    tooltip.style.display='block';
+    tooltip.style.left=(found.px+12)+'px';
+    tooltip.style.top=(found.py-8)+'px';
+    tooltip.textContent=found.w;
+  } else {
+    tooltip.style.display='none';
+  }
+});
+
+/* ── TAB 4: LOGITS / SOFTMAX ── */
+const LOGIT_TOKENS=[
+  {t:'the',z:2.1},{t:'a',z:1.4},{t:'Paris',z:3.8},{t:'France',z:1.8},{t:'beautiful',z:0.5},
+];
+function initLogits(){
+  const el=document.getElementById('logit-sliders');
+  if(el.children.length)return;
+  LOGIT_TOKENS.forEach((tok,i)=>{
+    const row=document.createElement('div'); row.className='logit-slider-row';
+    row.innerHTML=`<span class="logit-label">${tok.t}</span>
+      <input type="range" id="z${i}" min="-3" max="6" step="0.1" value="${tok.z}" oninput="updateLogits()">
+      <span class="slider-val" id="zv${i}">${tok.z.toFixed(1)}</span>`;
+    el.appendChild(row);
+  });
+  updateLogits();
+}
+function updateLogits(){
+  const T=parseFloat(document.getElementById('temp-slider').value);
+  document.getElementById('temp-val').textContent=T.toFixed(1);
+  const zs=LOGIT_TOKENS.map((_,i)=>parseFloat(document.getElementById('z'+i).value));
+  zs.forEach((z,i)=>document.getElementById('zv'+i).textContent=z.toFixed(1).replace('-','−'));
+  const exps=zs.map(z=>Math.exp(z/T));
+  const sum=exps.reduce((a,b)=>a+b,0);
+  const probs=exps.map(e=>e/sum);
+  const maxP=Math.max(...probs);
+  const bars=document.getElementById('logit-bars');
+  bars.innerHTML='';
+  probs.forEach((p,i)=>{
+    const row=document.createElement('div'); row.className='logit-row';
+    row.innerHTML=`<div class="logit-token">${LOGIT_TOKENS[i].t}</div>
+      <div class="logit-bar-wrap"><div class="logit-bar" style="width:${(p/maxP*100).toFixed(1)}%"></div></div>
+      <div class="logit-num">${zs[i].toFixed(1).replace('-','−')}</div>
+      <div class="logit-num prob">${(p*100).toFixed(1)}%</div>`;
+    bars.appendChild(row);
+  });
+  const trueIdx=LOGIT_TOKENS.findIndex(t=>t.t==='Paris');
+  const loss=-Math.log(probs[trueIdx]);
+  const noteEl=document.getElementById('temp-note');
+  noteEl.textContent=`If "Paris" is the true next token: loss = −log(${(probs[trueIdx]*100).toFixed(1)}%) = ${loss.toFixed(3)}. Perplexity = ${Math.exp(loss).toFixed(2)}.`;
+  renderCE(probs,T);
+}
+function renderCE(probs,T){
+  const trueIdx=2;
+  const trueP=probs[trueIdx];
+  const loss=-Math.log(trueP);
+  const el=document.getElementById('ce-scenarios');
+  el.innerHTML='';
+  const scenarios=[
+    {label:'Model strongly predicts the correct token',prob:0.91,badge:'ce-loss-low'},
+    {label:'Model is uncertain (current settings)',prob:trueP,badge:loss<1.5?'ce-loss-low':loss<2.5?'ce-loss-mid':'ce-loss-high'},
+    {label:'Model spreads probability uniformly over GPT-2\'s 50,257 tokens',prob:1/50257,badge:'ce-loss-high'},
+  ];
+  scenarios.forEach(s=>{
+    const l=(-Math.log(s.prob)).toFixed(3);
+    const div=document.createElement('div'); div.className='ce-scenario';
+    div.innerHTML=`<div class="ce-scenario-text"><strong>${s.label}</strong><br>P(true) = ${(s.prob*100).toFixed(s.prob>0.01?1:4)}%</div>
+      <div class="ce-loss-badge ${s.badge}">Loss = ${l}</div>`;
+    el.appendChild(div);
+  });
+}
+
+/* ── EMBEDDING VISUALIZATIONS ── */
+function lcg(seed){
+  let s=seed>>>0;
+  return ()=>{ s=(s*1664525+1013904223)&0x7FFFFFFF; return s/0x7FFFFFFF; };
+}
+
+function initEmbViz(){
+  const matrix=document.getElementById('viz-emb-matrix');
+  if(!matrix||matrix.children.length)return;
+  const nRows=6,nCols=8,selRow=2;
+  for(let r=0;r<nRows;r++){
+    const rng=lcg(r*97+13);
+    const rowEl=document.createElement('div'); rowEl.className='viz-emb-matrix-row';
+    for(let c=0;c<nCols;c++){
+      const val=rng();
+      const cell=document.createElement('div'); cell.className='viz-emb-cell';
+      if(r===selRow){
+        cell.style.background='var(--accent)';
+        cell.style.opacity=(0.25+val*0.75).toFixed(2);
+      } else {
+        cell.style.background=val>0.5?'var(--surface2)':'var(--border)';
+        cell.style.opacity=(0.2+val*0.35).toFixed(2);
+      }
+      rowEl.appendChild(cell);
+    }
+    matrix.appendChild(rowEl);
+  }
+  const vec=document.getElementById('viz-emb-vec');
+  if(vec&&!vec.children.length){
+    const rng=lcg(selRow*97+13);
+    for(let c=0;c<nCols;c++){
+      const val=rng();
+      const bar=document.createElement('div');
+      bar.style.cssText=`width:22px;height:${Math.round(val*38+10)}px;background:var(--accent);opacity:${(0.25+val*0.75).toFixed(2)};border-radius:3px;flex-shrink:0`;
+      vec.appendChild(bar);
+    }
+  }
+}
+
+function initPosViz(){
+  const nBars=12;
+  function makeBars(elId,colorVar,genFn){
+    const el=document.getElementById(elId);
+    if(!el||el.children.length)return;
+    for(let i=0;i<nBars;i++){
+      const v=genFn(i);
+      const bar=document.createElement('div');
+      bar.style.cssText=`width:16px;height:${Math.round(v*38+8)}px;background:var(${colorVar});opacity:${(0.35+v*0.65).toFixed(2)};border-radius:3px;flex-shrink:0`;
+      el.appendChild(bar);
+    }
+  }
+  const rngTok=lcg(77);
+  const tokVals=Array.from({length:nBars},()=>rngTok());
+  makeBars('viz-pos-tok','--accent',i=>tokVals[i]);
+  // sinusoidal pattern for positional embedding (visualizes the sine/cosine structure)
+  const posVals=Array.from({length:nBars},(_,i)=>(Math.sin(i*0.55+0.8)+1)/2);
+  makeBars('viz-pos-pos','--pos',i=>posVals[i]);
+  // combined = element-wise average (schematic of the sum, normalized for display)
+  const combEl=document.getElementById('viz-pos-comb');
+  if(combEl&&!combEl.children.length){
+    for(let i=0;i<nBars;i++){
+      const combined=Math.min((tokVals[i]+posVals[i])/2,1);
+      const bar=document.createElement('div');
+      bar.style.cssText=`width:16px;height:${Math.round(combined*38+8)}px;background:var(--warn);opacity:${(0.35+combined*0.65).toFixed(2)};border-radius:3px;flex-shrink:0`;
+      combEl.appendChild(bar);
+    }
+  }
+}
+</script>
+<script>
+/* ── TAB SWITCHING (tabs 1-5: neural-network background; 6-10: language as probability) ── */
+const TABS=['neuron','activation','network','learning','distributed','prob','tokens','embed','predict','why'];
+function switchTab(id){
+  TABS.forEach(t=>document.getElementById('tab-'+t).classList.toggle('active',t===id));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',TABS[i]===id));
+  if(id==='activation') drawActFn();
+  if(id==='learning') initLoss();
+  if(id==='distributed') initDistrib();
+  if(id==='embed'){drawEmb(); initEmbViz(); initPosViz();}
+  if(id==='predict') initLogits();
+  if(id==='tokens') tokenize();
+}
+</script>
+
+<script>
+// Open a tab from the link, e.g. ...#tabid
+window.addEventListener('load', () => {
+  const h = location.hash.slice(1);
+  if (!h) return;
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === h || b.dataset.tab === 'tab-' + h ||
+    (b.getAttribute('onclick') || '').includes("'" + h + "'"));
+  if (b) b.click();
+});
+function goTab(id) {
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === id || b.dataset.tab === 'tab-' + id ||
+    (b.getAttribute('onclick') || '').includes("'" + id + "'"));
+  if (b) { b.click(); window.scrollTo(0, 0); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1472 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lesson 2 · The Transformer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root {
+  --bg: #F7F5F0; --surface: #EDEAE2; --surface2: #E0DDD4;
+  --text: #1A1916; --text2: #504E48; --text3: #7A7870;
+  --accent: #2455A4; --accent-light: #D8E4F7;
+  --pos: #1A7A4E; --pos-light: #D2EFE2;
+  --neg: #B83030; --neg-light: #F7DEDE;
+  --warn: #A06010; --warn-light: #FDF0DC;
+  --border: #D4D1C8; --border2: #C0BDB4;
+  --radius: 10px; --radius-sm: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+    --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+    --accent: #6B9EF8; --accent-light: #1A2A4A;
+    --pos: #4ABA82; --pos-light: #0D2E1E;
+    --neg: #F08080; --neg-light: #2E0E0E;
+    --warn: #F0C060; --warn-light: #2A1E08;
+    --border: #38362E; --border2: #4A4840;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+  --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+  --accent: #6B9EF8; --accent-light: #1A2A4A;
+  --pos: #4ABA82; --pos-light: #0D2E1E;
+  --neg: #F08080; --neg-light: #2E0E0E;
+  --warn: #F0C060; --warn-light: #2A1E08;
+  --border: #38362E; --border2: #4A4840;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.65; min-height: 100%; }
+
+.page-header { padding: 32px 24px 0; max-width: 860px; margin: 0 auto; }
+.lesson-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.lesson-title { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(26px,5vw,38px); line-height: 1.15; margin-bottom: 12px; text-wrap: balance; }
+.lesson-intro { font-size: 16px; color: var(--text2); max-width: 680px; margin-bottom: 28px; font-weight: 300; }
+
+.tab-nav { display: flex; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding: 0 24px; max-width: 860px; margin: 0 auto; }
+.tab-btn { background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; padding: 10px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--text3); cursor: pointer; transition: color .15s, border-color .15s; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.content { max-width: 860px; margin: 0 auto; padding: 32px 24px 64px; }
+
+.section-heading { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(20px,3.5vw,26px); margin-bottom: 12px; text-wrap: balance; }
+.section-heading em { font-style: italic; color: var(--text2); }
+.subsection { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(17px,2.8vw,20px); margin: 28px 0 10px; color: var(--text); }
+p { color: var(--text2); margin-bottom: 16px; font-size: 15.5px; }
+p strong { color: var(--text); font-weight: 600; }
+code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--surface2); padding: 1px 5px; border-radius: 3px; }
+
+.eq-block { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 14px 18px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); overflow-x: auto; line-height: 1.8; white-space: pre-line; }
+.eq-block .eq-label { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); display: block; margin-bottom: 6px; }
+.eq-comment { color: var(--text3); font-size: 12.5px; }
+
+.insight { background: var(--accent-light); border: 1px solid var(--accent); border-radius: var(--radius); padding: 14px 18px; margin: 24px 0; font-size: 14.5px; color: var(--text); }
+.insight strong { color: var(--accent); }
+.insight-neurosci { background: var(--pos-light); border-color: var(--pos); }
+.insight-neurosci strong { color: var(--pos); }
+.insight-warn { background: var(--warn-light); border-color: var(--warn); }
+.insight-warn strong { color: var(--warn); }
+
+.widget { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 28px 0; }
+.widget-title { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 18px; }
+
+/* ── viz cards ── */
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 28px 0; }
+.viz-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .09em; color: var(--text3); margin-bottom: 16px; }
+.viz-caption { font-size: 12.5px; color: var(--text3); margin-top: 14px; line-height: 1.55; }
+
+/* ── architecture overview diagram ── */
+.arch-diagram { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 16px 0; }
+.arch-block { width: 100%; max-width: 400px; border-radius: var(--radius-sm); padding: 10px 16px; font-size: 13.5px; font-weight: 500; text-align: center; position: relative; }
+.arch-block-attn { background: var(--accent-light); border: 1.5px solid var(--accent); color: var(--accent); }
+.arch-block-ff { background: var(--warn-light); border: 1.5px solid var(--warn); color: var(--warn); }
+.arch-block-ln { background: var(--surface2); border: 1.5px solid var(--border2); color: var(--text2); font-size: 12px; }
+.arch-block-io { background: var(--pos-light); border: 1.5px solid var(--pos); color: var(--pos); }
+.arch-block-embed { background: var(--surface2); border: 1.5px solid var(--border2); color: var(--text2); }
+.arch-arrow { color: var(--text3); font-size: 18px; line-height: 1.2; text-align: center; }
+.arch-residual-label { font-size: 11px; color: var(--text3); font-style: italic; text-align: center; margin: 2px 0; }
+.arch-brace { width: 100%; max-width: 440px; display: flex; align-items: center; gap: 0; margin: 4px 0; }
+.arch-brace-line { flex: 1; height: 1px; background: var(--border2); }
+.arch-brace-text { font-size: 11px; color: var(--text3); padding: 0 8px; white-space: nowrap; }
+.arch-repeat-box { width: 100%; max-width: 440px; border: 1.5px dashed var(--border2); border-radius: var(--radius); padding: 12px 16px; display: flex; flex-direction: column; align-items: center; gap: 0; position: relative; }
+.arch-repeat-label { position: absolute; top: -10px; right: 16px; background: var(--bg); padding: 0 6px; font-size: 11px; color: var(--text3); font-style: italic; }
+
+/* ── residual stream diagram ── */
+.resid-diagram { display: flex; align-items: flex-start; gap: 24px; margin: 20px 0; overflow-x: auto; }
+.resid-stream { display: flex; flex-direction: column; align-items: center; gap: 0; min-width: 80px; }
+.resid-node { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.resid-line { width: 3px; height: 40px; background: var(--accent); opacity: 0.5; }
+.resid-node-label { font-size: 10px; color: var(--text3); margin-top: 3px; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+.resid-sublayer { background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 12px; color: var(--text2); text-align: center; min-width: 120px; }
+.resid-plus { font-size: 20px; color: var(--accent); font-weight: 600; margin: 0 4px; }
+
+/* ── attention heatmap ── */
+.attn-container { overflow-x: auto; }
+.attn-grid { display: inline-grid; gap: 3px; }
+.attn-cell { width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500; cursor: pointer; transition: transform .1s; flex-shrink: 0; }
+.attn-cell:hover { transform: scale(1.08); }
+.attn-header { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); font-family: 'JetBrains Mono', monospace; writing-mode: vertical-rl; transform: rotate(180deg); flex-shrink: 0; }
+.attn-row-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); padding: 0 8px 0 0; white-space: nowrap; text-align: right; align-self: center; }
+.attn-head-picker { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.attn-head-btn { padding: 5px 11px; border-radius: 20px; border: 1.5px solid var(--border2); background: var(--bg); color: var(--text2); font-size: 12px; cursor: pointer; transition: all .15s; }
+.attn-head-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.attn-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 11.5px; color: var(--text3); }
+.attn-legend-bar { height: 12px; width: 100px; border-radius: 3px; background: linear-gradient(to right, var(--surface2), var(--accent)); }
+
+/* ── QKV diagram ── */
+.qkv-diagram { display: flex; flex-direction: column; gap: 16px; margin: 16px 0; }
+.qkv-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.qkv-input-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 14px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); min-width: 60px; text-align: center; }
+.qkv-arrow { color: var(--text3); font-size: 16px; }
+.qkv-weight { background: var(--warn-light); border: 1px solid var(--warn); border-radius: var(--radius-sm); padding: 6px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--warn); text-align: center; }
+.qkv-result { padding: 8px 14px; border-radius: var(--radius-sm); font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: center; min-width: 60px; }
+.qkv-q { background: var(--accent-light); border: 1px solid var(--accent); color: var(--accent); }
+.qkv-k { background: var(--pos-light); border: 1px solid var(--pos); color: var(--pos); }
+.qkv-v { background: var(--neg-light); border: 1px solid var(--neg); color: var(--neg); }
+.qkv-label { font-size: 12px; color: var(--text3); width: 20px; flex-shrink: 0; }
+
+/* ── softmax demo ── */
+.softmax-row { display: grid; grid-template-columns: 80px 1fr 60px; align-items: center; gap: 10px; margin-bottom: 6px; }
+.softmax-token { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text2); }
+.softmax-track { height: 22px; background: var(--surface2); border-radius: 4px; overflow: hidden; position: relative; }
+.softmax-fill { position: absolute; top:0; left:0; bottom:0; border-radius: 4px; transition: width .3s; }
+.softmax-pct { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text2); text-align: right; font-variant-numeric: tabular-nums; }
+.score-cell { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.score-label { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3); width: 80px; flex-shrink: 0; }
+.score-input { font-family: 'JetBrains Mono', monospace; font-size: 13px; width: 70px; padding: 4px 8px; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); text-align: right; }
+
+/* ── multi-head diagram ── */
+.mha-diagram { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 16px 0; }
+.mha-heads-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.mha-head { background: var(--accent-light); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 12px; font-weight: 500; color: var(--accent); text-align: center; min-width: 70px; }
+.mha-head.head-2 { background: var(--pos-light); border-color: var(--pos); color: var(--pos); }
+.mha-head.head-3 { background: var(--warn-light); border-color: var(--warn); color: var(--warn); }
+.mha-head.head-4 { background: var(--neg-light); border-color: var(--neg); color: var(--neg); }
+.mha-concat { background: var(--surface2); border: 1.5px solid var(--border2); border-radius: var(--radius-sm); padding: 10px 20px; font-size: 13px; color: var(--text2); text-align: center; font-family: 'JetBrains Mono', monospace; }
+.mha-proj { background: var(--warn-light); border: 1.5px solid var(--warn); border-radius: var(--radius-sm); padding: 8px 20px; font-size: 12px; color: var(--warn); text-align: center; }
+.mha-output { background: var(--accent-light); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--accent); text-align: center; font-family: 'JetBrains Mono', monospace; }
+.mha-arrow { font-size: 18px; color: var(--text3); }
+.mha-wide-arrow { font-size: 18px; color: var(--text3); width: 100%; text-align: center; }
+
+/* ── FFN diagram ── */
+.ffn-diagram { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+.ffn-layer { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ffn-layer-label { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+.ffn-nodes { display: flex; flex-direction: column; gap: 3px; }
+.ffn-node { width: 14px; border-radius: 2px; flex-shrink: 0; }
+.ffn-arrow { font-size: 18px; color: var(--text3); align-self: center; }
+.ffn-dim-label { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--text2); text-align: center; margin-top: 4px; }
+
+/* ── layer norm step-through ── */
+.ln-steps { display: flex; flex-direction: column; gap: 6px; margin: 16px 0; }
+.ln-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.ln-step-label { font-size: 11px; font-weight: 600; color: var(--text3); width: 82px; flex-shrink: 0; padding-top: 8px; text-align: right; padding-right: 10px; font-family: 'JetBrains Mono', monospace; }
+.ln-cells { display: flex; gap: 5px; flex-wrap: wrap; }
+.ln-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.ln-cell-box { width: 46px; height: 34px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; border: 1px solid var(--border); color: var(--text1); }
+.ln-cell-dim { font-size: 9px; color: var(--text3); }
+.ln-step-note { font-size: 11px; color: var(--text2); padding-top: 9px; font-style: italic; }
+
+/* ── forward pass step-through ── */
+.fwd-steps { display: flex; flex-direction: column; gap: 0; }
+.fwd-step { border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
+.fwd-step-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface); user-select: none; }
+.fwd-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--bg); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fwd-step-title { font-weight: 600; font-size: 14.5px; color: var(--text); flex: 1; }
+.fwd-step-chevron { color: var(--text3); font-size: 14px; transition: transform .2s; }
+.fwd-step.open .fwd-step-chevron { transform: rotate(90deg); }
+.fwd-step-body { display: none; padding: 16px; border-top: 1px solid var(--border); background: var(--bg); }
+.fwd-step.open .fwd-step-body { display: block; }
+.fwd-tensor { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--accent); background: var(--accent-light); padding: 4px 10px; border-radius: var(--radius-sm); display: inline-block; margin: 4px 0; }
+.content a { color: var(--accent); }
+
+/* ── responsive ── */
+@media (max-width: 500px) {
+  .ln-demo { grid-template-columns: 1fr; }
+  .mha-head { min-width: 56px; font-size: 11px; padding: 6px 8px; }
+}
+/* ── lesson switcher ── */
+.lesson-switcher{display:flex;align-items:center;gap:12px;padding:12px 24px 4px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border);}
+.ls-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text3); white-space: nowrap;
+}
+.ls-links { display: flex; gap: 6px; flex-wrap: wrap; }
+.ls-btn {
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+  padding: 4px 13px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--text2); text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.ls-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.ls-active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+  cursor: default; pointer-events: none;
+}
+</style>
+
+<!-- LESSON NAV -->
+<nav class="lesson-switcher" aria-label="Course navigation">
+  <a class="ls-label" href="index.html" style="text-decoration:none">LLM Mechanics</a>
+  <div class="ls-links">
+    <a href="lesson1.html" class="ls-btn">1 · Foundations</a>
+    <span class="ls-btn ls-active">2 · Architecture</span>
+    <a href="lesson3.html" class="ls-btn">3 · Forward Pass</a>
+    <a href="lesson4.html" class="ls-btn">4 · Training</a>
+    <a href="lesson5.html" class="ls-btn">5 · Representations</a>
+    <a href="lesson6.html" class="ls-btn">6 · Limitations</a>
+    <a href="lesson7.html" class="ls-btn">7 · Mech Interp</a>
+    <a href="lesson8.html" class="ls-btn">8 · Neural Systems</a>
+    <a href="lesson9.html" class="ls-btn">9 · Hands-On</a>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="lesson-label">Lesson 2 · Architecture</div>
+  <h1 class="lesson-title">The Transformer</h1>
+  <p class="lesson-intro">
+    Almost every modern language model is built from a stack of transformer blocks (state-space
+    models such as Mamba, and hybrids, are the main exceptions). This lesson traces exactly how
+    information flows through one block — from the residual stream through attention and feedforward layers —
+    and then through the full depth of the model.
+  </p>
+</header>
+
+<nav class="tab-nav" role="tablist">
+  <button class="tab-btn active" onclick="switchTab('overview')">1 · Overview</button>
+  <button class="tab-btn" onclick="switchTab('residual')">2 · Residual Stream</button>
+  <button class="tab-btn" onclick="switchTab('attention')">3 · Attention</button>
+  <button class="tab-btn" onclick="switchTab('multihead')">4 · Multi-Head Attention</button>
+  <button class="tab-btn" onclick="switchTab('ffn')">5 · Feedforward Layers</button>
+  <button class="tab-btn" onclick="switchTab('forward')">6 · Full Forward Pass</button>
+</nav>
+
+<!-- ══ TAB 1: OVERVIEW ══ -->
+<div id="tab-overview" class="tab-panel active">
+<div class="content">
+  <h2 class="section-heading">The Architecture at a Glance</h2>
+
+  <p>
+    In Lesson 1, each token was converted to a dense vector by looking up a row in the learned
+    embedding matrix E, then a positional embedding P<sub>t</sub> was added to mark its place in the
+    sequence. That operation produces the transformer's actual input — one d-dimensional vector per
+    token, stacked into a matrix:
+  </p>
+
+  <div class="eq-block"><span class="eq-label">Embeddings → Transformer input (from Lesson 1)</span>x<sup>(0)</sup><sub>t</sub> = E[id<sub>t</sub>]  +  P<sub>t</sub>        <span class="eq-comment">// token embedding + positional embedding</span>
+
+    Stack T tokens → X<sup>(0)</sup> ∈ ℝ<sup>T×d</sup>   <span class="eq-comment">// this matrix enters the transformer</span></div>
+
+  <p>
+    The transformer's job is to refine X<sup>(0)</sup> into progressively richer representations by passing it
+    through L successive <strong>blocks</strong>. Each block performs two operations: a
+    <strong>self-attention</strong> layer (which lets every token gather information from every earlier
+    token and itself) and a <strong>feedforward network</strong> (which processes each position independently).
+    Every block reads from and writes back to these same vectors — the <strong><em>residual stream</em></strong>.
+    Unlike a plain feedforward network — where each layer's output <em>replaces</em> the previous
+    one — the residual stream works by addition: each block contributes a correction to the existing
+    vectors, so the original token representation is not replaced and stays part of the sum at
+    every depth (although later layers can add directions that cancel parts of it).
+  </p>
+  <p>
+    For GPT-2 small there are 12 such blocks, each operating on the same 768-dimensional vectors that
+    the embedding lookup produced. The model applies those two operations 12 times before producing
+    output logits. This block count is what practitioners mean by the model's <strong>depth</strong>:
+    a 12-block transformer has depth 12 by the standard convention, or depth 24 if the attention
+    and feedforward sublayers are each counted separately. When researchers refer to "layer&nbsp;N
+    activations" or compare model depths, they almost always mean the block count.
+  </p>
+
+  <div class="viz-card">
+    <div class="viz-label">Figure 1 — From Token IDs to Output Logits</div>
+    <div class="arch-diagram">
+      <div class="arch-block arch-block-embed" style="margin-bottom:2px">
+        Token IDs → <strong>E[id<sub>t</sub>] + P<sub>t</sub></strong> = X<sup>(0)</sup> ∈ ℝ<sup>T×d</sup>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Embedding lookup + positional encoding (Lesson 1)</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-repeat-box">
+        <div class="arch-repeat-label">× L blocks</div>
+
+        <div style="width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;gap:0">
+          <div class="arch-block arch-block-ln" style="width:100%;margin-bottom:2px">Layer Norm</div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-block arch-block-attn" style="width:100%">Multi-Head Self-Attention</div>
+          <div class="arch-residual-label">↕ residual connection (+ x)</div>
+          <div class="arch-block arch-block-ln" style="width:100%;margin-bottom:2px">Layer Norm</div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-block arch-block-ff" style="width:100%">Feedforward Network (MLP)</div>
+          <div class="arch-residual-label">↕ residual connection (+ x′)</div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↓</div>
+      <div class="arch-block arch-block-ln" style="margin-bottom:2px">Final Layer Norm</div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-block arch-block-io">LayerNorm(X<sup>(L)</sup>) → unembedding → output logits over vocabulary</div>
+    </div>
+    <div class="viz-caption">
+      The embedding vectors from Lesson 1 are the literal starting point (X<sup>(0)</sup>). Each transformer
+      block refines them in place — adding information from earlier tokens via attention, then processing
+      each position independently via the feedforward layer. After the last block, a final layer norm is
+      applied and the result is projected through the unembedding matrix to produce next-token probabilities.
+    </div>
+  </div>
+
+  <div class="eq-block"><span class="eq-label">One transformer block (pre-norm convention)</span>x′ = x + MHA(LayerNorm(x))    <span class="eq-comment">// attention sub-layer (multi-head attention, <a href="#multihead" onclick="goTab('multihead');return false">tab 4</a>) with residual</span>
+    x<sub>out</sub> = x′ + FFN(LayerNorm(x′))  <span class="eq-comment">// feedforward sub-layer with residual</span></div>
+
+  <p>
+    Notice what stays constant across all 12 blocks: the <strong>dimensionality d</strong>. Every
+    block receives a T×d matrix and emits a T×d matrix. The embedding lookup fixes d, and the
+    transformer never changes it. The blocks only refine the content of those vectors — not their
+    shape. This is what makes the residual connection possible: each sublayer adds a correction of
+    the same shape to the stream it reads from.
+  </p>
+
+  <div class="insight">
+    <strong>Key intuition:</strong> The embedding vectors from Lesson 1 are a first draft — each
+    token represented in isolation, with no awareness of context. The transformer's blocks are a
+    sequence of revisions: each pass lets every token incorporate information from its neighbors,
+    progressively enriching the representation until it is rich enough to predict the next word.
+  </div>
+
+  <h3 class="subsection">Model scale: where do all the parameters go?</h3>
+  <p>
+    A 1.5B-parameter model like GPT-2 XL sounds abstract. Most of those parameters live in just two places per
+    block: the attention projection matrices W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub>, W<sub>O</sub>
+    (each d × d, so 4d² per block), and the feedforward weight matrices W<sub>up</sub> and W<sub>down</sub>
+    (d × 4d and 4d × d, so another 8d² per block). That gives roughly 12d² parameters per block times
+    L blocks — for GPT-2 XL that's 12 × 1,600² × 48 ≈ 1.5B (GPT-2 small: 12 × 768² × 12 ≈ 85M,
+    plus ~39M of embeddings ≈ 124M).
+  </p>
+  <div class="eq-block"><span class="eq-label">Parameter budget per block</span>Attention (W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub>, W<sub>O</sub>):  4 × d² <span class="eq-comment">// four d×d matrices</span>
+    Feedforward (W<sub>up</sub>, W<sub>down</sub>):         8 × d² <span class="eq-comment">// d→4d→d, both directions</span>
+    ──────────────────────────────────────────
+    Total per block:                 12 × d²
+    GPT-2 small (d=768, L=12):       ~85M + embeddings ≈ 124M params
+    GPT-2 XL (d=1600, L=48):         ~1.5B params</div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel:</strong> The layered structure mirrors the hierarchical organization
+    of sensory cortex — V1, V2, V4, IT in vision; A1, belt, parabelt in audition. Early layers
+    extract local features; later layers build abstract, task-relevant representations. The difference
+    is that transformer layers are <em>identical</em> in structure — the abstraction hierarchy emerges
+    purely from training, not from anatomical specialization.
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 2: RESIDUAL STREAM ══ -->
+<div id="tab-residual" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">The Residual Stream</h2>
+  <p>
+    The residual stream is the sequence of <strong>d-dimensional vectors that passes through the
+    entire model</strong> — one vector per token position. It starts as the sum of the token embedding
+    and the positional embedding, and each subsequent block reads from it and writes an additive
+    correction back to it.
+  </p>
+  <p>
+    At no point does any layer <em>replace</em> the stream. Attention adds a correction; the feedforward
+    adds another correction. The original token embedding is still part of the sum at every
+    layer — it has been incrementally refined, though later layers can write directions that
+    partly cancel or crowd out what earlier layers wrote.
+  </p>
+
+  <div class="viz-card">
+    <div class="viz-label">Figure 2 — The Residual Stream Through L Blocks</div>
+    <svg viewBox="0 0 700 425" style="width:100%;max-width:700px;display:block;margin:0 auto" class="viz-vec-svg" id="resid-svg">
+      <!-- main stream line: solid, then dashed ellipsis section, then solid again -->
+      <line x1="350" y1="10" x2="350" y2="250" stroke="var(--accent)" stroke-width="3"/>
+      <line x1="350" y1="250" x2="350" y2="288" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 5" opacity="0.5"/>
+      <line x1="350" y1="288" x2="350" y2="420" stroke="var(--accent)" stroke-width="3"/>
+
+      <!-- nodes -->
+      <circle cx="350" cy="30"  r="8" fill="var(--accent)"/>
+      <circle cx="350" cy="135" r="8" fill="var(--accent)"/>
+      <circle cx="350" cy="240" r="8" fill="var(--accent)"/>
+      <circle cx="350" cy="296" r="8" fill="var(--accent)"/>
+      <circle cx="350" cy="405" r="8" fill="var(--accent)"/>
+
+      <!-- node labels (right of stream) -->
+      <text x="362" y="34" font-family="JetBrains Mono,monospace" font-size="11" fill="var(--text2)">x<tspan dy="-4" font-size="8">(0)</tspan><tspan dy="4" font-size="11"> = E[id] + P</tspan></text>
+
+      <text x="362" y="139" font-family="JetBrains Mono,monospace" font-size="11" fill="var(--text2)">x<tspan dy="-4" font-size="8">(1)</tspan><tspan dy="4" font-size="11"> = x</tspan><tspan dy="-4" font-size="8">(0)</tspan><tspan dy="4" font-size="11"> + Attn</tspan><tspan dy="-4" font-size="8">(0)</tspan><tspan dy="4" font-size="11"> + FFN</tspan><tspan dy="-4" font-size="8">(0)</tspan><tspan dy="4" font-size="11"></tspan></text>
+
+      <text x="362" y="244" font-family="JetBrains Mono,monospace" font-size="11" fill="var(--text2)">x<tspan dy="-4" font-size="8">(2)</tspan><tspan dy="4" font-size="11"> = x</tspan><tspan dy="-4" font-size="8">(1)</tspan><tspan dy="4" font-size="11"> + Attn</tspan><tspan dy="-4" font-size="8">(1)</tspan><tspan dy="4" font-size="11"> + FFN</tspan><tspan dy="-4" font-size="8">(1)</tspan><tspan dy="4" font-size="11"></tspan></text>
+
+      <text x="362" y="300" font-family="JetBrains Mono,monospace" font-size="11" fill="var(--text3)">x<tspan dy="-4" font-size="8">(<tspan font-style="italic">l</tspan>)</tspan><tspan dy="4" font-size="11"></tspan></text>
+
+      <text x="362" y="409" font-family="JetBrains Mono,monospace" font-size="11" fill="var(--text2)">x<tspan dy="-4" font-size="8">(<tspan font-style="italic">l</tspan>+1)</tspan><tspan dy="4" font-size="11"> = x</tspan><tspan dy="-4" font-size="8">(<tspan font-style="italic">l</tspan>)</tspan><tspan dy="4" font-size="11"> + Attn</tspan><tspan dy="-4" font-size="8">(<tspan font-style="italic">l</tspan>)</tspan><tspan dy="4" font-size="11"> + FFN</tspan><tspan dy="-4" font-size="8">(<tspan font-style="italic">l</tspan>)</tspan><tspan dy="4" font-size="11"></tspan></text>
+
+      <!-- Block 0 sublayer boxes (between y=30 and y=135) -->
+      <rect x="30" y="48" width="272" height="32" rx="5" fill="var(--accent-light)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="166" y="68" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="var(--accent)">Block 0: Self-Attention</text>
+      <line x1="302" y1="64" x2="342" y2="64" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+      <rect x="30" y="88" width="272" height="32" rx="5" fill="var(--warn-light)" stroke="var(--warn)" stroke-width="1.5"/>
+      <text x="166" y="108" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="var(--warn)">Block 0: Feedforward</text>
+      <line x1="302" y1="104" x2="342" y2="104" stroke="var(--warn)" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+      <!-- Block 1 sublayer boxes (between y=135 and y=240) -->
+      <rect x="30" y="153" width="272" height="32" rx="5" fill="var(--accent-light)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="166" y="173" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="var(--accent)">Block 1: Self-Attention</text>
+      <line x1="302" y1="169" x2="342" y2="169" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+      <rect x="30" y="193" width="272" height="32" rx="5" fill="var(--warn-light)" stroke="var(--warn)" stroke-width="1.5"/>
+      <text x="166" y="213" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="var(--warn)">Block 1: Feedforward</text>
+      <line x1="302" y1="209" x2="342" y2="209" stroke="var(--warn)" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+      <!-- Ellipsis dots between block 1 output and block l input -->
+      <circle cx="350" cy="257" r="3" fill="var(--text3)" opacity="0.7"/>
+      <circle cx="350" cy="268" r="3" fill="var(--text3)" opacity="0.5"/>
+      <circle cx="350" cy="279" r="3" fill="var(--text3)" opacity="0.3"/>
+
+      <!-- Block l sublayer boxes (between y=296 and y=405) -->
+      <rect x="30" y="314" width="272" height="32" rx="5" fill="var(--accent-light)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="166" y="334" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="var(--accent)">Block <tspan font-style="italic">l</tspan>: Self-Attention</text>
+      <line x1="302" y1="330" x2="342" y2="330" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+      <rect x="30" y="354" width="272" height="32" rx="5" fill="var(--warn-light)" stroke="var(--warn)" stroke-width="1.5"/>
+      <text x="166" y="374" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="var(--warn)">Block <tspan font-style="italic">l</tspan>: Feedforward</text>
+      <line x1="302" y1="370" x2="342" y2="370" stroke="var(--warn)" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+      <!-- ⊕ addition signs at each block's output node -->
+      <text x="341" y="139" font-family="JetBrains Mono,monospace" font-size="15" font-weight="700" fill="var(--pos)" text-anchor="middle">⊕</text>
+      <text x="341" y="244" font-family="JetBrains Mono,monospace" font-size="15" font-weight="700" fill="var(--pos)" text-anchor="middle">⊕</text>
+      <text x="341" y="409" font-family="JetBrains Mono,monospace" font-size="15" font-weight="700" fill="var(--pos)" text-anchor="middle">⊕</text>
+
+      <defs>
+        <marker id="arr-a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/>
+        </marker>
+        <marker id="arr-b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="var(--warn)"/>
+        </marker>
+      </defs>
+    </svg>
+    <div class="viz-caption">
+      The residual stream (central vertical axis) carries the representation through all L blocks,
+      numbered 0 to L−1. Blocks 0 and 1 show the pattern concretely; block <i>l</i> shows the general form
+      (it reads x<sup>(<i>l</i>)</sup> and writes x<sup>(<i>l</i>+1)</sup>). Each block's
+      self-attention sublayer (blue) and feedforward sublayer (orange) each compute a correction
+      and write it to the stream (⊕). The stream is never replaced — only added to, so
+      x<sup>(0)</sup> stays in the sum at every depth (later terms can still cancel parts of it).
+    </div>
+  </div>
+
+  <h3 class="subsection">Why residuals matter</h3>
+  <p>
+    Without residual connections, gradients vanish as they backpropagate through many layers — the
+    product of many Jacobians approaches zero. Residuals solve this by providing a <strong>gradient
+    highway</strong>: the loss gradient can flow back directly to early layers without passing through
+    every transformation. This is the same insight behind ResNets in computer vision.
+  </p>
+  <p>
+    The residual formulation also has a useful interpretive consequence: a sublayer that learns nothing useful can simply output zero, so the block acts as the identity function and leaves the stream unchanged.
+    This means the model can effectively <strong>decide how deep to process</strong> each token by
+    tuning how much each block contributes.
+  </p>
+
+
+  <div class="insight insight-warn">
+    <strong>Common misconception:</strong> It is tempting to think of the residual stream as a
+    "working memory" that gets overwritten layer by layer. It isn't replaced wholesale — every
+    layer's contribution stays in the sum, unless a later layer writes a direction that cancels
+    it (which models do learn, for example to remove information they no longer need). Mechanistic interpretability research often exploits
+    this, tracing how specific circuits write information in early layers and read it back in later ones.
+  </div>
+
+  <h3 class="subsection">The superposition hypothesis</h3>
+  <p>
+    The residual stream has d dimensions — 768 for GPT-2 small. But the model needs to track far
+    more than 768 independent concepts simultaneously. Research on <strong>superposition</strong>
+    suggests the model packs many more features into these dimensions by encoding them as
+    near-orthogonal directions, accepting small interference between features as a tolerable cost.
+    This is an active area of mechanistic interpretability research.
+  </p>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel:</strong> The residual stream resembles the concept of a
+    <em>population code</em> in systems neuroscience — a large set of neurons jointly encoding
+    many variables simultaneously, with each neuron responding to a mixture of features
+    (mixed selectivity). Just as a single prefrontal neuron might encode task context, reward,
+    and stimulus identity all at once, individual dimensions of the residual stream encode
+    overlapping, distributed information.
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel — network dynamics:</strong> The residual stream update rule
+    (x<sup>(<i>l</i>+1)</sup> = x<sup>(<i>l</i>)</sup> + Δ<sup>(<i>l</i>)</sup>) is mathematically identical to an
+    Euler step in a discrete dynamical system. This makes the residual stream a <em>state-space
+    trajectory</em>: depth plays the role of time, and each layer applies a vector field that
+    moves the representation toward something more useful for prediction. Neural ODE models (<a href="https://arxiv.org/abs/1806.07366" target="_blank" rel="noopener">Chen et al., 2018</a>) formalize this connection explicitly, treating network depth as a continuous time axis.
+    The closer neuroscience analog is the ventral visual stream (V1→V2→V4→IT) — a spatial
+    unfolding of representations across a processing hierarchy — rather than temporal oscillatory
+    dynamics, since a transformer has no recurrence across time. The high-dimensional trajectory
+    framing also connects naturally to superposition: just as neural populations traverse
+    trajectories through high-dimensional activity spaces during a task, the residual stream
+    navigates a high-dimensional representation space where many features are packed as
+    near-orthogonal directions.
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 3: ATTENTION ══ -->
+<div id="tab-attention" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Self-Attention</h2>
+  <p>
+    Attention is the mechanism that lets every token position <strong>look at every earlier
+    position (and itself)</strong> and decide how much information to gather from each. Unlike the
+    feedforward layers, which process each position in isolation, attention computes pairwise
+    relationships across the sequence.
+  </p>
+
+  <h3 class="subsection">Queries, Keys, and Values</h3>
+  <p>
+    Each position in the sequence generates three vectors from its current residual stream state:
+    a <strong>Query</strong> Q (what information am I looking for?), a <strong>Key</strong> K
+    (what information do I advertise?), and a <strong>Value</strong> V (what information do I
+    actually contain?). These are computed by projecting x through three learned weight matrices.
+  </p>
+
+  <div class="viz-card">
+    <div class="viz-label">Figure 3 — Computing Q, K, V</div>
+    <svg viewBox="0 0 480 390" style="width:100%;max-width:520px;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="f3-arr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+          <path d="M0,1 L6,3.5 L0,6Z" fill="var(--text3)"/>
+        </marker>
+        <marker id="f3-arr-q" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+          <path d="M0,1 L6,3.5 L0,6Z" fill="var(--accent)"/>
+        </marker>
+        <marker id="f3-arr-k" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+          <path d="M0,1 L6,3.5 L0,6Z" fill="var(--pos)"/>
+        </marker>
+        <marker id="f3-arr-v" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+          <path d="M0,1 L6,3.5 L0,6Z" fill="var(--neg)"/>
+        </marker>
+        <marker id="f3-arr-mid" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+          <path d="M0,1 L6,3.5 L0,6Z" fill="var(--text2)"/>
+        </marker>
+      </defs>
+
+      <!-- Shared input box -->
+      <rect x="165" y="10" width="150" height="32" rx="6"
+            fill="var(--surface2)" stroke="var(--border2)" stroke-width="1.5"/>
+      <text x="240" y="30" text-anchor="middle"
+            font-family="JetBrains Mono,monospace" font-size="13" fill="var(--text)">x<tspan dy="4" font-size="9">t</tspan><tspan dy="-4" font-size="13"> ∈ ℝ</tspan><tspan dy="-5" font-size="9">d</tspan></text>
+
+      <!-- Fan-out dashed arrows -->
+      <line x1="240" y1="42" x2="72"  y2="92" stroke="var(--text3)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#f3-arr)"/>
+      <line x1="240" y1="42" x2="240" y2="92" stroke="var(--text3)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#f3-arr)"/>
+      <line x1="240" y1="42" x2="408" y2="92" stroke="var(--text3)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#f3-arr)"/>
+
+      <!-- Weight matrices -->
+      <rect x="24"  y="92" width="96" height="28" rx="5" fill="var(--warn-light)" stroke="var(--warn)" stroke-width="1.5"/>
+      <text x="72"  y="110" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="var(--warn)">× W<tspan dy="3" font-size="8">Q</tspan></text>
+      <rect x="192" y="92" width="96" height="28" rx="5" fill="var(--warn-light)" stroke="var(--warn)" stroke-width="1.5"/>
+      <text x="240" y="110" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="var(--warn)">× W<tspan dy="3" font-size="8">K</tspan></text>
+      <rect x="360" y="92" width="96" height="28" rx="5" fill="var(--warn-light)" stroke="var(--warn)" stroke-width="1.5"/>
+      <text x="408" y="110" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="var(--warn)">× W<tspan dy="3" font-size="8">V</tspan></text>
+
+      <!-- Colored arrows to output boxes -->
+      <line x1="72"  y1="120" x2="72"  y2="142" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#f3-arr-q)"/>
+      <line x1="240" y1="120" x2="240" y2="142" stroke="var(--pos)"    stroke-width="1.5" marker-end="url(#f3-arr-k)"/>
+      <line x1="408" y1="120" x2="408" y2="142" stroke="var(--neg)"    stroke-width="1.5" marker-end="url(#f3-arr-v)"/>
+
+      <!-- Output boxes -->
+      <rect x="24"  y="144" width="96" height="28" rx="5" fill="var(--accent-light)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="72"  y="162" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" fill="var(--accent)">q<tspan dy="4" font-size="9">t</tspan></text>
+      <rect x="192" y="144" width="96" height="28" rx="5" fill="var(--pos-light)" stroke="var(--pos)" stroke-width="1.5"/>
+      <text x="240" y="162" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" fill="var(--pos)">k<tspan dy="4" font-size="9">s</tspan></text>
+      <rect x="360" y="144" width="96" height="28" rx="5" fill="var(--neg-light)" stroke="var(--neg)" stroke-width="1.5"/>
+      <text x="408" y="162" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" fill="var(--neg)">v<tspan dy="4" font-size="9">s</tspan></text>
+
+      <!-- Role annotations -->
+      <text x="72"  y="183" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" font-weight="600" fill="var(--accent)">Query</text>
+      <text x="240" y="183" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" font-weight="600" fill="var(--pos)">Key</text>
+      <text x="408" y="183" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" font-weight="600" fill="var(--neg)">Value</text>
+      <text x="72"  y="196" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10.5" font-style="italic" fill="var(--accent)">What am I seeking?</text>
+      <text x="240" y="196" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10.5" font-style="italic" fill="var(--pos)">What do I advertise?</text>
+      <text x="408" y="196" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10.5" font-style="italic" fill="var(--neg)">What do I contribute?</text>
+      <text x="72"  y="208" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="var(--accent)" opacity="0.7">scores other keys</text>
+      <text x="240" y="208" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="var(--pos)"    opacity="0.7">scored by other queries</text>
+      <text x="408" y="208" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="var(--neg)"    opacity="0.7">mixed into output</text>
+      <text x="240" y="222" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="var(--text3)">three independent projections of the same x<tspan font-size="7.5" dy="2">t</tspan></text>
+
+      <!-- Separator -->
+      <line x1="16" y1="232" x2="464" y2="232" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"/>
+      <text x="240" y="244" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="var(--text3)">↓ scoring: for each pair of positions t (query) and s (key)</text>
+
+      <!-- Downstream pipeline -->
+      <line x1="72"  y1="248" x2="178" y2="255" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#f3-arr-mid)"/>
+      <line x1="240" y1="248" x2="215" y2="255" stroke="var(--pos)"    stroke-width="1.5" marker-end="url(#f3-arr-mid)"/>
+      <rect x="118" y="257" width="196" height="30" rx="5" fill="var(--surface2)" stroke="var(--border2)" stroke-width="1.5"/>
+      <text x="216" y="276" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="var(--text)">q<tspan dy="3" font-size="8">t</tspan><tspan dy="-3"> · k</tspan><tspan dy="3" font-size="8">s</tspan><tspan dy="-3"> / √d</tspan><tspan dy="2" font-size="8">k</tspan><tspan dy="-2"> = score</tspan></text>
+      <line x1="216" y1="287" x2="216" y2="305" stroke="var(--text3)" stroke-width="1.5" marker-end="url(#f3-arr)"/>
+      <rect x="118" y="307" width="196" height="28" rx="5" fill="var(--surface2)" stroke="var(--border2)" stroke-width="1.5"/>
+      <text x="216" y="325" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="var(--text)">softmax → α<tspan dy="3" font-size="8">t,s</tspan></text>
+      <line x1="216" y1="335" x2="216" y2="353" stroke="var(--text3)" stroke-width="1.5" marker-end="url(#f3-arr)"/>
+      <line x1="408" y1="248" x2="322" y2="355" stroke="var(--neg)"   stroke-width="1.5" marker-end="url(#f3-arr-mid)"/>
+      <rect x="90"  y="355" width="252" height="30" rx="5" fill="var(--surface)" stroke="var(--border2)" stroke-width="1.5"/>
+      <text x="216" y="374" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="var(--text2)">Σ α<tspan dy="3" font-size="8">t,s</tspan><tspan dy="-3"> · v</tspan><tspan dy="3" font-size="8">s</tspan><tspan dy="-3">  =  output</tspan><tspan dy="3" font-size="8">t</tspan></text>
+    </svg>
+    <div class="viz-caption">
+      One shared x<sub>t</sub> fans out to three independent projections, each with a distinct role.
+      Below the separator: q<sub>t</sub> · k<sub>s</sub> scores how much position t attends to position s;
+      softmax normalises scores into weights α<sub>t,s</sub>; and the weighted sum over v<sub>s</sub>
+      produces the output for position t. The matrix operation QK<sup>⊤</sup> computes all T² dot products simultaneously.
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>How Q, K, and V acquire meaning.</strong> The names Query, Key, and Value are borrowed
+    from database retrieval — a useful analogy, but one the architecture does not enforce. The only
+    structural constraint is this: Q and K are compared via dot product to produce attention scores,
+    while V supplies the content that gets weighted and summed. Which features each projection
+    captures — and whether they behave like "questions," "labels," and "answers" in any intuitive
+    sense — is determined entirely by training. Gradient descent finds whatever assignment of roles
+    minimises prediction loss. The semantic descriptions we attach to these projections are patterns
+    observed in trained models, not properties specified in advance.
+  </div>
+
+  <div class="eq-block"><span class="eq-label">Attention computation</span>Q = X W<sub>Q</sub>,  K = X W<sub>K</sub>,  V = X W<sub>V</sub>     <span class="eq-comment">// project all positions at once</span>
+
+    S = Q K<sup>⊤</sup> / √d<sub>k</sub> + mask            <span class="eq-comment">// T×T score matrix  (S<sub>t,s</sub> = q<sub>t</sub>·k<sub>s</sub>/√d<sub>k</sub>)</span>
+    mask<sub>t,s</sub> = 0 if s ≤ t,  −∞ if s &gt; t       <span class="eq-comment">// causal mask: no looking at later tokens</span>
+    A = softmax(S)                         <span class="eq-comment">// row-wise softmax → attention weights (e<sup>−∞</sup> = 0)</span>
+
+    Output = A V                           <span class="eq-comment">// weighted sum of values</span></div>
+
+  <p>
+    The dot product Q K<sup>⊤</sup> produces a <em>score</em> for every (query, key) pair — how
+    well position t's query matches position s's key. Dividing by √d<sub>k</sub> prevents the
+    dot products from growing too large (which would push the softmax into regions of near-zero
+    gradient). The softmax then converts scores into weights that sum to one per row.
+  </p>
+
+  <div class="insight">
+    <strong>Causal masking:</strong> During training and inference, a token at position t must
+    not attend to future positions. This is enforced by setting the scores above the diagonal
+    to −∞ before the softmax (which maps them to 0 weight). The model therefore sees a
+    lower-triangular attention pattern — position t can only gather information from positions
+    0 through t (positions are numbered from 0).
+  </div>
+
+  <h3 class="subsection">The √d<sub>k</sub> scaling factor</h3>
+  <p>
+    The scaling by √d<sub>k</sub> is subtle but important. If q and k are d<sub>k</sub>-dimensional
+    random vectors with unit-variance components, their dot product has variance d<sub>k</sub>
+    (it's a sum of d<sub>k</sub> random terms). Dividing by √d<sub>k</sub> brings the variance
+    back to one. Without this, large dot products would make the softmax extremely peaky — one
+    position would receive nearly all the attention — which creates a gradient bottleneck.
+  </p>
+
+  <h3 class="subsection">Interactive: Softmax on Attention Scores</h3>
+  <p>
+    Edit the raw attention scores below to see how softmax converts them to probabilities.
+    Notice how even a small score difference produces a large probability concentration.
+  </p>
+  <div class="widget">
+    <div class="widget-title">Softmax Demo</div>
+    <div id="score-inputs"></div>
+    <div style="height:1px;background:var(--border);margin:14px 0"></div>
+    <div id="softmax-bars"></div>
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel:</strong> The attention pattern — the matrix of α<sub>t,s</sub>
+    values that determines how much each position attends to each other — resembles <em>effective
+    connectivity</em> between brain areas: dynamic, context-dependent routing of information that
+    changes trial by trial. The learned projection matrices W<sub>Q</sub>, W<sub>K</sub>,
+    W<sub>V</sub> are the fixed-weight tracts; the attention pattern they produce is recomputed
+    fresh for every new input. This is reminiscent of top-down attentional modulation in the
+    visual cortex, where the strength of signal propagation from one area to another is gated
+    by task demands.
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 4: MULTI-HEAD ATTENTION ══ -->
+<div id="tab-multihead" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Multi-Head Attention</h2>
+  <p>
+    A single attention head produces one d<sub>k</sub>-dimensional output per position. But a
+    sentence has many kinds of structure simultaneously — syntactic dependencies, coreference
+    relations, semantic roles, positional proximity. Running <strong>H parallel attention
+    heads</strong> allows the model to attend to different types of relationships at once, each
+    head learning its own Q/K/V projection matrices.
+  </p>
+  <p>
+    Each head reads the full d-dimensional stream and projects it, with its own W<sub>Q</sub>,
+    W<sub>K</sub>, W<sub>V</sub>, into a smaller space of size d<sub>k</sub> = d / H. For GPT-2 small
+    with d = 768 and H = 12 heads, each head works in its own 64-dimensional space — a learned
+    projection of all 768 dimensions, not a slice of them. The outputs from all heads are
+    concatenated and projected back to d dimensions.
+  </p>
+  <p>
+    <strong>MHA(X)</strong> (multi-head attention) is the whole attention sub-layer of one block written as a
+    single function: it takes the stream X (T × d: one row per token) and returns an update of the same size,
+    which is added to the stream. In GPT-2 its input is the layer-normed stream, so a block computes
+    X′ = X + MHA(LayerNorm(X)) (<a href="#forward" onclick="goTab('forward');return false">tab 6</a>).
+  </p>
+
+  <div class="viz-card">
+    <div class="viz-label">Figure 4 — Multi-Head Attention</div>
+    <div class="mha-diagram">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">Input X ∈ ℝ<sup>T×d</sup></div>
+      <div class="mha-arrow">↓</div>
+      <div class="mha-heads-row" id="mha-heads-row"></div>
+      <div class="mha-arrow">↓ concatenate</div>
+      <div class="mha-concat">Concat(head<sub>0</sub>, …, head<sub>H−1</sub>) ∈ ℝ<sup>T×Hd<sub>k</sub></sup> = ℝ<sup>T×d</sup></div>
+      <div class="mha-arrow">↓</div>
+      <div class="mha-proj">× W<sub>O</sub> ∈ ℝ<sup>d×d</sup></div>
+      <div class="mha-arrow">↓</div>
+      <div class="mha-output">MHA output ∈ ℝ<sup>T×d</sup></div>
+    </div>
+    <div class="viz-caption">
+      Each head independently computes attention over the sequence in its own projected 64-dimensional space.
+      Concatenation places the heads' outputs side by side, and W<sub>O</sub> maps them back to d dimensions;
+      as the equations below show, this is the same as each head writing its own update and the updates being added.
+    </div>
+  </div>
+
+  <div class="eq-block"><span class="eq-label">Multi-head attention</span>Attention(Q, K, V) = softmax(Q K<sup>⊤</sup> / √d<sub>k</sub> + mask) V   <span class="eq-comment">// one head (<a href="#attention" onclick="goTab('attention');return false">tab 3</a>); mask = −∞ above the diagonal</span>
+    head<sub>h</sub> = Attention(X W<sup>h</sup><sub>Q</sub>, X W<sup>h</sup><sub>K</sub>, X W<sup>h</sup><sub>V</sub>)   <span class="eq-comment">// each head h = 0 … H−1; T × d<sub>k</sub></span>
+    MHA(X) = Concat(head<sub>0</sub>, …, head<sub>H−1</sub>) W<sub>O</sub>            <span class="eq-comment">// join and project: T × d</span>
+           = head<sub>0</sub> W<sup>0</sup><sub>O</sub> + head<sub>1</sub> W<sup>1</sup><sub>O</sub> + … + head<sub>H−1</sub> W<sup>H−1</sup><sub>O</sub>   <span class="eq-comment">// the same: a sum of the heads' writes</span>
+
+    W<sup>h</sup><sub>Q</sub>, W<sup>h</sup><sub>K</sub>, W<sup>h</sup><sub>V</sub> ∈ ℝ<sup>d×d<sub>k</sub></sup>    where d<sub>k</sub> = d/H
+    W<sub>O</sub> ∈ ℝ<sup>d×d</sup>;   W<sup>h</sup><sub>O</sub> ∈ ℝ<sup>d<sub>k</sub>×d</sup> = rows h·d<sub>k</sub> … (h+1)·d<sub>k</sub>−1 of W<sub>O</sub>   <span class="eq-comment">// biases (b<sub>Q</sub>, b<sub>K</sub>, b<sub>V</sub>, b<sub>O</sub>) omitted</span></div>
+
+  <p>
+    The two forms of MHA(X) are equal because multiplying a concatenation by a matrix is the same as multiplying
+    each piece by its own block of rows and adding: head h only ever meets rows h·d<sub>k</sub> to
+    (h+1)·d<sub>k</sub>−1 of W<sub>O</sub>, its own W<sup>h</sup><sub>O</sub>. So each head writes its own
+    d-dimensional update, head<sub>h</sub> W<sup>h</sup><sub>O</sub>, and the attention sub-layer's output is
+    their sum (plus the bias b<sub>O</sub>). Heads in the same layer do not exchange information; they interact
+    only through the stream, when a later layer reads what an earlier one wrote. Interpretability work uses
+    this per-head form to ask what each head contributes.
+  </p>
+
+  <div style="overflow-x:auto;margin:16px 0">
+    <table style="border-collapse:collapse;font-size:14px;width:100%">
+      <thead><tr style="border-bottom:1px solid var(--border);text-align:left"><th style="padding:6px 8px">Symbol</th><th style="padding:6px 8px">Meaning</th><th style="padding:6px 8px">Size (GPT-2 small)</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:6px 8px">X</td><td style="padding:6px 8px">the (layer-normed) residual stream, one row per token</td><td style="padding:6px 8px">T × 768</td></tr>
+        <tr><td style="padding:6px 8px">T, d, H, d<sub>k</sub></td><td style="padding:6px 8px">tokens, stream width, heads per layer, head width (d / H)</td><td style="padding:6px 8px">T, 768, 12, 64</td></tr>
+        <tr><td style="padding:6px 8px">W<sup>h</sup><sub>Q</sub>, W<sup>h</sup><sub>K</sub>, W<sup>h</sup><sub>V</sub></td><td style="padding:6px 8px">head h's query, key and value matrices (superscript = which head, subscript = which matrix)</td><td style="padding:6px 8px">768 × 64 each</td></tr>
+        <tr><td style="padding:6px 8px">Q, K, V</td><td style="padding:6px 8px">one head's queries, keys and values: what each token looks for, offers, and passes on</td><td style="padding:6px 8px">T × 64 each</td></tr>
+        <tr><td style="padding:6px 8px">head<sub>h</sub></td><td style="padding:6px 8px">head h's output: at each position, the attention-weighted average of the values</td><td style="padding:6px 8px">T × 64</td></tr>
+        <tr><td style="padding:6px 8px">W<sub>O</sub>, W<sup>h</sup><sub>O</sub></td><td style="padding:6px 8px">output matrix of the layer; head h's block of 64 rows of it</td><td style="padding:6px 8px">768 × 768; 64 × 768</td></tr>
+        <tr><td style="padding:6px 8px">MHA(X)</td><td style="padding:6px 8px">the attention sub-layer's output, added to the stream</td><td style="padding:6px 8px">T × 768</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection">What do different heads specialize in?</h3>
+  <p>
+    Interpretability research has found that some attention heads develop recognisable functions.
+    Much of the evidence for the first three types below comes from BERT, a bidirectional model
+    (<a href="https://arxiv.org/abs/1906.04341" target="_blank" rel="noopener">Clark et al., 2019</a>);
+    GPT-style models show similar heads, plus induction heads. Some well-documented head types include:
+  </p>
+  <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0">
+    <div class="insight" style="margin:0">
+      <strong>Syntactic heads</strong> — attend from a word to a grammatically related word, such as a direct object to its verb or a determiner to its noun; in BERT, some heads follow particular
+      dependency relations with fairly high accuracy.
+    </div>
+    <div class="insight insight-warn" style="margin:0">
+      <strong>Positional heads</strong> — attend to the immediately preceding token regardless of
+      content, effectively passing information one step along the sequence. (BERT also has heads that
+      attend to the following token; a causal mask forbids this in GPT-style models.)
+    </div>
+    <div class="insight insight-neurosci" style="margin:0">
+      <strong>Coreference heads</strong> — link a pronoun or repeated mention back to an earlier
+      mention of the same entity ("she" → "the scientist").
+    </div>
+    <div class="fwd-step" style="margin:0;background:var(--neg-light);border-color:var(--neg)">
+      <div class="fwd-step-header" style="background:var(--neg-light)" onclick="this.parentElement.classList.toggle('open')">
+        <div style="font-size:13px;font-weight:600;color:var(--neg);flex:1">Induction heads</div>
+        <div class="fwd-step-chevron">›</div>
+      </div>
+      <div class="fwd-step-body" style="background:var(--bg)">
+        <p style="margin-bottom:0;font-size:14px">
+          If the sequence contains "A B … A", two heads work together. First, a
+          <em>previous-token head</em> in an earlier layer writes into B's position that B is
+          preceded by A. Then, at the second A, the <em>induction head</em> looks for a position
+          preceded by A, so it attends to B and copies B into the output — predicting that
+          "A B" will repeat. <a href="https://arxiv.org/abs/2209.11895" target="_blank" rel="noopener">Olsson et al. (2022)</a> present preliminary evidence that these heads underlie much of in-context learning:
+          the model's ability to pick up on patterns demonstrated earlier in the prompt
+          (see <a href="lesson7.html#circuits">Lesson 7, tab 5</a>).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Importantly, no single head handles everything. The power comes from the ensemble — H heads
+    each contributing a different "read" of the context, each mapped back to d dimensions by its block of
+    W<sub>O</sub>, and added together into a single update to the residual stream.
+  </p>
+
+  <h3 class="subsection">Interactive: Head Specialization</h3>
+  <p>
+    The heatmap below shows attention weights for the same sentence across four hypothetical heads.
+    Row t, column s shows how much position t attends to position s (upper-triangle cells are
+    masked — causal attention only looks back). Switch heads to see the contrast: positional,
+    syntactic, duplicate-token, and global patterns all emerge from the same architecture
+    with different learned weights.
+  </p>
+
+  <div class="widget">
+    <div class="widget-title">Self-Attention Heatmap — Head Specialization</div>
+    <div class="attn-head-picker" id="head-picker"></div>
+    <div class="attn-container">
+      <div id="attn-grid-wrap"></div>
+    </div>
+    <div class="attn-legend">
+      <span>Low attention</span>
+      <div class="attn-legend-bar"></div>
+      <span>High attention</span>
+    </div>
+    <p class="viz-caption" id="attn-caption" style="margin-top:10px"></p>
+  </div>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel:</strong> Multi-head attention is conceptually similar to
+    <em>parallel processing streams</em> in sensory cortex — the ventral (what) and dorsal (where)
+    visual pathways extract different features from the same retinal input simultaneously. In
+    auditory cortex, pitch, timbre, and spatial location are processed in partially distinct
+    pathways before being integrated. The key difference is anatomical: these cortical streams
+    are physically separated, while attention heads are mathematical abstractions running in
+    parallel on the same hardware.
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 5: FEEDFORWARD ══ -->
+<div id="tab-ffn" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">Feedforward Layers and Layer Normalization</h2>
+
+  <h3 class="subsection">The Feedforward Network</h3>
+  <p>
+    After attention gathers information across positions, a <strong>position-wise feedforward
+    network</strong> processes each token's vector independently. It is a two-layer MLP: expand
+    from d to 4d dimensions, apply a nonlinearity, then project back to d. Despite its simplicity,
+    the feedforward layer holds <em>more parameters</em> than the attention layer for most models
+    (8d² vs 4d² per block).
+  </p>
+
+  <div class="insight">
+    <strong>Division of labor.</strong> Each transformer block alternates between two categorically
+    different operations. Attention is the only place tokens communicate — it routes information
+    across positions, assembling context. The feedforward network then operates on each position
+    in isolation, with no awareness of neighboring tokens, transforming what attention assembled
+    into a richer local representation. This alternation — gather, then process; gather, then
+    process — repeats L times and is the core computational motif of the transformer.
+  </div>
+
+  <div class="viz-card">
+    <div class="viz-label">Figure 5 — Feedforward Expansion and Compression</div>
+    <div class="ffn-diagram" id="ffn-diagram">
+      <!-- rendered by JS -->
+    </div>
+    <div class="viz-caption">
+      The input vector of dimension d is first expanded to 4d by the first linear layer, a
+      nonlinearity is applied element-wise, then it is compressed back to d. This expansion-compression pattern can act as a kind of memory: research suggests each hidden unit works like a key–value pair, with the key responding to particular input patterns and the value promoting likely next tokens (<a href="https://arxiv.org/abs/2012.14913" target="_blank" rel="noopener">Geva et al., 2021</a>).
+    </div>
+  </div>
+
+  <div class="eq-block"><span class="eq-label">Feedforward network</span>FFN(x) = GELU(x W<sub>up</sub>) W<sub>down</sub>    <span class="eq-comment">// x is a row vector, as in attention</span>
+
+    W<sub>up</sub>   ∈ ℝ<sup>d×4d</sup>   <span class="eq-comment">// expand: d → 4d</span>
+    W<sub>down</sub> ∈ ℝ<sup>4d×d</sup>   <span class="eq-comment">// compress: 4d → d</span></div>
+
+  <p>
+    GPT-2-era models (GPT-2, GPT-3, BERT) use <strong>GELU</strong> (Gaussian Error Linear Unit) rather
+    than ReLU; most recent models use the gated SwiGLU variant described below.
+    GELU is smoother and approximates ReLU while keeping a nonzero gradient for almost all inputs
+    (unlike ReLU's flat zero for x &lt; 0).
+    It is defined as x · Φ(x) where Φ is the standard normal CDF — in practice approximated
+    as 0.5x(1 + tanh(√(2/π)(x + 0.044715x³))).
+    For a detailed treatment of ReLU, GELU, and activation functions more broadly, see <a href="lesson1.html#activation">Lesson 1, tab 2</a>.
+  </p>
+
+  <h3 class="subsection">Gated MLPs and W<sub>gate</sub></h3>
+  <p>
+    Many recent models — LLaMA, PaLM, Mistral — replace the two-matrix FFN with a
+    <strong>gated variant</strong> that adds a third weight matrix, W<sub>gate</sub>. Instead of
+    applying the nonlinearity directly to x W<sub>up</sub>, the hidden layer is element-wise
+    multiplied (⊙) by a learned gate:
+  </p>
+  <div class="eq-block"><span class="eq-label">SwiGLU feedforward (gated)</span>FFN<sub>SwiGLU</sub>(x) = ( x W<sub>up</sub>  ⊙  SiLU(x W<sub>gate</sub>) ) W<sub>down</sub>
+
+    W<sub>up</sub>, W<sub>gate</sub> ∈ ℝ<sup>d×d<sub>ff</sub></sup>   <span class="eq-comment">// both expand d → d<sub>ff</sub></span>
+    W<sub>down</sub>             ∈ ℝ<sup>d<sub>ff</sub>×d</sup>   <span class="eq-comment">// compress d<sub>ff</sub> → d</span>
+    d<sub>ff</sub> ≈ (8/3)d                 <span class="eq-comment">// LLaMA: 3·d·d<sub>ff</sub> ≈ 8d², same as the 4d GELU FFN</span>
+
+    SiLU(z) = z · σ(z)          <span class="eq-comment">// "Sigmoid Linear Unit" — smooth gate, ≈ 0 for z ≪ 0</span></div>
+  <p>
+    The SiLU gate selectively opens or closes each hidden dimension based on the
+    current input. W<sub>gate</sub> learns which intermediate directions are worth passing through;
+    W<sub>up</sub> learns what content to project into those directions. The result is that the
+    network has dynamic, input-dependent control over which "neurons" contribute — a richer
+    computational motif than a fixed nonlinearity applied uniformly. Because the gate adds a third
+    matrix, the hidden size is reduced from 4d to about (8/3)d (as in LLaMA) so the FFN keeps
+    roughly 8d² parameters. At that matched parameter count SwiGLU outperforms plain GELU (<a href="https://arxiv.org/abs/2002.05202" target="_blank" rel="noopener">Shazeer, 2020</a>), which is
+    why it is now the dominant FFN design in frontier models.
+  </p>
+
+  <div class="insight">
+    <strong>FFN as memory:</strong> <a href="https://arxiv.org/abs/2012.14913" target="_blank" rel="noopener">Geva et al. (2021)</a> found that the feedforward layers act like key-value memories. W<sub>up</sub> columns are "keys": each fires on particular input patterns (shallow ones such as a shared last word in lower layers, more semantic ones in upper layers). W<sub>down</sub> rows are "values": what is written back to the residual stream when a key fires, which raises the probability of tokens that tend to follow that pattern. (An illustrative example: a key that fires on "The Eiffel Tower is in" could write a direction that promotes "Paris".) Later work links factual recall to such mid-layer FFN memories (<a href="lesson7.html#editing">Lesson 7, tab 7</a>).
+  </div>
+
+  <h3 class="subsection">Layer Normalization</h3>
+  <p>
+    Before each sub-layer, a copy of the residual stream is <strong>normalized</strong> across its d
+    dimensions to have zero mean and unit variance, then rescaled by learned parameters γ and β.
+    This gives every attention and feedforward sublayer an input of consistent scale, however
+    large the stream has grown — useful when composing dozens of transformations (24 sublayers in
+    GPT-2 small, 96 in GPT-2 XL). Only the copy fed into the sublayer is normalized; the residual
+    stream itself is not. Many recent models (Llama, Mistral) use <strong>RMSNorm</strong>, a
+    simpler variant that skips the mean subtraction and the shift β.
+  </p>
+
+  <div class="eq-block"><span class="eq-label">Layer normalization</span>LayerNorm(x) = γ ⊙ (x − μ) / σ  +  β
+
+    μ = mean(x)          <span class="eq-comment">// mean over d dimensions</span>
+    σ = std(x)           <span class="eq-comment">// std over d dimensions</span>
+    γ, β ∈ ℝ<sup>d</sup>          <span class="eq-comment">// learned scale and shift</span></div>
+
+  <div class="viz-card">
+    <div class="viz-label">Figure 6 — Layer Norm Step by Step</div>
+    <div class="ln-steps" id="ln-steps"></div>
+    <div class="viz-caption">
+      A 5-dimensional token vector walked through each arithmetic step. Note that γ and β
+      restore the network's ability to express any mean and scale — LayerNorm does not lock
+      representations to zero mean, it removes <em>uncontrolled</em> scale before
+      reintroducing <em>learned</em> scale. Layer norm operates independently at each
+      position, normalizing across the d feature dimensions (not across the sequence).
+    </div>
+  </div>
+
+  <h3 class="subsection">Pre-norm vs post-norm</h3>
+  <p>
+    The original "<a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">Attention Is All You Need</a>" paper (Vaswani et al., 2017) placed layer norm <em>after</em> each sublayer
+    (post-norm). Modern models — GPT-2, GPT-3, LLaMA — place it <em>before</em> (pre-norm). Pre-norm
+    is easier to train at scale because it leaves a clean identity path: each sublayer's output is
+    simply added to the stream, nothing normalizes the stream itself, and gradients pass straight
+    back through the additions. Post-norm puts a layer norm on that path after every addition,
+    which makes gradients near the output large at the start of training and calls for a careful
+    learning-rate warm-up (<a href="https://arxiv.org/abs/2002.04745" target="_blank" rel="noopener">Xiong et al., 2020</a>).
+    The price of pre-norm is that the stream's norm grows with depth, which is one reason a final
+    layer norm is applied before the unembedding.
+  </p>
+
+  <div class="insight insight-neurosci">
+    <strong>Neuroscience parallel:</strong> The FFN's expand–nonlinearity–compress structure
+    (d → 4d → d) resembles the local circuit motif of a <em>cortical column</em>: inputs
+    arrive at a position, are fanned out across a larger population of neurons (layer 4 →
+    supragranular layers), a nonlinearity shapes how strongly each unit responds, and the
+    result is projected back to a lower-dimensional output. Crucially, this processing is
+    <em>local</em> — each token's FFN computation is independent of every other position,
+    just as a cortical column's recurrent processing is largely confined to its own
+    spatial neighborhood before long-range projections (the analog of attention) carry
+    information across areas. Unlike ReLU, GELU has no hard threshold: negative inputs give
+    small nonzero outputs, so the 4d units are not silenced, and their activity is graded and
+    fairly dense. The closer analog of <a href="https://doi.org/10.1038/381607a0" target="_blank" rel="noopener">Olshausen &amp; Field's</a> sparse coding — cortex representing
+    stimuli with a small fraction of active neurons — is found not in single units but in
+    <em>features</em>: directions recovered by sparse autoencoders (<a href="lesson7.html#saes">Lesson 7, tab 8</a>).
+  </div>
+</div>
+</div>
+
+<!-- ══ TAB 6: FULL FORWARD PASS ══ -->
+<div id="tab-forward" class="tab-panel">
+<div class="content">
+  <h2 class="section-heading">The Full Forward Pass</h2>
+  <p>
+    With the pieces in place — embeddings, residual stream, attention, feedforward, layer norm —
+    we can trace exactly what happens to an input sequence from raw tokens to output logits.
+    Step through each stage below.
+  </p>
+
+  <div class="fwd-steps">
+    <div class="fwd-step open" id="step1">
+      <div class="fwd-step-header" onclick="toggleStep('step1')">
+        <div class="fwd-step-num">1</div>
+        <div class="fwd-step-title">Tokenization and Embedding Lookup</div>
+        <div class="fwd-step-chevron">›</div>
+      </div>
+      <div class="fwd-step-body">
+        <p>The input string is tokenized into T integer IDs. Each ID is used to select a row from the embedding matrix E ∈ ℝ<sup>|V|×d</sup>. A positional embedding P<sub>t</sub> is added at each position.</p>
+        <div class="fwd-tensor">Input: T token IDs</div><br>
+        <div class="fwd-tensor">E ∈ ℝ<sup>|V|×d</sup></div>
+        <span style="font-size:13px;color:var(--text3);margin:0 6px">→</span>
+        <div class="fwd-tensor">X<sup>(0)</sup> ∈ ℝ<sup>T×d</sup></div>
+        <p style="margin-top:12px;margin-bottom:0;font-size:14px">Each row of X<sup>(0)</sup> is the starting vector for that token position. All subsequent computation operates on these T vectors in parallel.</p>
+      </div>
+    </div>
+
+    <div class="fwd-step" id="step2">
+      <div class="fwd-step-header" onclick="toggleStep('step2')">
+        <div class="fwd-step-num">2</div>
+        <div class="fwd-step-title">Layer Norm (pre-norm)</div>
+        <div class="fwd-step-chevron">›</div>
+      </div>
+      <div class="fwd-step-body">
+        <p>At each block, the residual stream is first normalized by LayerNorm (layer normalization, <a href="#ffn" onclick="goTab('ffn');return false">tab 5</a>: each row centred, scaled to standard deviation 1, then given a learned scale and shift; not a logarithm). LayerNorm is applied independently at every position (row of X).</p>
+        <div class="fwd-tensor">X<sup>(<i>l</i>)</sup> ∈ ℝ<sup>T×d</sup></div>
+        <span style="font-size:13px;color:var(--text3);margin:0 6px">→</span>
+        <div class="fwd-tensor">LayerNorm(X<sup>(<i>l</i>)</sup>) ∈ ℝ<sup>T×d</sup></div>
+        <p style="margin-top:12px;margin-bottom:0;font-size:14px">The normalized version is passed into the attention and feedforward sublayers. The original X<sup>(<i>l</i>)</sup> is retained for the residual connection.</p>
+      </div>
+    </div>
+
+    <div class="fwd-step" id="step3">
+      <div class="fwd-step-header" onclick="toggleStep('step3')">
+        <div class="fwd-step-num">3</div>
+        <div class="fwd-step-title">Multi-Head Self-Attention</div>
+        <div class="fwd-step-chevron">›</div>
+      </div>
+      <div class="fwd-step-body">
+        <p>For each of H heads, Q, K, V are computed by linear projection. Attention weights A are formed as softmax(QK<sup>⊤</sup>/√d<sub>k</sub>) with causal masking applied. The attended values AV are computed, all H head outputs are concatenated, and projected by W<sub>O</sub>: the same as adding each head's own write, head<sub>h</sub> W<sup>h</sup><sub>O</sub>, plus the bias b<sub>O</sub> (<a href="#multihead" onclick="goTab('multihead');return false">tab 4</a>).</p>
+        <div class="fwd-tensor">LayerNorm(X) → Q, K, V ∈ ℝ<sup>T×d<sub>k</sub></sup> per head</div><br>
+        <div class="fwd-tensor">A = softmax(QK<sup>⊤</sup>/√d<sub>k</sub>) ∈ ℝ<sup>T×T</sup></div><br>
+        <div class="fwd-tensor">MHA(LayerNorm(X)) ∈ ℝ<sup>T×d</sup></div>
+        <p style="margin-top:12px;margin-bottom:0;font-size:14px">The attention computation has complexity O(T²d) — it scales quadratically with sequence length T, which is one motivation for efficient attention variants in long-context models.</p>
+      </div>
+    </div>
+
+    <div class="fwd-step" id="step4">
+      <div class="fwd-step-header" onclick="toggleStep('step4')">
+        <div class="fwd-step-num">4</div>
+        <div class="fwd-step-title">Residual Addition (post-attention)</div>
+        <div class="fwd-step-chevron">›</div>
+      </div>
+      <div class="fwd-step-body">
+        <p>The attention output is added back to the original (pre-norm) residual stream. This is the first residual connection in the block.</p>
+        <div class="fwd-tensor">X′ = X<sup>(<i>l</i>)</sup> + MHA(LayerNorm(X<sup>(<i>l</i>)</sup>))</div>
+        <p style="margin-top:12px;margin-bottom:0;font-size:14px">X′ now contains the original information in X<sup>(<i>l</i>)</sup> plus contextual updates from attention. The feedforward layer will read from X′.</p>
+      </div>
+    </div>
+
+    <div class="fwd-step" id="step5">
+      <div class="fwd-step-header" onclick="toggleStep('step5')">
+        <div class="fwd-step-num">5</div>
+        <div class="fwd-step-title">Feedforward Network (position-wise)</div>
+        <div class="fwd-step-chevron">›</div>
+      </div>
+      <div class="fwd-step-body">
+        <p>A second layer norm is applied to X′, then the feedforward MLP transforms each position's vector independently: expand d → 4d with W<sub>up</sub>, apply GELU, compress back 4d → d with W<sub>down</sub>. A second residual connection adds this back to X′.</p>
+        <div class="fwd-tensor">X<sup>(<i>l</i>+1)</sup> = X′ + FFN(LayerNorm(X′))</div>
+        <p style="margin-top:12px;margin-bottom:0;font-size:14px">This completes one block. X<sup>(<i>l</i>+1)</sup> is the residual stream entering the next block. Steps 2–5 repeat for each of the L blocks.</p>
+      </div>
+    </div>
+
+    <div class="fwd-step" id="step6">
+      <div class="fwd-step-header" onclick="toggleStep('step6')">
+        <div class="fwd-step-num">6</div>
+        <div class="fwd-step-title">Final Layer Norm and Unembedding</div>
+        <div class="fwd-step-chevron">›</div>
+      </div>
+      <div class="fwd-step-body">
+        <p>After the last block, a final layer norm is applied. The resulting T×d matrix is multiplied by the <strong>unembedding matrix</strong> — in GPT-2, the transpose of the embedding matrix E<sup>⊤</sup> (weight tying; Pythia, Llama and Mistral learn a separate matrix instead) — producing logits over the vocabulary for each position.</p>
+        <div class="fwd-tensor">X<sup>(L)</sup> → LayerNorm(X<sup>(L)</sup>) ∈ ℝ<sup>T×d</sup></div><br>
+        <div class="fwd-tensor">logits = LayerNorm(X<sup>(L)</sup>) · E<sup>⊤</sup> ∈ ℝ<sup>T×|V|</sup></div><br>
+        <div class="fwd-tensor">P(next token | context) = softmax(logits[T−1])</div>
+        <p style="margin-top:12px;margin-bottom:0;font-size:14px">When generating text, only the last position's logits are used to pick the next token; in training, every position's logits are scored against the token that follows it. The output is a probability distribution over all |V| tokens (50,257 for GPT-2).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="eq-block" style="margin-top:24px"><span class="eq-label">Complete forward pass summary</span>X<sup>(0)</sup> = Embed(tokens) + PosEmbed          <span class="eq-comment">// T × d</span>
+    for <i>l</i> = 0 to L−1:                          <span class="eq-comment">// block <i>l</i> maps X<sup>(<i>l</i>)</sup> → X<sup>(<i>l</i>+1)</sup></span>
+      X′     = X<sup>(<i>l</i>)</sup> + MHA(LayerNorm(X<sup>(<i>l</i>)</sup>))         <span class="eq-comment">// attention sub-layer</span>
+      X<sup>(<i>l</i>+1)</sup> = X′   + FFN(LayerNorm(X′))              <span class="eq-comment">// feedforward sub-layer</span>
+    logits = LayerNorm(X<sup>(L)</sup>) · E<sup>⊤</sup>                  <span class="eq-comment">// T × |V|</span>
+    P      = softmax(logits[T−1])             <span class="eq-comment">// next-token distribution (last position, at generation)</span></div>
+
+  <div class="insight">
+    <strong>Everything is differentiable.</strong> Every operation in this forward pass —
+    embedding lookup, matrix multiplications, layer norms, softmax, GELU — is differentiable
+    with respect to the model parameters. This means the entire stack can be trained end-to-end
+    by gradient descent, minimizing the cross-entropy loss between predicted and actual next tokens.
+  </div>
+</div>
+</div>
+
+
+<script>
+/* ── Tab switching ── */
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'attention') {} // no lazy inits needed in Tab 3
+  if (id === 'multihead') { initMHA(); initAttention(); }
+  if (id === 'ffn') initFFN();
+  if (id === 'neuro') {} // static
+}
+
+/* ── Accordion steps ── */
+function toggleStep(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+/* ── LCG deterministic random ── */
+function lcg(seed) {
+  let s = seed >>> 0;
+  return () => { s = (s * 1664525 + 1013904223) & 0x7FFFFFFF; return s / 0x7FFFFFFF; };
+}
+
+/* ── Layer Norm step-through ── */
+(function initLN() {
+  const container = document.getElementById('ln-steps');
+  if (!container) return;
+
+  const raw = [12, 3, 47, 8, 25];
+  const mu = raw.reduce((a,b)=>a+b,0)/raw.length; // 19
+  const centered = raw.map(v => v - mu);
+  const sigma = Math.sqrt(centered.map(v=>v*v).reduce((a,b)=>a+b,0)/raw.length);
+  const normed = centered.map(v => +(v/sigma).toFixed(2));
+  const gamma = [1.2, 0.9, 1.1, 1.0, 0.8];
+  const beta  = [0.1, -0.2, 0.0, 0.1, -0.1];
+  const final = normed.map((v,i) => +(v*gamma[i]+beta[i]).toFixed(2));
+
+  const steps = [
+    { label: 'input x',  values: raw,      note: `μ = ${mu.toFixed(1)},  σ = ${sigma.toFixed(2)}`, bg:'var(--accent-light)', border:'var(--accent)' },
+    { label: 'x − μ',    values: centered,  note: 'mean-centered',                                  bg:'#e07b3a18',           border:'#e07b3a88' },
+    { label: '÷ σ',      values: normed,    note: 'unit variance',                                  bg:'var(--pos-light,#2e8b5718)', border:'#2e8b5788' },
+    { label: '× γ + β',  values: final,     note: 'learned rescale (γ, β trained)',                  bg:'#8b2eb418',           border:'#8b2eb488' },
+  ];
+
+  steps.forEach(step => {
+    const row = document.createElement('div');
+    row.className = 'ln-step-row';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'ln-step-label';
+    lbl.textContent = step.label;
+    row.appendChild(lbl);
+
+    const cells = document.createElement('div');
+    cells.className = 'ln-cells';
+    step.values.forEach((v, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'ln-cell';
+      const box = document.createElement('div');
+      box.className = 'ln-cell-box';
+      box.style.background = step.bg;
+      box.style.borderColor = step.border;
+      box.textContent = v > 0 ? '+' + v : String(v).replace('-', '−');
+      const dim = document.createElement('div');
+      dim.className = 'ln-cell-dim';
+      dim.textContent = 'd' + '₀₁₂₃₄₅₆₇₈₉'[i];
+      cell.appendChild(box);
+      cell.appendChild(dim);
+      cells.appendChild(cell);
+    });
+    row.appendChild(cells);
+
+    const note = document.createElement('div');
+    note.className = 'ln-step-note';
+    note.textContent = step.note;
+    row.appendChild(note);
+
+    container.appendChild(row);
+  });
+})();
+
+/* ── Softmax demo ── */
+(function initSoftmax() {
+  const tokens = ['The', 'cat', 'sat', 'on', 'the', 'mat'];
+  const defaultScores = [0.2, 3.1, 1.4, 0.8, 0.5, 1.9];
+  const colors = ['var(--accent)', 'var(--pos)', 'var(--warn)', 'var(--neg)',
+                  'var(--accent)', 'var(--pos)'];
+
+  const inputsEl = document.getElementById('score-inputs');
+  const barsEl = document.getElementById('softmax-bars');
+  if (!inputsEl || !barsEl) return;
+
+  const inputs = [];
+  tokens.forEach((tok, i) => {
+    const row = document.createElement('div');
+    row.className = 'score-cell';
+    row.innerHTML = `<div class="score-label">"${tok}"</div>`;
+    const inp = document.createElement('input');
+    inp.type = 'number'; inp.step = '0.1'; inp.min = '-5'; inp.max = '10';
+    inp.value = defaultScores[i].toFixed(1);
+    inp.className = 'score-input';
+    inp.addEventListener('input', render);
+    inputs.push(inp);
+    row.appendChild(inp);
+    inputsEl.appendChild(row);
+  });
+
+  // bar rows
+  const barRows = tokens.map((tok, i) => {
+    const row = document.createElement('div');
+    row.className = 'softmax-row';
+    const label = document.createElement('div');
+    label.className = 'softmax-token';
+    label.textContent = `"${tok}"`;
+    const track = document.createElement('div');
+    track.className = 'softmax-track';
+    const fill = document.createElement('div');
+    fill.className = 'softmax-fill';
+    fill.style.background = colors[i];
+    track.appendChild(fill);
+    const pct = document.createElement('div');
+    pct.className = 'softmax-pct';
+    row.appendChild(label); row.appendChild(track); row.appendChild(pct);
+    barsEl.appendChild(row);
+    return {fill, pct};
+  });
+
+  function render() {
+    const scores = inputs.map(inp => parseFloat(inp.value) || 0);
+    const maxS = Math.max(...scores);
+    const exps = scores.map(s => Math.exp(s - maxS));
+    const sum = exps.reduce((a,b)=>a+b, 0);
+    const probs = exps.map(e => e/sum);
+    probs.forEach((p, i) => {
+      barRows[i].fill.style.width = (p * 100).toFixed(1) + '%';
+      barRows[i].pct.textContent = (p * 100).toFixed(1) + '%';
+    });
+  }
+  render();
+})();
+
+/* ── Attention heatmap ── */
+let attnInited = false;
+function initAttention() {
+  if (attnInited) return;
+  attnInited = true;
+
+  const tokens = ['The', 'cat', 'sat', 'on', 'the', 'mat'];
+  const T = tokens.length;
+
+  // four head patterns (hand-crafted to be illustrative)
+  const heads = [
+    { label: 'Head 0 — Positional', color: [43,85,164],
+      desc: 'Mostly attends to adjacent tokens. Each position\'s highest weight goes to the immediately preceding token.',
+      weights: [
+        [1.0, 0, 0, 0, 0, 0],
+        [0.7, 0.3, 0, 0, 0, 0],
+        [0.1, 0.8, 0.1, 0, 0, 0],
+        [0.05, 0.1, 0.75, 0.1, 0, 0],
+        [0.05, 0.05, 0.1, 0.7, 0.1, 0],
+        [0.05, 0.05, 0.05, 0.1, 0.75, 0]
+      ]
+    },
+    { label: 'Head 1 — Syntactic', color: [26,122,78],
+      desc: 'The verb "sat" attends strongly to its subject "cat"; the noun "mat" looks back partly to its preposition "on".',
+      weights: [
+        [1.0, 0, 0, 0, 0, 0],
+        [0.1, 0.9, 0, 0, 0, 0],
+        [0.05, 0.7, 0.25, 0, 0, 0],
+        [0.05, 0.05, 0.1, 0.8, 0, 0],
+        [0.4, 0.1, 0.05, 0.1, 0.35, 0],
+        [0.05, 0.05, 0.05, 0.2, 0.1, 0.55]
+      ]
+    },
+    { label: 'Head 2 — Duplicate-token', color: [160,96,16],
+      desc: '"the" (position 4) attends back to "The" (position 0), an earlier copy of the same word — a duplicate-token pattern.',
+      weights: [
+        [1.0, 0, 0, 0, 0, 0],
+        [0.15, 0.85, 0, 0, 0, 0],
+        [0.1, 0.6, 0.3, 0, 0, 0],
+        [0.1, 0.1, 0.65, 0.15, 0, 0],
+        [0.6, 0.05, 0.05, 0.1, 0.2, 0],
+        [0.1, 0.1, 0.05, 0.35, 0.05, 0.35]
+      ]
+    },
+    { label: 'Head 3 — Global', color: [184,48,48],
+      desc: 'More diffuse attention — later tokens integrate information broadly across the full context seen so far.',
+      weights: [
+        [1.0, 0, 0, 0, 0, 0],
+        [0.5, 0.5, 0, 0, 0, 0],
+        [0.35, 0.35, 0.3, 0, 0, 0],
+        [0.25, 0.25, 0.25, 0.25, 0, 0],
+        [0.2, 0.2, 0.2, 0.2, 0.2, 0],
+        [0.18, 0.18, 0.18, 0.18, 0.15, 0.13]
+      ]
+    }
+  ];
+
+  let activeHead = 0;
+
+  const picker = document.getElementById('head-picker');
+  const gridWrap = document.getElementById('attn-grid-wrap');
+  const caption = document.getElementById('attn-caption');
+
+  heads.forEach((h, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'attn-head-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = `Head ${i}`;
+    btn.onclick = () => {
+      document.querySelectorAll('.attn-head-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      activeHead = i;
+      renderGrid();
+    };
+    picker.appendChild(btn);
+  });
+
+  function renderGrid() {
+    const h = heads[activeHead];
+    const [r,g,b] = h.color;
+    gridWrap.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'attn-grid';
+    grid.style.gridTemplateColumns = `80px repeat(${T}, 36px)`;
+
+    // header row
+    const emptyCorner = document.createElement('div');
+    emptyCorner.style.cssText = 'width:80px;font-size:10px;color:var(--text3);text-align:right;padding-right:8px;align-self:end;padding-bottom:4px';
+    emptyCorner.textContent = 'from ↓ to →';
+    grid.appendChild(emptyCorner);
+    tokens.forEach(tok => {
+      const hdr = document.createElement('div');
+      hdr.className = 'attn-header';
+      hdr.textContent = tok;
+      grid.appendChild(hdr);
+    });
+
+    // data rows
+    h.weights.forEach((row, rowIdx) => {
+      const rowLabel = document.createElement('div');
+      rowLabel.className = 'attn-row-label';
+      rowLabel.textContent = tokens[rowIdx];
+      grid.appendChild(rowLabel);
+      row.forEach((w, colIdx) => {
+        const cell = document.createElement('div');
+        cell.className = 'attn-cell';
+        if (colIdx > rowIdx) {
+          cell.style.background = 'var(--surface2)';
+          cell.style.opacity = '0.4';
+        } else {
+          const alpha = 0.08 + w * 0.92;
+          cell.style.background = `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+          cell.textContent = w > 0.05 ? (w*100).toFixed(0)+'%' : '';
+          cell.style.color = w > 0.45 ? '#fff' : `rgba(${r},${g},${b},1)`;
+          cell.style.fontSize = '9px';
+        }
+        grid.appendChild(cell);
+      });
+    });
+
+    gridWrap.appendChild(grid);
+    caption.textContent = h.desc;
+  }
+  renderGrid();
+}
+
+/* ── Multi-head diagram ── */
+let mhaInited = false;
+function initMHA() {
+  if (mhaInited) return;
+  mhaInited = true;
+  const container = document.getElementById('mha-heads-row');
+  if (!container) return;
+  const headDefs = [
+    {n:'Head 0', cls:'', role:'Positional'},
+    {n:'Head 1', cls:'head-2', role:'Syntactic'},
+    {n:'Head 2', cls:'head-3', role:'Duplicate-token'},
+    {n:'Head 3', cls:'head-4', role:'Global'},
+    {n:'Head 4', cls:'', role:'…'},
+    {n:'Head H−1', cls:'head-3', role:'…'}
+  ];
+  headDefs.forEach(h => {
+    const el = document.createElement('div');
+    el.className = 'mha-head ' + h.cls;
+    el.innerHTML = `<div style="font-weight:600;font-size:11px">${h.n}</div><div style="font-size:10px;opacity:0.8;margin-top:2px">${h.role}</div>`;
+    container.appendChild(el);
+  });
+}
+
+/* ── FFN diagram ── */
+let ffnInited = false;
+function initFFN() {
+  if (ffnInited) return;
+  ffnInited = true;
+  const container = document.getElementById('ffn-diagram');
+  if (!container) return;
+
+  function makeLayer(label, n, color, maxN, dimLabel) {
+    const col = document.createElement('div');
+    col.className = 'ffn-layer';
+    const lbl = document.createElement('div');
+    lbl.className = 'ffn-layer-label';
+    lbl.textContent = label;
+    const nodes = document.createElement('div');
+    nodes.className = 'ffn-nodes';
+    const showN = Math.min(n, maxN);
+    for (let i = 0; i < showN; i++) {
+      const node = document.createElement('div');
+      node.className = 'ffn-node';
+      node.style.background = color;
+      const h = 6;
+      node.style.height = h + 'px';
+      node.style.opacity = (0.3 + (i/showN)*0.7).toFixed(2);
+      nodes.appendChild(node);
+    }
+    const dim = document.createElement('div');
+    dim.className = 'ffn-dim-label';
+    dim.textContent = dimLabel;
+    col.appendChild(lbl); col.appendChild(nodes); col.appendChild(dim);
+    return col;
+  }
+
+  function makeArrow(label) {
+    const el = document.createElement('div');
+    el.className = 'ffn-layer';
+    el.innerHTML = `<div class="ffn-arrow" style="align-self:center;margin-top:20px">→</div><div class="ffn-layer-label" style="text-align:center;margin-top:4px">${label}</div>`;
+    return el;
+  }
+
+  container.appendChild(makeLayer('Input', 16, 'var(--accent)', 16, 'd'));
+  container.appendChild(makeArrow('W<sub>up</sub> + GELU'));
+  container.appendChild(makeLayer('Hidden', 32, 'var(--warn)', 32, '4d'));
+  container.appendChild(makeArrow('W<sub>down</sub>'));
+  container.appendChild(makeLayer('Output', 16, 'var(--pos)', 16, 'd'));
+}
+
+/* ── init on page load for visible tab ── */
+window.addEventListener('DOMContentLoaded', () => {
+  // softmax is always inited (in first tab vicinity)
+  // no-op for overview tab
+});
+</script>
+
+<script>
+// Open a tab from the link, e.g. ...#tabid
+window.addEventListener('load', () => {
+  const h = location.hash.slice(1);
+  if (!h) return;
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === h || b.dataset.tab === 'tab-' + h ||
+    (b.getAttribute('onclick') || '').includes("'" + h + "'"));
+  if (b) b.click();
+});
+function goTab(id) {
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === id || b.dataset.tab === 'tab-' + id ||
+    (b.getAttribute('onclick') || '').includes("'" + id + "'"));
+  if (b) { b.click(); window.scrollTo(0, 0); }
+}
+</script>
+</body>
+</html>

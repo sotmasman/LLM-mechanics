@@ -1,0 +1,663 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lesson 8 · Neural Systems</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F7F5F0; --surface: #EDEAE2; --surface2: #E0DDD4;
+    --text: #1A1916; --text2: #504E48; --text3: #7A7870;
+    --accent: #2455A4; --accent-light: #D8E4F7;
+    --pos: #1A7A4E; --pos-light: #D2EFE2;
+    --neg: #B83030; --neg-light: #F7DEDE;
+    --warn: #A06010; --warn-light: #FDF0DC;
+    --purple: #6D3ABF; --purple-light: #EDE9FB;
+    --border: #D4D1C8; --border2: #C0BDB4;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+      --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+      --accent: #6B9EF8; --accent-light: #1A2A4A;
+      --pos: #4ABA82; --pos-light: #0D2E1E;
+      --neg: #F08080; --neg-light: #2E0E0E;
+      --warn: #F0C060; --warn-light: #2A1E08;
+      --purple: #B08AFF; --purple-light: #1E1340;
+      --border: #38362E; --border2: #4A4840;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+    --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+    --accent: #6B9EF8; --accent-light: #1A2A4A;
+    --pos: #4ABA82; --pos-light: #0D2E1E;
+    --neg: #F08080; --neg-light: #2E0E0E;
+    --warn: #F0C060; --warn-light: #2A1E08;
+    --purple: #B08AFF; --purple-light: #1E1340;
+    --border: #38362E; --border2: #4A4840;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    margin: 0; padding: 0 0 60px; line-height: 1.65;
+  }
+
+  /* ── Lesson switcher ── */
+  .lesson-switcher { display: flex; align-items: center; gap: 12px; padding: 12px 24px 4px; flex-wrap: wrap; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .ls-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); white-space: nowrap; }
+  .ls-links { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ls-btn { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 4px 13px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); text-decoration: none; transition: background .15s, border-color .15s, color .15s; }
+  .ls-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+  .ls-active { background: var(--accent); border-color: var(--accent); color: #fff; cursor: default; pointer-events: none; }
+
+  /* ── Page header ── */
+  .page-header {
+    padding: 36px 24px 24px; border-bottom: 1px solid var(--border);
+    max-width: 780px; margin: 0 auto;
+  }
+  .lesson-label { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .page-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 4vw, 30px); font-weight: 400;
+    color: var(--text); margin: 0 0 10px; text-wrap: balance; line-height: 1.25;
+  }
+  .page-header .subtitle { font-size: 15px; color: var(--text2); max-width: 620px; margin: 0; }
+
+  /* ── Tab nav ── */
+  .tab-nav {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    padding: 16px 24px 0; border-bottom: 1px solid var(--border);
+    max-width: 780px; margin: 0 auto;
+  }
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 8px 14px; border: none; background: transparent; color: var(--text2);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0; cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s, background .15s; white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text); background: var(--surface); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Tab panels ── */
+  .tab-panel { display: none; max-width: 780px; margin: 0 auto; padding: 28px 24px; }
+  .tab-panel.active { display: block; }
+
+  h2 {
+    font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400;
+    color: var(--text); margin: 0 0 14px; text-wrap: balance;
+  }
+  h3 {
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--text); margin: 30px 0 10px;
+  }
+  h3:first-child, h3.first { margin-top: 0; }
+  p { margin: 0 0 14px; color: var(--text2); font-size: 14.5px; }
+  p:last-child { margin-bottom: 0; }
+  ul, ol { margin: 0 0 14px; padding-left: 20px; color: var(--text2); font-size: 14px; }
+  li { margin-bottom: 6px; }
+  li:last-child { margin-bottom: 0; }
+
+  /* ── Insight boxes ── */
+  .insight {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 14px; margin: 18px 0; font-size: 14px; color: var(--text2);
+  }
+  .insight strong { color: var(--accent); }
+  .insight-pos { background: var(--pos-light); border-color: var(--pos); }
+  .insight-pos strong { color: var(--pos); }
+  .insight-warn { background: var(--warn-light); border-color: var(--warn); }
+  .insight-warn strong { color: var(--warn); }
+  .insight-neg { background: var(--neg-light); border-color: var(--neg); }
+  .insight-neg strong { color: var(--neg); }
+  .insight-purple { background: var(--purple-light); border-color: var(--purple); }
+  .insight-purple strong { color: var(--purple); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin: 16px 0;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
+  }
+
+  /* ── Two-col grid ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  @media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── Compare grid ── */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  @media (max-width: 520px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-col {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px;
+  }
+  .compare-col-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--text3); margin-bottom: 10px;
+  }
+  .compare-col ul { margin: 0; }
+
+  /* ── Step list ── */
+  .step-list { margin: 14px 0; display: flex; flex-direction: column; gap: 12px; }
+  .step-item { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; }
+  .step-num {
+    width: 22px; height: 22px; background: var(--accent); color: #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .step-body { font-size: 14px; color: var(--text2); min-width: 0; }
+  .step-body strong { color: var(--text); }
+
+  /* ── Data table ── */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
+  th {
+    background: var(--surface2); color: var(--text3); font-weight: 600;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border2);
+  }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Widget ── */
+  .widget {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); margin: 18px 0; overflow: hidden;
+  }
+  .widget-title {
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    padding: 12px 16px 0;
+  }
+
+  /* ── Eq block ── */
+  .eq {
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    background: var(--surface2); border-radius: var(--radius-sm);
+    padding: 10px 14px; margin: 12px 0; color: var(--text);
+    overflow-x: auto; white-space: pre;
+  }
+
+  /* ── Paper header ── */
+  .paper-header {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px; margin-bottom: 24px;
+  }
+  .paper-title {
+    font-family: 'DM Serif Display', serif; font-size: 17px; font-weight: 400;
+    color: var(--text); margin: 0 0 6px; line-height: 1.35; text-wrap: balance;
+  }
+  .paper-meta { font-size: 12.5px; color: var(--text3); }
+  .paper-meta em { font-style: normal; color: var(--accent); }
+  .tab-panel a { color: var(--accent); }
+</style>
+
+<!-- LESSON NAV -->
+<nav class="lesson-switcher" aria-label="Course navigation">
+  <a class="ls-label" href="index.html" style="text-decoration:none">LLM Mechanics</a>
+  <div class="ls-links">
+    <a href="lesson1.html" class="ls-btn">1 · Foundations</a>
+    <a href="lesson2.html" class="ls-btn">2 · Architecture</a>
+    <a href="lesson3.html" class="ls-btn">3 · Forward Pass</a>
+    <a href="lesson4.html" class="ls-btn">4 · Training</a>
+    <a href="lesson5.html" class="ls-btn">5 · Representations</a>
+    <a href="lesson6.html" class="ls-btn">6 · Limitations</a>
+    <a href="lesson7.html" class="ls-btn">7 · Mech Interp</a>
+    <span class="ls-btn ls-active">8 · Neural Systems</span>
+    <a href="lesson9.html" class="ls-btn">9 · Hands-On</a>
+  </div>
+</nav>
+
+<!-- ── Page header ── -->
+<header class="page-header">
+  <div class="lesson-label">Lesson 8</div>
+  <h1>LLMs as Neural Systems to Study: The Electrophysiology Angle</h1>
+  <p class="subtitle">What does it look like to study a language model the way a neuroscientist studies a brain? From the fundamental analogy to the geometry of residual stream dynamics.</p>
+</header>
+
+<!-- ── Tab nav ── -->
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="tab-analogy">1 · The Analogy</button>
+  <button class="tab-btn" data-tab="tab-parallels">2 · Neuro Parallels</button>
+  <button class="tab-btn" data-tab="tab-fernando">3 · Fernando &amp; Guitchounts 2025</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TAB 1 · THE ANALOGY
+     ═══════════════════════════════════════════════════════════ -->
+<section class="tab-panel active" id="tab-analogy">
+
+  <h2>The Fundamental Analogy</h2>
+  <p>Neuroscience spent much of the 20th century trying to understand how populations of neurons represent and transform information. The core empirical tool was the electrode: place a probe near neurons, record their voltage spikes, and try to infer what the population is "computing." Decades of progress followed — from simple receptive fields in V1 to population vectors in motor cortex to place cells in hippocampus.</p>
+  <p>LLMs offer something stranger and more tractable: a neural network with the same functional challenge (mapping inputs to outputs via learned representations), but with <em>full observability</em>. We can record from every "neuron" at every "timestep." We can replay stimuli exactly. We can intervene with surgical precision. We can examine the weights that produced the behavior. In many ways, an LLM is the dream experiment that biological neuroscience never gets to run.</p>
+
+  <div class="insight">
+    <strong>The core analogy:</strong> <strong style="color:#fff">Tokens</strong> in an LLM correspond roughly to <strong style="color:#fff">stimuli</strong>. <strong style="color:#fff">Layers</strong> correspond to <strong style="color:#fff">time</strong> (or to the depth of processing). The <strong style="color:#fff"><em>d</em> dimensions</strong> of the residual stream are most analogous to <strong style="color:#fff">neurons</strong>. The <strong style="color:#fff">residual stream</strong> at each layer is the <strong style="color:#fff">population state</strong> — a high-dimensional vector summarizing "what the network knows" at that moment. Studying how this state evolves from layer to layer is, structurally, very similar to studying how neural population activity evolves over time during a task. For autoregressive generation, each <strong style="color:#fff">forward pass</strong> is analogous to a <strong style="color:#fff">trial</strong> dependent on the previous trial history. While these analogies are imperfect, we will explore if any concepts from electrophysiology are potentially useful for studying LLMs.
+  </div>
+
+  <h3>What "recording" looks like in an LLM</h3>
+  <p>In classical electrophysiology, you insert an electrode and record a spike train — a sequence of action potentials over time. In a modern large-scale recording experiment (e.g., silicon probes), you might record from hundreds or thousands of neurons simultaneously, capturing a population trajectory through high-dimensional state space as the animal performs a task.</p>
+  <p>In an LLM, the analog is to extract the residual stream activations at each layer. For a model with <em>d</em> dimensions and <em>L</em> layers processing a sequence of <em>T</em> input tokens, you obtain a tensor of shape T × L × d. Each token's trajectory through layers is a path through ℝ<sup>d</sup> — a curve in high-dimensional space that starts at the token embedding and ends at the final residual state, which the unembedding maps to the pre-softmax logits. This is, literally, a population trajectory.</p>
+
+  <figure style="margin:20px 0 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 10px;overflow:hidden;">
+    <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">Recording from the Residual Stream</div>
+    <div style="overflow-x:auto;">
+      <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;min-width:540px;display:block;"
+           font-family="'DM Sans', system-ui, sans-serif" font-size="13">
+        <defs>
+          <marker id="rs-stream" markerWidth="7" markerHeight="7" refX="6.5" refY="3.5" orient="auto">
+            <path d="M0,0.5 L0,6.5 L7,3.5 z" fill="var(--accent)"/>
+          </marker>
+          <marker id="rs-probe" markerWidth="7" markerHeight="7" refX="6.5" refY="3.5" orient="auto">
+            <path d="M0,0.5 L0,6.5 L7,3.5 z" fill="var(--pos)"/>
+          </marker>
+        </defs>
+
+        <!-- context label -->
+        <text x="16" y="16" fill="var(--text3)" font-size="10" font-weight="600" letter-spacing="0.07em">FOR EACH TOKEN POSITION t IN THE INPUT SEQUENCE</text>
+
+        <!-- ── blocks ── -->
+        <rect x="16" y="28" width="78" height="36" rx="6" fill="var(--surface2)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="55" y="46" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="500">Embed</text>
+        <text x="55" y="58" text-anchor="middle" fill="var(--text3)" font-size="10">token → ℝᵈ</text>
+
+        <rect x="154" y="28" width="48" height="36" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="178" y="50" text-anchor="middle" fill="var(--text)" font-size="11" font-weight="500">Layer 0</text>
+
+        <rect x="260" y="28" width="48" height="36" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="284" y="50" text-anchor="middle" fill="var(--text)" font-size="11" font-weight="500">Layer 1</text>
+
+        <text x="368" y="53" text-anchor="middle" fill="var(--text3)" font-size="22" letter-spacing="2">···</text>
+
+        <rect x="396" y="28" width="66" height="36" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="429" y="50" text-anchor="middle" fill="var(--text)" font-size="11" font-weight="500">Layer L−1</text>
+
+        <rect x="516" y="28" width="82" height="36" rx="6" fill="var(--surface2)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="557" y="46" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="500">Unembed</text>
+        <text x="557" y="58" text-anchor="middle" fill="var(--text3)" font-size="10">ℝᵈ → vocab</text>
+
+        <!-- ── residual stream arrows (all at y=46) ── -->
+        <line x1="94" y1="46" x2="149" y2="46" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#rs-stream)"/>
+        <line x1="202" y1="46" x2="255" y2="46" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#rs-stream)"/>
+        <line x1="308" y1="46" x2="350" y2="46" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5,3"/>
+        <line x1="384" y1="46" x2="391" y2="46" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#rs-stream)"/>
+        <line x1="462" y1="46" x2="511" y2="46" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#rs-stream)"/>
+        <line x1="598" y1="46" x2="650" y2="46" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="654" y="50" fill="var(--accent)" font-size="11" font-weight="600">logits</text>
+
+        <!-- ── stream labels (above arrows) ── -->
+        <text x="122" y="37" text-anchor="middle" fill="var(--accent)" font-size="11" font-style="italic">x₀</text>
+        <text x="229" y="37" text-anchor="middle" fill="var(--accent)" font-size="11" font-style="italic">x₁</text>
+        <text x="326" y="37" text-anchor="middle" fill="var(--accent)" font-size="11" font-style="italic">x₂</text>
+        <text x="486" y="37" text-anchor="middle" fill="var(--accent)" font-size="11" font-style="italic">x<tspan baseline-shift="sub" font-size="8">L</tspan></text>
+
+        <!-- ── tap circles (junction dots on the stream) ── -->
+        <circle cx="122" cy="46" r="4" fill="var(--pos)" opacity="0.85"/>
+        <circle cx="229" cy="46" r="4" fill="var(--pos)" opacity="0.85"/>
+        <circle cx="484" cy="46" r="4" fill="var(--pos)" opacity="0.85"/>
+
+        <!-- ── probe lines (tap off downward) ── -->
+        <line x1="122" y1="50" x2="122" y2="113" stroke="var(--pos)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#rs-probe)"/>
+        <line x1="229" y1="50" x2="229" y2="113" stroke="var(--pos)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#rs-probe)"/>
+        <line x1="484" y1="50" x2="484" y2="113" stroke="var(--pos)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#rs-probe)"/>
+
+        <!-- ── vector representations (6 cells × 9px, 1px gap) ── -->
+        <!-- h₀ at x=122, left=113 -->
+        <g transform="translate(113, 115)">
+          <rect y="0"  width="18" height="9" rx="1" fill="var(--neg)"     opacity="0.80"/>
+          <rect y="10" width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.45"/>
+          <rect y="20" width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.90"/>
+          <rect y="30" width="18" height="9" rx="1" fill="var(--surface2)"/>
+          <rect y="40" width="18" height="9" rx="1" fill="var(--neg)"     opacity="0.55"/>
+          <rect y="50" width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.75"/>
+          <rect x="-3" y="-3" width="24" height="66" rx="3" fill="none" stroke="var(--pos)" stroke-width="1.2"/>
+        </g>
+
+        <!-- h₁ at x=229, left=220 -->
+        <g transform="translate(220, 115)">
+          <rect y="0"  width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.60"/>
+          <rect y="10" width="18" height="9" rx="1" fill="var(--neg)"     opacity="0.75"/>
+          <rect y="20" width="18" height="9" rx="1" fill="var(--surface2)"/>
+          <rect y="30" width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.90"/>
+          <rect y="40" width="18" height="9" rx="1" fill="var(--neg)"     opacity="0.40"/>
+          <rect y="50" width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.65"/>
+          <rect x="-3" y="-3" width="24" height="66" rx="3" fill="none" stroke="var(--pos)" stroke-width="1.2"/>
+        </g>
+
+        <!-- h_N at x=484, left=475 -->
+        <g transform="translate(475, 115)">
+          <rect y="0"  width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.95"/>
+          <rect y="10" width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.70"/>
+          <rect y="20" width="18" height="9" rx="1" fill="var(--neg)"     opacity="0.35"/>
+          <rect y="30" width="18" height="9" rx="1" fill="var(--surface2)"/>
+          <rect y="40" width="18" height="9" rx="1" fill="var(--accent)"  opacity="0.80"/>
+          <rect y="50" width="18" height="9" rx="1" fill="var(--neg)"     opacity="0.65"/>
+          <rect x="-3" y="-3" width="24" height="66" rx="3" fill="none" stroke="var(--pos)" stroke-width="1.2"/>
+        </g>
+
+        <!-- dimension annotation -->
+        <text x="504" y="145" fill="var(--text3)" font-size="10">← d values</text>
+        <text x="504" y="158" fill="var(--text3)" font-size="10">(e.g. 768 or</text>
+        <text x="504" y="171" fill="var(--text3)" font-size="10">4 096 or …)</text>
+
+        <!-- ── vector labels ── -->
+        <text x="122" y="189" text-anchor="middle" fill="var(--text2)" font-size="12" font-style="italic">x₀</text>
+        <text x="122" y="200" text-anchor="middle" fill="var(--text3)" font-size="10">∈ ℝ<tspan dy="-4" font-size="8">d</tspan></text>
+
+        <text x="229" y="189" text-anchor="middle" fill="var(--text2)" font-size="12" font-style="italic">x₁</text>
+        <text x="229" y="200" text-anchor="middle" fill="var(--text3)" font-size="10">∈ ℝ<tspan dy="-4" font-size="8">d</tspan></text>
+
+        <text x="484" y="189" text-anchor="middle" fill="var(--text2)" font-size="12" font-style="italic">x<tspan baseline-shift="sub" font-size="9">L</tspan></text>
+        <text x="484" y="200" text-anchor="middle" fill="var(--text3)" font-size="10">∈ ℝ<tspan dy="-4" font-size="8">d</tspan></text>
+
+        <!-- ── legend ── -->
+        <circle cx="20" cy="218" r="3.5" fill="var(--pos)" opacity="0.85"/>
+        <line x1="23.5" y1="218" x2="44" y2="218" stroke="var(--pos)" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <path d="M40,214 L40,222 L46,218 z" fill="var(--pos)"/>
+        <text x="51" y="222" fill="var(--text3)" font-size="10">= read out the activation vector at this (layer, position)</text>
+      </svg>
+    </div>
+    <figcaption style="font-size:12px;color:var(--text3);margin-top:8px;line-height:1.55;"><strong>Figure 1.</strong> The residual stream x<sub><i>l</i></sub><sup>(t)</sup> ∈ ℝᵈ exists at every layer <i>l</i> and token position t. Layers are numbered from 0 to L − 1 (L = number of layers, e.g. 0–11 in GPT-2 small); x<sub><i>l</i></sub> enters layer <i>l</i>, and x<sub>L</sub> leaves the last one. (Our scripts and figures name each point by the layer whose output it is, after the embedding "emb": x<sub><i>l</i></sub> here is their point <i>l</i> − 1, and x<sub>L</sub> their last layer.) Recording from it produces a dataset of vectors (one per layer, position, and input), directly analogous to a population recording in neuroscience — but with full coverage, zero noise, and perfect repeatability.</figcaption>
+  </figure>
+
+  <h3>What's different from biological neuroscience</h3>
+
+  <div class="compare-grid">
+    <div class="compare-col" style="background:var(--pos-light);border-color:var(--pos);">
+      <div class="compare-col-title" style="color:var(--pos);">Advantages over biology</div>
+      <ul>
+        <li><strong>Full observability.</strong> Every dimension at every layer, every token. No sampling bias, no dropped spikes.</li>
+        <li><strong>Zero noise.</strong> The same input gives identical activations. No trial-to-trial variability to average over.</li>
+        <li><strong>Ground truth connectivity.</strong> We have the weight matrices. We know exactly how information flows — in principle.</li>
+        <li><strong>Arbitrary intervention.</strong> Clamp, ablate, patch, or perturb any activation at any layer, any token, any dimension. Optogenetics with infinite precision.</li>
+        <li><strong>Instant replay.</strong> Re-run the same prompt as many times as you want, with or without changes.</li>
+      </ul>
+    </div>
+    <div class="compare-col" style="background:var(--neg-light);border-color:var(--neg);">
+      <div class="compare-col-title" style="color:var(--neg);">Challenges that remain</div>
+      <ul>
+        <li><strong>No clear "neuron" unit.</strong> Individual residual stream dimensions aren't interpretable on their own. Polysemanticity means features are distributed across dimensions.</li>
+        <li><strong>No natural timescale.</strong> Layers aren't milliseconds. There's no oscillation, no theta rhythm, no obvious timescale to anchor the dynamics.</li>
+        <li><strong>Training data is opaque.</strong> The model's "experience" (the training corpus) is vast, heterogeneous, and not under our control.</li>
+        <li><strong>No obvious homolog.</strong> Which part of the LLM corresponds to hippocampus? Prefrontal cortex? It's unclear, and forcing the mapping may mislead.</li>
+        <li><strong>Functional vs. mechanistic understanding.</strong> Knowing what a component computes doesn't tell us why it was necessary or how it generalizes.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Open questions</h3>
+  <p>The analogy is productive but generates as many questions as it answers.</p>
+
+  <div class="card">
+    <div class="card-title">Key open questions</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-body"><strong>What is the right vocabulary?</strong> Neuroscience settled on tuning curves, population codes, attractors, and trajectories. Which of these transfer cleanly to LLMs? Which need modification? Which are actively misleading?</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-body"><strong>What counts as a "finding"?</strong> Discovering that V1 neurons respond to oriented edges is a finding because it constrains computational theories. What is the LLM equivalent? Does showing that mid-layer MLPs store factual associations constrain anything important?</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-body"><strong>How do we validate?</strong> Neuroscience validates by intervention and by behavior. LLMs allow arbitrary intervention — but what is the right behavioral read-out? Token probability? Task performance? Out-of-distribution generalization?</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-body"><strong>Do LLMs have "states"?</strong> Neural circuits pass through distinct dynamical states (rest, preparation, execution, recovery). Do LLMs have analogs? Do different prompt types produce qualitatively different trajectory shapes?</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-body"><strong>What's the right null model?</strong> When we see something interesting in neural data, we compare to a null (shuffled spikes, random connectivity). What's the null for an LLM's residual stream? A random transformer of the same size? A model trained on noise?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Learning across trials:</strong> A central interest in systems neuroscience is how population activity reorganizes across trials during learning. An analogous question exists for LLMs: how do residual stream dynamics change across training steps? This is the focus of <strong>developmental interpretability</strong> — a nascent subfield that has already found striking results, including sudden phase transitions in circuit formation (e.g., the abrupt emergence of induction heads) and late-stage generalization long after training loss converges (grokking). It remains underdeveloped relative to post-training analysis, largely because it requires model checkpoints saved throughout training. Few model families release them, but some do: <a href="https://arxiv.org/abs/2304.01373" target="_blank">Pythia</a> (154 checkpoints per model) and <a href="https://arxiv.org/abs/2402.00838" target="_blank">OLMo</a>.
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TAB 2 · NEURO PARALLELS
+     ═══════════════════════════════════════════════════════════ -->
+<section class="tab-panel" id="tab-parallels">
+
+  <h2>Neuroscience parallels in Lessons 1–7</h2>
+  <p>Lessons 1–7 compared language models with brains in many places, usually in a box at the end of a tab. This tab collects them in one table, grouped by topic, with the lesson and tab where each first appeared (later tabs that return to it are listed below the link). The last column gives the caveats each lesson stated itself, then further limitations that the lessons did not state.</p>
+  <p>Three patterns run through the table. Most parallels are <strong>structural</strong> (similar shapes of computation or representation), not claims of shared mechanism. Many break on the same few differences: brains are <strong>recurrent</strong> and learn <strong>continually</strong> with <strong>local</strong> rules, while a transformer runs one feedforward pass with frozen weights trained by backpropagation. And the strongest parallels are <strong>methodological</strong>: the same analysis tools work on both systems, with the same pitfalls.</p>
+
+  <div class="table-wrap">
+    <style>#tab-parallels table.parallels td:nth-child(4) { font-size: calc(13.5px - 1pt); } .tab-panel#tab-parallels { max-width: 1240px; }</style>
+    <table class="parallels" style="min-width:760px;">
+      <thead><tr><th style="width:20%">In the model</th><th style="width:22%">In the brain</th><th style="width:13%">First discussed</th><th>Caveats and limitations</th></tr></thead>
+      <tbody>
+      <tr><td colspan="4" style="background:var(--surface);font-weight:600;color:var(--text);font-size:12.5px;letter-spacing:.04em;">Units and learning</td></tr>
+<tr><td><strong style="color:var(--text)">1.</strong> Artificial neuron</td><td>Biological neuron: weights as synaptic strengths, the weighted sum as dendritic summation, ReLU as a firing threshold</td><td><a href="lesson1.html#neuron">L1 · tab 1</a><br><small>The Neuron</small><br><small style="color:var(--text3)">also <a href="lesson1.html#activation">L1 · tab 2</a>; <a href="lesson5.html#neuro">L5 · tab 5</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> No spikes, refractory period or temporal dynamics: a unit is an instantaneous function evaluated once per forward pass (<a href="lesson1.html#neuron">L1 · tab 1</a>); firing rate and membrane potential do not map cleanly onto activations (<a href="lesson5.html#neuro">L5 · tab 5</a>).<br><strong style="color:var(--text)">Also:</strong> Dendrites compute nonlinearly (local NMDA and calcium spikes), so one pyramidal cell behaves more like a small network. Real neurons are excitatory or inhibitory (Dale's principle), while an artificial unit mixes signs freely and can flip them in training. GELU units output negative values, which no firing rate can.</td></tr>
+<tr><td><strong style="color:var(--text)">2.</strong> Activation function</td><td>A neuron's input–output (f–I) curve; the sigmoid was modelled on it, ReLU fits a linear-threshold neuron</td><td><a href="lesson1.html#activation">L1 · tab 2</a><br><small>Activation Functions</small><br><small style="color:var(--text3)">also <a href="lesson2.html#ffn">L2 · tab 5</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> Neither captures spiking, adaptation or neuromodulation; they are chosen because they are cheap to differentiate (<a href="lesson1.html#activation">L1 · tab 2</a>). GELU has no hard threshold, so units are never fully silent (<a href="lesson2.html#ffn">L2 · tab 5</a>).<br><strong style="color:var(--text)">Also:</strong> Real f–I curves saturate; ReLU and GELU do not. A neuron's gain changes with neuromodulation and normalization, while the activation function is fixed. GELU and SwiGLU were chosen for optimization, not biology.</td></tr>
+<tr><td><strong style="color:var(--text)">3.</strong> Gradient descent / backpropagation</td><td>Synaptic plasticity with local, Hebbian-style rules</td><td><a href="lesson1.html#learning">L1 · tab 4</a><br><small>How Networks Learn</small><br><small style="color:var(--text3)">also <a href="lesson4.html#backprop">L4 · tab 3</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> "Loose at best": backprop needs a global error signal sent backward through the network, whereas synapses change by local rules (<a href="lesson1.html#learning">L1 · tab 4</a>); the brain's learning rule is almost certainly different (<a href="lesson4.html#backprop">L4 · tab 3</a>).<br><strong style="color:var(--text)">Also:</strong> Exact backprop needs feedback weights that mirror the forward ones (the weight-transport problem) and separate forward and backward phases. Biology seems to use three-factor rules, Hebbian change gated by a neuromodulator such as dopamine. Brains learn continually from far less data (a child hears about 10<sup>7</sup>–10<sup>8</sup> words; LLMs train on billions to trillions of tokens).</td></tr>
+<tr><td><strong style="color:var(--text)">4.</strong> Frozen weights of a trained model</td><td>The connectome: fixed wiring that supports flexible computation through different activity patterns</td><td><a href="lesson1.html#learning">L1 · tab 4</a><br><small>How Networks Learn</small><br><small style="color:var(--text3)">also <a href="lesson5.html#neuro">L5 · tab 5</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> Biological synapses keep changing (LTP/LTD, neuromodulation, consolidation in sleep), so the connectome drifts; a deployed model's weights are truly static (<a href="lesson1.html#learning">L1 · tab 4</a>).<br><strong style="color:var(--text)">Also:</strong> A connectome is usually a wiring diagram without synaptic strengths, so a model's weights are far more complete than any connectome. Even a complete connectome does not explain behaviour: <em>C. elegans</em>' has been known since 1986 (<a href="https://doi.org/10.1098/rstb.1986.0056" target="_blank">White et al.</a>), and neuromodulators reconfigure its identically wired circuits.</td></tr>
+<tr><td><strong style="color:var(--text)">5.</strong> Next-token learning yields rich representations</td><td>The brain may arrive at similar representations through a different learning rule</td><td><a href="lesson4.html#backprop">L4 · tab 3</a><br><small>Backprop</small></td><td><strong style="color:var(--text)">In the lessons:</strong> Convergence is only "may"; the different learning rule is itself a challenge for using LLMs as neural models (<a href="lesson4.html#backprop">L4 · tab 3</a>).<br><strong style="color:var(--text)">Also:</strong> The evidence for convergence (LLM activations predicting fMRI, MEG or ECoG responses to language) is correlational, comes from encoding models limited by noise ceilings and stimulus sets, and partly tracks model size, not only next-word prediction. Similar representations do not imply similar mechanisms.</td></tr>
+<tr><td colspan="4" style="background:var(--surface);font-weight:600;color:var(--text);font-size:12.5px;letter-spacing:.04em;">Coding and representation</td></tr>
+<tr><td><strong style="color:var(--text)">6.</strong> Distributed representation (many units per concept, each unit in many concepts)</td><td>The "grandmother cell" (one cell per concept) as the contrasting local code</td><td><a href="lesson1.html#distributed">L1 · tab 5</a><br><small>Distributed Coding</small></td><td><strong style="color:var(--text)">In the lessons:</strong> You cannot read off what a network knows from a single unit (<a href="lesson1.html#distributed">L1 · tab 5</a>).<br><strong style="color:var(--text)">Also:</strong> Highly selective concept cells do exist in the human medial temporal lobe (<a href="https://doi.org/10.1038/nature03687" target="_blank">Quian Quiroga et al. 2005</a>), but even they belong to sparse population codes. The 2<sup>d</sup> capacity of dense codes ignores noise and readout; real capacity is far lower.</td></tr>
+<tr><td><strong style="color:var(--text)">7.</strong> Activation patterns and their geometry</td><td>Population codes of place, grid and orientation-selective cells; representational geometry</td><td><a href="lesson1.html#distributed">L1 · tab 5</a><br><small>Distributed Coding</small><br><small style="color:var(--text3)">also <a href="lesson1.html#embed">L1 · tab 8</a>; <a href="lesson5.html#neuro">L5 · tab 5</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> LLM activations are noiseless, perfectly reproducible and driven by fully controlled stimuli; in LLMs the sparsity lies in features, not units (<a href="lesson1.html#distributed">L1 · tab 5</a>).<br><strong style="color:var(--text)">Also:</strong> Place and grid codes represent continuous, low-dimensional variables (grid cells on a torus); token spaces have no comparable known structure. Biological codes have correlated noise and drift over days. LLM geometry is distorted by a few outlier dimensions and by anisotropy.</td></tr>
+<tr><td><strong style="color:var(--text)">8.</strong> Token embeddings</td><td>The population code of a sensory area; RSA and PCA apply "almost without modification"</td><td><a href="lesson1.html#embed">L1 · tab 8</a><br><small>Embeddings</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated.<br><strong style="color:var(--text)">Also:</strong> An input embedding is a fixed, context-free table row, not an evoked response; the closer analogue of a sensory response is the contextual residual stream. Sensory responses are noisy and modulated by state and attention.</td></tr>
+<tr><td><strong style="color:var(--text)">9.</strong> Superposition; features found by sparse autoencoders</td><td>Sparse coding in primary visual cortex: a sparse code learned from natural images gives V1-like receptive fields (<a href="https://doi.org/10.1038/381607a0" target="_blank">Olshausen &amp; Field 1996</a>); the overcomplete version of the model is <a href="https://doi.org/10.1016/S0042-6989(97)00169-7" target="_blank">Olshausen &amp; Field 1997</a></td><td><a href="lesson1.html#distributed">L1 · tab 5</a><br><small>Distributed Coding</small><br><small style="color:var(--text3)">also <a href="lesson2.html#ffn">L2 · tab 5</a>; <a href="lesson5.html#super">L5 · tab 3</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> The model's units respond densely; the sparsity is in features, not units (<a href="lesson1.html#distributed">L1 · tab 5</a>, <a href="lesson2.html#ffn">L2 · tab 5</a>). The regimes are reversed: V1 has more neurons than inputs, so features can have neurons of their own, while superposition packs more features than neurons, so features share them; what the two share is sparsity (<a href="lesson1.html#distributed">L1 · tab 5</a>, <a href="lesson5.html#super">L5 · tab 3</a>).<br><strong style="color:var(--text)">Also:</strong> Olshausen &amp; Field is a normative model of receptive fields, not evidence of superposition. Brain sparsity is also driven by energy cost, which LLMs lack. A sparse autoencoder finds a sparse dictionary for almost any data, and its features depend on dictionary size.</td></tr>
+<tr><td><strong style="color:var(--text)">10.</strong> Residual stream: many overlapping variables in the same dimensions</td><td>Mixed selectivity: a prefrontal neuron encoding task context, reward and stimulus at once</td><td><a href="lesson2.html#residual">L2 · tab 2</a><br><small>Residual Stream</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated.<br><strong style="color:var(--text)">Also:</strong> The residual stream has no privileged basis (no elementwise nonlinearity acts on it), so its dimensions are not neuron-like; an MLP hidden unit is the closer analogue. Mixed selectivity in prefrontal cortex is nonlinear, conjunctive tuning (<a href="https://doi.org/10.1038/nature12160" target="_blank">Rigotti et al. 2013</a>), which linear superposition does not reproduce, and it is usually seen as useful for computation rather than as a side effect of compression.</td></tr>
+<tr><td><strong style="color:var(--text)">11.</strong> Next-token prediction</td><td>Predictive coding: the brain continually predicts its next input</td><td><a href="lesson1.html#prob">L1 · tab 6</a><br><small>Language as Probability</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated.<br><strong style="color:var(--text)">Also:</strong> Predictive coding is a circuit hypothesis: top-down connections carry predictions and dedicated units carry prediction errors. A transformer has no top-down feedback or error units within a forward pass; its prediction is a training objective, not an inference-time error-correction loop. The evidence for predictive coding in cortex is itself debated.</td></tr>
+<tr><td><strong style="color:var(--text)">12.</strong> Tokenization: the unit the model sees</td><td>Choosing single-unit, multi-unit or population activity as the unit of analysis</td><td><a href="lesson1.html#tokens">L1 · tab 7</a><br><small>Tokenization</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated (a passing comparison).<br><strong style="color:var(--text)">Also:</strong> An experimenter's choice of unit does not change the brain, but the tokenizer is part of the model and fixes what it can perceive (its spelling and arithmetic failures follow from it). Brains receive continuous sensory streams, not pre-cut tokens.</td></tr>
+<tr><td><strong style="color:var(--text)">13.</strong> Softmax with temperature τ</td><td>The Boltzmann / Luce choice rule of decision neuroscience and reinforcement learning (τ = 1/β; low τ exploits, high τ explores)</td><td><a href="lesson1.html#predict">L1 · tab 9</a><br><small>Next-Token Prediction</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated.<br><strong style="color:var(--text)">Also:</strong> In decision neuroscience softmax is a descriptive model fitted to choices, not a known neural mechanism. Animal exploration is partly directed by uncertainty, not purely random. An LLM's τ is set from outside at decoding time, not adapted by the system.</td></tr>
+<tr><td colspan="4" style="background:var(--surface);font-weight:600;color:var(--text);font-size:12.5px;letter-spacing:.04em;">Architecture</td></tr>
+<tr><td><strong style="color:var(--text)">14.</strong> The stack of transformer blocks</td><td>The hierarchy of sensory cortex (V1 → V2 → V4 → IT; A1 → belt → parabelt)</td><td><a href="lesson2.html#overview">L2 · tab 1</a><br><small>Overview</small><br><small style="color:var(--text3)">also <a href="lesson2.html#residual">L2 · tab 2</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> Transformer layers are identical in structure; the hierarchy emerges from training alone, not from anatomical specialization (<a href="lesson2.html#overview">L2 · tab 1</a>).<br><strong style="color:var(--text)">Also:</strong> Cortex has dense feedback and lateral connections, so its hierarchy is not strictly serial. Receptive fields grow along the ventral stream, while attention sees the whole context from layer 0. For language, intermediate LLM layers best predict activity in the brain's language network (<a href="https://doi.org/10.1073/pnas.2105646118" target="_blank">Schrimpf et al. 2021</a>).</td></tr>
+<tr><td><strong style="color:var(--text)">15.</strong> Residual updates across layers</td><td>Neural population trajectories in a dynamical system; depth plays the role of time</td><td><a href="lesson2.html#residual">L2 · tab 2</a><br><small>Residual Stream</small><br><small style="color:var(--text3)">also <a href="lesson5.html#neuro">L5 · tab 5</a>; <a href="#fernando" onclick="goTab('fernando');return false">L8 · tab 3</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> The closer analogue is the spatial unfolding along the ventral visual stream, not temporal dynamics: a transformer has no recurrence (<a href="lesson2.html#residual">L2 · tab 2</a>). Whether fixed points, attractors and limit cycles apply is an open question (<a href="lesson5.html#neuro">L5 · tab 5</a>).<br><strong style="color:var(--text)">Also:</strong> Each layer has its own weights, so the model is not an autonomous system iterating one rule, and attractors are only loosely defined. There are only 12 steps (GPT-2 small) of uncontrolled size. An LLM has two axes, depth and token position; a brain has one physical time with recurrent dynamics.</td></tr>
+<tr><td><strong style="color:var(--text)">16.</strong> Residual stream as "working memory"</td><td>Working memory as a store whose contents get overwritten</td><td><a href="lesson2.html#residual">L2 · tab 2</a><br><small>Residual Stream</small></td><td><strong style="color:var(--text)">In the lessons:</strong> Presented as a misconception: contributions accumulate and are not overwritten (<a href="lesson2.html#residual">L2 · tab 2</a>).<br><strong style="color:var(--text)">Also:</strong> If anything in an LLM plays the part of working memory, it is the context (KV cache) across tokens, not the stream within one forward pass. Biological working memory is activity sustained over seconds.</td></tr>
+<tr><td><strong style="color:var(--text)">17.</strong> Attention pattern (recomputed for every input) vs. fixed W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub></td><td>Effective connectivity that changes from trial to trial vs. fixed anatomical tracts</td><td><a href="lesson2.html#attention">L2 · tab 3</a><br><small>Attention</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated.<br><strong style="color:var(--text)">Also:</strong> Effective connectivity is a statistical estimate between brain areas (dynamic causal modelling, Granger causality); attention routes between token positions, not processing areas. Attention weights are not reliable measures of importance: the value vectors and W<sub>O</sub> matter too.</td></tr>
+<tr><td><strong style="color:var(--text)">18.</strong> Transformer attention</td><td>Top-down attention gating signals between cortical areas</td><td><a href="lesson2.html#attention">L2 · tab 3</a><br><small>Attention</small></td><td><strong style="color:var(--text)">In the lessons:</strong> Only "reminiscent" (<a href="lesson2.html#attention">L2 · tab 3</a>).<br><strong style="color:var(--text)">Also:</strong> Self-attention has no goal signal from a control area and no capacity limit; it is closer to content-addressable retrieval. Cognitive attention works largely through gain changes and normalization and is capacity-limited. The shared name is mostly historical.</td></tr>
+<tr><td><strong style="color:var(--text)">19.</strong> Multiple attention heads</td><td>Parallel processing streams: ventral "what" and dorsal "where"; auditory pathways</td><td><a href="lesson2.html#multihead">L2 · tab 4</a><br><small>Multi-Head Attention</small></td><td><strong style="color:var(--text)">In the lessons:</strong> Cortical streams are physically separate; heads are mathematical abstractions on the same hardware (<a href="lesson2.html#multihead">L2 · tab 4</a>).<br><strong style="color:var(--text)">Also:</strong> The two-streams model is itself a simplification with much cross-talk. Heads are often redundant (many can be pruned) and polysemantic, and they sit within one layer, while cortical streams span many areas.</td></tr>
+<tr><td><strong style="color:var(--text)">20.</strong> Feedforward (MLP) layer, d → 4d → d; attention between positions</td><td>The local circuit of a cortical column; long-range projections between areas</td><td><a href="lesson2.html#ffn">L2 · tab 5</a><br><small>Feedforward Layers</small></td><td><strong style="color:var(--text)">In the lessons:</strong> GELU is not a hard threshold, so hidden activity is graded and dense (<a href="lesson2.html#ffn">L2 · tab 5</a>).<br><strong style="color:var(--text)">Also:</strong> The column as a computational unit is contested, and the laminar circuit is heavily recurrent. Clearer biological expansion-recoding motifs are cerebellar granule cells and the insect mushroom body. The MLP applies identical weights at every position, which has no biological counterpart.</td></tr>
+<tr><td colspan="4" style="background:var(--surface);font-weight:600;color:var(--text);font-size:12.5px;letter-spacing:.04em;">Methods</td></tr>
+<tr><td><strong style="color:var(--text)">21.</strong> Recording every activation of the model</td><td>Electrophysiology: a perfect multi-electrode recording during a computation</td><td><a href="lesson1.html#why">L1 · tab 10</a><br><small>Why This Works</small><br><small style="color:var(--text3)">also <a href="lesson5.html#neuro">L5 · tab 5</a>; <a href="#analogy" onclick="goTab('analogy');return false">L8 · tab 1</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> Only advantages are listed: full coverage, no noise, perfect repeatability (<a href="lesson1.html#distributed">L1 · tab 5</a>, <a href="lesson5.html#neuro">L5 · tab 5</a>).<br><strong style="color:var(--text)">Also:</strong> Full access does not guarantee understanding: standard neuroscience analyses gave misleading answers on a fully known microprocessor (<a href="https://doi.org/10.1371/journal.pcbi.1005268" target="_blank">Jonas &amp; Kording 2017</a>). Residual-stream dimensions have no privileged basis, unlike recorded neurons, and the stream is a sum of earlier writes rather than one population's firing.</td></tr>
+<tr><td><strong style="color:var(--text)">22.</strong> PCA, RSA and dimensionality analysis of activations</td><td>The same tools in systems neuroscience; RSA compares models, brain areas and species by geometry</td><td><a href="lesson1.html#distributed">L1 · tab 5</a><br><small>Distributed Coding</small><br><small style="color:var(--text3)">also <a href="lesson1.html#embed">L1 · tab 8</a>; L5 · tabs <a href="lesson5.html#linear">2</a>, <a href="lesson5.html#probing">4</a>, <a href="lesson5.html#neuro">5</a></small></td><td><strong style="color:var(--text)">In the lessons:</strong> The stimuli are chosen by hypothesis, so contrasts not sampled are invisible; for LLMs one token position (or an average) must be chosen (<a href="lesson5.html#probing">L5 · tab 4</a>).<br><strong style="color:var(--text)">Also:</strong> RSA is a weak constraint: different mechanisms can give similar dissimilarity matrices, and scores depend on the distance measure and noise ceilings. PCA on LLM activations is dominated by outlier dimensions unless normalized. UMAP and t-SNE distort global distances.</td></tr>
+<tr><td><strong style="color:var(--text)">23.</strong> Activation patching</td><td>Optogenetics and microstimulation: causal tests, not correlations</td><td><a href="lesson5.html#neuro">L5 · tab 5</a><br><small>Neuro Parallels</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated.<br><strong style="color:var(--text)">Also:</strong> Patching swaps in the exact activation from another input; optogenetics drives genetically defined cells coarsely, often outside their normal range. In both systems other components can compensate (redundancy in brains, "self-repair" in LLMs), and a causal effect does not pin down the mechanism.</td></tr>
+<tr><td><strong style="color:var(--text)">24.</strong> Rank-one weight edit (ROME); MLP as associative memory</td><td>Forming a new associative memory trace (a Hebbian-like, outer-product change across many synapses)</td><td><a href="lesson7.html#editing">L7 · tab 7</a><br><small>Model Editing</small></td><td><strong style="color:var(--text)">In the lessons:</strong> Facts are distributed across layers; other keys are kept only approximately; sequential edits degrade the model; editing success is weaker evidence for localization than it looks (<a href="https://arxiv.org/abs/2301.04213" target="_blank">Hase et al. 2023</a>); a rank-one update changes every entry of W<sub>down</sub>, not one synapse (<a href="lesson7.html#editing">L7 · tab 7</a>).<br><strong style="color:var(--text)">Also:</strong> Biological memories form through plasticity and consolidation, not one closed-form step. The damage from sequential edits resembles catastrophic interference, which brains reduce with complementary learning systems.</td></tr>
+<tr><td><strong style="color:var(--text)">25.</strong> Interpretability's open methodological problems</td><td>Systems neuroscience's own unfinished move from isolated findings to theory and standards</td><td><a href="lesson5.html#neuro">L5 · tab 5</a><br><small>Neuro Parallels</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated (a rhetorical comparison).<br><strong style="color:var(--text)">Also:</strong> The comparison is about the state of two fields, not a mechanism; <a href="https://doi.org/10.1371/journal.pcbi.1005268" target="_blank">Jonas &amp; Kording (2017)</a> is the classic critique that applies to both.</td></tr>
+<tr><td colspan="4" style="background:var(--surface);font-weight:600;color:var(--text);font-size:12.5px;letter-spacing:.04em;">Cognition and behaviour</td></tr>
+<tr><td><strong style="color:var(--text)">26.</strong> The reversal curse: trained on "A is B", the model does not learn "B is A"</td><td>A person who learns A is B automatically knows B is A</td><td><a href="lesson6.html#directional">L6 · tab 4</a><br><small>Directional Knowledge</small></td><td><strong style="color:var(--text)">In the lessons:</strong> None stated for the human side.<br><strong style="color:var(--text)">Also:</strong> Human recall is not fully symmetric either: backward recall of sequences is hard, and forward and backward cued recall can differ. People often infer B is A by reasoning, and LLMs can too when both facts are in the context; the curse concerns knowledge stored in the weights.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Parallels the lessons imply but do not draw</h3>
+  <p>Lesson 7 in particular uses methods and terms with obvious neuroscience counterparts without naming them. For completeness:</p>
+  <div class="table-wrap">
+    <table style="min-width:640px;">
+      <thead><tr><th style="width:22%">In the model</th><th style="width:26%">In the brain</th><th style="width:13%">Where</th><th>Main limitation</th></tr></thead>
+      <tbody>
+<tr><td>Ablation</td><td>Lesions and inactivation (muscimol, cooling)</td><td>L7 · tabs <a href="lesson7.html#goal">1</a>, <a href="lesson7.html#circuits">5</a></td><td>Ablation is exact and instant, with no recovery or reorganization; it can push activations outside anything seen in training.</td></tr>
+<tr><td>Linear probe</td><td>Decoding stimulus or choice from population recordings</td><td><a href="lesson7.html#probing">L7 · tab 2</a></td><td>Decodable does not mean used, in both systems (<a href="lesson7.html#probing">L7 · tab 2</a> notes this for LLMs).</td></tr>
+<tr><td>Steering vectors</td><td>Microstimulation biasing perception (<a href="https://doi.org/10.1038/346174a0" target="_blank">Salzman, Britten &amp; Newsome 1990</a>)</td><td><a href="lesson7.html#steering">L7 · tab 6</a></td><td>Microstimulation drives an anatomical cluster; steering adds a direction across the whole population, exactly and reversibly.</td></tr>
+<tr><td>Polysemantic neurons</td><td>Mixed selectivity</td><td><a href="lesson5.html#linear">L5 · tab 2</a>; <a href="lesson7.html#goal">L7 · tab 1</a></td><td>Mixed selectivity is usually seen as useful for computation, polysemanticity as a side effect of superposition.</td></tr>
+<tr><td>A single SAE feature (the Golden Gate Bridge)</td><td>Concept cells in the medial temporal lobe (<a href="https://doi.org/10.1038/nature03687" target="_blank">Quian Quiroga et al. 2005</a>)</td><td><a href="lesson7.html#saes">L7 · tab 8</a></td><td>A feature is a direction, not a unit; both are characterised from top-activating examples.</td></tr>
+<tr><td>Circuits; "inhibition" heads; induction heads appearing abruptly</td><td>Neural circuits; inhibitory interneurons; developmental stages</td><td><a href="lesson7.html#circuits">L7 · tab 5</a></td><td>An "inhibition" head writes a negative contribution, it is not an inhibitory cell type; a training phase transition is not a critical period.</td></tr>
+<tr><td>Lost in the middle (U-shaped recall over the context)</td><td>The serial-position curve of human free recall</td><td><a href="lesson6.html#memory">L6 · tab 1</a></td><td>Human primacy and recency come from rehearsal and working memory; the LLM's comes from causal attention and position encoding.</td></tr>
+<tr><td>"Hallucination", "confabulation"</td><td>Perception without a stimulus; confabulation after memory-system damage</td><td>L6 · tabs <a href="lesson6.html#tokens">2</a>, <a href="lesson6.html#hallucination">3</a></td><td>LLM errors are false statements, not false perceptions, and there is no separate truth-checking system that has broken.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:var(--text3);">Lesson 3 (Forward Pass) draws no neuroscience parallels.</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TAB 3 · FERNANDO & GUITCHOUNTS 2025
+     ═══════════════════════════════════════════════════════════ -->
+<section class="tab-panel" id="tab-fernando">
+
+  <div class="paper-header">
+    <div class="paper-title">Transformer Dynamics: A neuroscientific approach to interpretability of large language models</div>
+    <div class="paper-meta">Fernando &amp; Guitchounts · <a href="https://arxiv.org/abs/2502.12131" target="_blank"><em>arXiv:2502.12131</em></a>, 2025 · <em>LLM residual stream as dynamical system</em></div>
+  </div>
+
+  <h2 class="first">Background: the population dynamics framework</h2>
+  <p>This paper applies a framework developed in systems neuroscience — the <strong>population dynamics</strong> view — to LLMs. The framework emerged from simultaneous recordings of many neurons in motor cortex and was synthesized in a landmark review (<a href="https://doi.org/10.1146/annurev-neuro-092619-094115" target="_blank">Vyas, Golub, Sussillo &amp; Shenoy, <em>Annual Review of Neuroscience</em>, 2020</a>). Rather than asking "what does this neuron encode?", it asks: "what shape does the population activity trace through high-dimensional space, and what does that shape reveal about the computation?"</p>
+  <p>When you record from <em>N</em> neurons simultaneously, you get a point in ℝ<sup>N</sup> at each moment. The sequence of points over time is a <strong>trajectory</strong>. In practice, these trajectories tend to live on a <strong>neural manifold</strong> — a low-dimensional subspace capturing the computationally relevant variation. Motor cortex during reaching, for instance, uses only a handful of dimensions out of hundreds of recorded neurons.</p>
+  <p>Two concepts from this tradition are especially relevant here. First, <strong>attractors</strong>: regions of state space that the trajectory flows toward and stays near, arising from the learned connectivity of the network rather than any explicit programming. Second, <strong>rotational dynamics</strong> (<a href="https://doi.org/10.1038/nature11129" target="_blank">Churchland et al. 2012</a>): in motor cortex, population trajectories trace near-circular orbits when projected onto their top principal components, generating the sequential muscle activation needed for smooth reaching. Fernando &amp; Guitchounts find rotational structure in Llama 3.1 8B as well — but in the phase portraits of individual units rather than in population principal components — and whether this reflects the same functional role remains an open question, since the transformer is feedforward rather than recurrent. In a transformer, "time" maps to <em>layer depth</em>, not to milliseconds; the geometric tools carry over, but their functional interpretation may not.</p>
+
+  <h2>Overview</h2>
+  <p>This paper directly imports the neuroscience dynamical systems framework into LLM analysis. The authors treat the residual stream of Llama 3.1 8B as a high-dimensional dynamical system and ask: what is the geometry of token trajectories across layers? The results are strikingly parallel to what has been found in motor cortex — cross-layer continuity, rotational structure, acceleration and deceleration phases, and a mid-network pseudo-attractor.</p>
+
+  <h3>Methodology</h3>
+
+  <h4 style="margin:20px 0 6px;font-size:14px;font-weight:600;color:var(--text2);">Model</h4>
+  <p style="margin-top:0;">The primary model is <strong>Llama 3.1 8B</strong> (L = 32 transformer layers, hidden dimension D = 4,096). Gemma 2 was used in a preliminary analysis but results are not reported. The residual stream is extracted at <strong>two checkpoints per layer</strong>: before the attention sublayer's layer norm (h<sub>l</sub><sup>Attn</sup>) and before the MLP sublayer's layer norm (h<sub>l</sub><sup>MLP</sup>). This yields 2L = 64 interleaved sublayer states per sequence.</p>
+  <div class="eq" style="margin:8px 0 16px;">Tensor shape: B × 64 × 4096
+  where B = batch size, 64 = sublayer checkpoints, 4096 = residual stream dimension
+  Each of the 4096 dimensions is referred to as a "unit."</div>
+
+  <h4 style="margin:20px 0 6px;font-size:14px;font-weight:600;color:var(--text2);">Input data</h4>
+  <p style="margin-top:0;">Text is drawn from <strong>WikiText-2-raw-v1</strong>, a standard benchmark corpus of Wikipedia articles. Sequences are filtered to lengths between 100 and 500 characters. Each sequence is prepended with a beginning-of-sequence (BOS) token. All analyses are performed on the <strong>last token position only</strong> — the "readout" position that determines the next-token prediction. Most analyses use N = 1,000 sequences (the paper calls them both "samples" and "data batches"); the autoencoder (analysis 7) uses a separate, much larger set. A <strong>shuffled control</strong> condition randomly permutes all tokens after the BOS token, breaking syntactic and semantic structure while preserving token identity. A perturbation experiment uses the prompt "I'm sorry, Dave. I'm afraid I can't do that."</p>
+
+  <h4 style="margin:20px 0 6px;font-size:14px;font-weight:600;color:var(--text2);">Analyses</h4>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-body"><strong>Per-unit Pearson correlation.</strong> For each of the 4,096 units, the Pearson correlation of its activations across all samples is computed for every pair of sublayer checkpoints (l, m). This produces a distribution of correlations spanning all layer-pair combinations, showing how long individual unit activations remain stable as the stream evolves.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-body"><strong>Cosine similarity between consecutive sublayers.</strong> CS<sub>l</sub> = (h<sub>l</sub> · h<sub>l+1</sub>) / (‖h<sub>l</sub>‖ ‖h<sub>l+1</sub>‖). Measures the angle between adjacent residual stream vectors — a value near 1 means the state barely changed direction; a lower value means a sharper turn in high-dimensional space.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-body"><strong>Velocity.</strong> ‖V<sub>l</sub>‖ = ‖h<sub>l+1</sub> − h<sub>l</sub>‖₂ — the Euclidean distance between adjacent sublayer states. Where cosine similarity captures the <em>direction</em> of change, velocity captures its <em>magnitude</em>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-body"><strong>Phase portraits and rotation counting.</strong> For each unit <em>i</em>, the authors plot its activation a<sub>l</sub><sup>i</sup> (x-axis) against its layer-wise gradient (y-axis), forming a phase portrait. Trajectories are centered by subtracting the initial value. Tangent angles are computed with arctan2 and adjusted for ±π wrapping. The total rotation count per unit is R = (1/2π) Σ Δθ<sub>l</sub>. A null distribution is generated by shuffling layer order 1,000 times per unit.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-body"><strong>Mutual information (MI) between consecutive sublayers.</strong> MI is estimated per unit using Gaussian kernel density estimation, in nats. Formula: MI = Σ p(x,y) log( p(x,y) / (p(x) p(y)) ), with a small constant (10⁻¹⁰) added for numerical stability. Computed separately at attention → MLP and MLP → attention transitions to isolate the information-theoretic signature of each sublayer type.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">6</div>
+      <div class="step-body"><strong>PCA via SVD.</strong> The residual stream tensor (N × 2L × D) is reshaped to a (2NL) × D matrix and mean-centered. The top right singular vectors are the principal axes. Explained variance per component: r<sub>k</sub> = σ<sub>k</sub>² / Σσ<sub>i</sub>². Per-layer explained variance is also computed using the top 100 components.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">7</div>
+      <div class="step-body"><strong>Compressing autoencoder (CAE).</strong> To visualize trajectory geometry in 2D, a bottleneck autoencoder is trained: input dimension 4,096, bottleneck dimension 2, with hidden layers following a geometric width progression. Training uses Adam (lr = 10⁻³), MSE loss, up to 100 epochs with early stopping. The autoencoder was trained on 85k batches and tested on 15k batches, each of 64 samples.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">8</div>
+      <div class="step-body"><strong>Perturbation ("teleportation").</strong> A 10 × 10 grid of points is spread across PC space and mapped back to activation space as x = z V<sub>2</sub><sup>⊤</sup> + μ (z: a grid point’s two PC coordinates; V<sub>2</sub>: the top two principal axes as columns; μ: the mean). These reconstructed activations replace the residual stream at chosen layer depths (layers 0, 7, 15, 23, 31), and recovery is measured as MSE against an unperturbed control over the following 12 sublayers. This tests whether the system has attractor-like dynamics — whether it pulls perturbed states back toward a canonical trajectory.</div>
+    </div>
+  </div>
+
+  <h3>Finding 1: High cross-layer continuity (r &gt; 0.8, rising with depth)</h3>
+  <p>For each of the 4,096 units, its activations at adjacent sublayers are highly correlated across inputs: <strong>r &gt; 0.8</strong> even in the earliest layers, and rising with depth. The residual stream doesn't change drastically from layer to layer — each layer makes a relatively small modification to the existing state, and attention sublayers change it less than MLP-to-next-layer transitions. This is similar to the smooth population trajectories seen in motor cortex — abrupt discontinuities would suggest a phase transition or qualitative change in computation.</p>
+
+  <h3>Finding 2: Velocity profile and attractor-like dynamics</h3>
+  <p>Two related findings point to structurally distinct phases across the network.</p>
+  <p><strong>Velocity profile.</strong> Velocity (‖h<sub>l+1</sub> − h<sub>l</sub>‖₂) is roughly constant across early and mid layers, then rises, most steeply in the last third of the model. Note that cosine similarity — a separate measure — increases as a function of depth, meaning adjacent layers become more directionally aligned as you go deeper. The two measures are compatible: later layers can change the residual stream by a larger magnitude (higher L<sub>2</sub> distance) while shifting its direction less abruptly (higher cosine similarity).</p>
+  <p><strong>Attractor-like dynamics.</strong> The authors test whether the network has attractor-like dynamics by "teleporting" activations — replacing the residual stream at a chosen layer with points drawn from a grid in PCA space, then measuring how closely trajectories return to the unperturbed mean over the following 12 sublayers. Perturbations at the extremes fail: layer 0 produces highly variable dynamics; layer 31 causes "even more drastic" deviation. (The paper calls layer 31 "penultimate", but with 32 layers numbered from 0, as layer 0 implies, it is the last.) Mid-layer perturbations at layers 7, 15, and 23 show the most robust recovery. The abstract and section heading place the attractor-like dynamics in "lower layers"; the recovery results themselves point to layers 7–23. The Discussion characterizes this as a "pseudo-attractor" — the system tends to pull perturbed states back toward a canonical trajectory, but only when the perturbation occurs before the final output phase.</p>
+
+  <div class="widget" style="padding:16px 16px 12px;">
+    <div class="widget-title" style="margin-bottom:12px;">Schematic: velocity profile across Llama 3.1 8B layers</div>
+    <svg viewBox="0 0 580 160" style="width:100%;max-width:580px;display:block;margin:0 auto;" aria-label="Velocity profile schematic">
+      <defs>
+        <linearGradient id="vg" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#2455A4" stop-opacity="0.4"/>
+          <stop offset="65%" stop-color="#2455A4" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#B83030" stop-opacity="0.6"/>
+        </linearGradient>
+      </defs>
+      <line x1="44" y1="128" x2="560" y2="128" stroke="var(--border2)" stroke-width="1"/>
+      <line x1="44" y1="22" x2="44" y2="128" stroke="var(--border2)" stroke-width="1"/>
+      <text x="302" y="150" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="var(--text3)">Layer (0 → 31)</text>
+      <text x="16" y="78" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="var(--text3)" transform="rotate(-90,16,78)">Velocity</text>
+      <line x1="388" y1="26" x2="388" y2="128" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="210" y="145" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="var(--text3)">Early–mid (roughly constant)</text>
+      <text x="478" y="145" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="var(--text3)">Last third (steepest acceleration)</text>
+      <path d="M44,88 C100,87 160,87 230,86 C280,85 320,84 388,83 C420,76 452,57 490,37 C520,23 545,20 560,18"
+            fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M44,88 C100,87 160,87 230,86 C280,85 320,84 388,83 C420,76 452,57 490,37 C520,23 545,20 560,18 L560,128 L44,128 Z"
+            fill="url(#vg)"/>
+    </svg>
+    <p style="font-size:12px;color:var(--text3);margin:8px 0 0;"><strong>Figure 2.</strong> Schematic. Early–mid layers: roughly constant velocity. Last third: steepest acceleration in L<sub>2</sub> displacement per layer step.</p>
+  </div>
+
+  <h3>Finding 3: Rotational dynamics in single units (~10.74 rotations per unit)</h3>
+  <p>This finding is about <strong>individual units</strong>, not the whole residual-stream vector. For each of the 4,096 residual-stream units, the authors draw a <strong>phase portrait</strong>: the unit's activation (x-axis, centered on its initial value) against its layer-to-layer change, its "gradient" over the 64 sublayer states (y-axis). They then count how many times the direction of travel along that 2D trajectory turns through a full circle (analysis 4 above).</p>
+  <p>On average, units complete about <strong>10.74 rotations</strong> across the network (the mean over units, given in the paper's Fig. 2B caption). When the layer order is shuffled (1,000 shuffles per unit), the count drops to <strong>approximately zero</strong>, so the rotations depend on the order of the layers rather than arising by chance. The paper reports no spread (SD or range) and no test statistic for this comparison.</p>
+  <p>It is <em>not</em> the total angle that the whole residual-stream vector turns through. The paper never sums angles between consecutive whole-vector states; for the whole vector it reports cosine similarity and velocity instead (Finding 2).</p>
+  <p>Because residual-stream units are not a privileged basis, a unit's rotations need not reflect any rotation of the population state, unlike motor cortex, where rotations appear in the population's principal components; and the count of 10.74 depends on the 64 sublayer steps and on how the layer-to-layer "gradient" is estimated.</p>
+
+  <div class="eq">Phase portrait of unit i:  ( a<sub>l</sub> − a<sub>0</sub> ,  da/dl )     for the l = 0 … 63 sublayer states
+Tangent angle:              θ<sub>l</sub> = arctan2( Δy<sub>l</sub> , Δx<sub>l</sub> )   (adjusted for ±π jumps)
+Rotations:                  R<sub>i</sub> = (1/2π) Σ<sub>l</sub> Δθ<sub>l</sub>
+                            mean over the 4,096 units ≈ 10.74   (shuffled layer order ≈ 0)</div>
+
+
+  <h3>Summary of findings</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Finding</th><th>What was measured</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Cross-layer continuity</td><td>Pearson r of each unit's activation between adjacent sublayers, across inputs</td><td>r &gt; 0.8 from the earliest layers, increasing with depth</td></tr>
+        <tr><td>Velocity profile</td><td>L<sub>2</sub> distance ‖h<sub>l+1</sub> − h<sub>l</sub>‖₂ per layer step</td><td>Roughly constant early–mid; steepest acceleration in last third</td></tr>
+        <tr><td>Attractor-like dynamics</td><td>Teleportation recovery (MSE vs. unperturbed control)</td><td>Best recovery at mid-layer perturbations (layers 7, 15, 23); extremes fail</td></tr>
+        <tr><td>Rotational dynamics</td><td>Rotations of each unit's phase portrait (activation vs its layer-to-layer change, 64 sublayers)</td><td>~10.74 rotations per unit on average in Llama 3.1 8B; ≈ 0 with shuffled layer order</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Open questions &amp; future work</h3>
+  <p>The paper's analyses all use a single input distribution — Wikipedia prose in English — and a single model (Llama 3.1 8B). This leaves several natural next steps open.</p>
+  <p><strong>Stimulus variation.</strong> Do the dynamics look the same across different kinds of input? The paper does not compare RS trajectories for, say, English vs. French text, or formal vs. informal register; it defines a shuffled-token control but reports no results for it. The authors acknowledge this gap, noting that the low dimensionality they observe may partly reflect "the relative simplicity" of encoding high-probability Wikipedia sequences. Tasks requiring in-context learning or multi-step reasoning might reveal richer or qualitatively different trajectories.</p>
+  <p><strong>Whole-sequence dynamics.</strong> All main analyses operate on the last-token position only. How representations evolve across the token dimension — not just the layer dimension — remains unexplored here.</p>
+  <p><strong>Cross-model comparisons.</strong> A single model can't tell you whether the 10.74-rotation figure, the velocity acceleration pattern, or the attractor depth are universal or idiosyncratic. Comparing models of different scales, depths, and training objectives is needed to know whether these are architectural constants or incidental properties of one checkpoint.</p>
+
+</section>
+
+<script>
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const target = document.getElementById(btn.dataset.tab);
+      if (target) target.classList.add('active');
+    });
+  });
+</script>
+
+
+<script>
+// Open a tab from the link, e.g. ...#tabid
+window.addEventListener('load', () => {
+  const h = location.hash.slice(1);
+  if (!h) return;
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === h || b.dataset.tab === 'tab-' + h ||
+    (b.getAttribute('onclick') || '').includes("'" + h + "'"));
+  if (b) b.click();
+});
+function goTab(id) {
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === id || b.dataset.tab === 'tab-' + id ||
+    (b.getAttribute('onclick') || '').includes("'" + id + "'"));
+  if (b) { b.click(); window.scrollTo(0, 0); }
+}
+</script>
+</body>
+</html>

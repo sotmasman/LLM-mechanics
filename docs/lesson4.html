@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Lesson 4 · Training & Optimization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #F7F5F0; --surface: #EDEAE2; --surface2: #E0DDD4;
+  --text: #1A1916; --text2: #504E48; --text3: #7A7870;
+  --accent: #2455A4; --accent-light: #D8E4F7;
+  --pos: #1A7A4E; --pos-light: #D2EFE2;
+  --neg: #B83030; --neg-light: #F7DEDE;
+  --warn: #A06010; --warn-light: #FDF0DC;
+  --border: #D4D1C8; --border2: #C0BDB4;
+  --radius: 10px; --radius-sm: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+    --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+    --accent: #6B9EF8; --accent-light: #1A2A4A;
+    --pos: #4ABA82; --pos-light: #0D2E1E;
+    --neg: #F08080; --neg-light: #2E0E0E;
+    --warn: #F0C060; --warn-light: #2A1E08;
+    --border: #38362E; --border2: #4A4840;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+  --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+  --accent: #6B9EF8; --accent-light: #1A2A4A;
+  --pos: #4ABA82; --pos-light: #0D2E1E;
+  --neg: #F08080; --neg-light: #2E0E0E;
+  --warn: #F0C060; --warn-light: #2A1E08;
+  --border: #38362E; --border2: #4A4840;
+  color-scheme: dark;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:16px;
+  line-height:1.65;
+  padding: env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+}
+img{max-width:100%;}
+[hidden]{display:none!important;}
+
+/* ── lesson switcher ── */
+.lesson-switcher{display:flex;align-items:center;gap:12px;padding:12px 24px 4px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border);}
+.ls-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);white-space:nowrap;}
+.ls-links{display:flex;gap:6px;flex-wrap:wrap;}
+.ls-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:4px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);text-decoration:none;transition:background .15s,border-color .15s,color .15s;}
+.ls-btn:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+.ls-active{background:var(--accent);border-color:var(--accent);color:#fff;cursor:default;pointer-events:none;}
+
+/* ── page layout ── */
+.page-header{padding:36px 24px 24px;max-width:860px;margin:0 auto;}
+.lesson-label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.page-header h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;color:var(--text);text-wrap:balance;}
+.page-header .subtitle{margin-top:10px;font-size:16px;color:var(--text2);max-width:600px;}
+
+/* ── tab nav ── */
+.tab-nav{display:flex;gap:2px;padding:0 24px;border-bottom:2px solid var(--border);max-width:860px;margin:0 auto;overflow-x:auto;scrollbar-width:none;}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:6px 4px;border:none;background:none;color:var(--text3);cursor:pointer;white-space:normal;text-align:center;line-height:1.2;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;min-width:0;flex:1 1 0;overflow:hidden;word-break:break-word;}
+.tab-top{display:block;font-size:11px;letter-spacing:.01em;}
+.tab-bot{display:block;}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ── tab content ── */
+.tab-panel{display:none;padding:32px 24px;max-width:860px;margin:0 auto;}
+.tab-panel.active{display:block;}
+.tab-panel a{color:var(--accent);}
+
+/* ── typography ── */
+h2{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(22px,3.5vw,28px);font-weight:400;color:var(--text);margin-bottom:16px;text-wrap:balance;}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:24px 0 10px;}
+h4{font-size:14px;font-weight:600;color:var(--text2);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.06em;}
+p{margin-bottom:14px;color:var(--text2);font-size:15.5px;}
+p:last-child{margin-bottom:0;}
+code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:var(--surface2);padding:1px 5px;border-radius:3px;}
+.eq{font-family:'JetBrains Mono',monospace;font-size:15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 18px;margin:16px 0;overflow-x:auto;color:var(--text);line-height:1.5;}
+
+/* ── insight boxes ── */
+.insight{border-left:3px solid var(--accent);background:var(--accent-light);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;margin:20px 0;}
+.insight-pos{border-left-color:var(--pos);background:var(--pos-light);}
+.insight-warn{border-left-color:var(--warn);background:var(--warn-light);}
+.insight-neg{border-left-color:var(--neg);background:var(--neg-light);}
+.insight strong{display:block;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:5px;}
+.insight-pos strong{color:var(--pos);}
+.insight-warn strong{color:var(--warn);}
+.insight-neg strong{color:var(--neg);}
+.insight p{margin:0;font-size:14px;}
+
+/* ── step list ── */
+.step-list{padding-left:0;list-style:none;margin:16px 0 20px;}
+.step-list li{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;line-height:1.55;}
+.step-list li:last-child{border-bottom:none;}
+.step-num{width:24px;height:24px;min-width:24px;background:var(--accent);color:#fff;border-radius:50%;display:block;text-align:center;line-height:24px;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
+
+/* ── grid helpers ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;}
+@media(max-width:600px){.two-col{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.card h3{margin-top:0;}
+
+/* ── comparison table ── */
+.table-wrap{overflow-x:auto;margin:20px 0;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{background:var(--surface2);color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:10px 14px;text-align:left;}
+td{padding:10px 14px;border-top:1px solid var(--border);color:var(--text2);vertical-align:top;}
+tr:hover td{background:var(--surface);}
+
+/* ── widgets ── */
+.widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;}
+.widget-title{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
+label{font-size:13px;font-weight:500;color:var(--text2);}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
+input[type=number]{font-family:'DM Sans',sans-serif;font-size:14px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:6px 10px;width:80px;}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.slider-row label{white-space:nowrap;min-width:120px;}
+.slider-val{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);min-width:50px;text-align:right;}
+.result-box{background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 16px;margin-top:16px;}
+.result-box .metric{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.result-box .metric:last-child{margin-bottom:0;}
+.result-box .metric-label{font-size:13px;color:var(--text3);}
+.result-box .metric-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;color:var(--text);}
+canvas{border-radius:var(--radius-sm);display:block;width:100%;max-width:100%;}
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:8px 18px;border-radius:20px;border:1.5px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;transition:opacity .15s;}
+.btn:hover{opacity:.85;}
+.btn-outline{background:transparent;color:var(--accent);}
+.btn-outline:hover{background:var(--accent-light);opacity:1;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.scenario-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:16px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:all .15s;}
+.scenario-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* ── progress bar ── */
+.bar-track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin:4px 0 12px;}
+.bar-fill{height:100%;border-radius:4px;transition:width .3s;}
+
+/* ── step indicator ── */
+.steps{display:flex;gap:0;margin:20px 0;overflow-x:auto;}
+.step{flex:1;min-width:80px;padding:12px 8px;text-align:center;font-size:12px;color:var(--text3);background:var(--surface);border:1px solid var(--border);position:relative;}
+.step:first-child{border-radius:var(--radius-sm) 0 0 var(--radius-sm);}
+.step:last-child{border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.step+.step{border-left:none;}
+.step.hl{background:var(--accent-light);color:var(--accent);font-weight:600;}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;display:block;margin-bottom:2px;}
+/* ── LR schedule diagram ── */
+.lr-diagram{width:100%;height:auto;display:block;margin:16px 0;overflow:visible;}
+</style>
+</head>
+<body>
+
+<!-- Lesson Switcher -->
+<nav class="lesson-switcher" aria-label="Course navigation">
+  <a class="ls-label" href="index.html" style="text-decoration:none">LLM Mechanics</a>
+  <div class="ls-links">
+    <a href="lesson1.html" class="ls-btn">1 · Foundations</a>
+    <a href="lesson2.html" class="ls-btn">2 · Architecture</a>
+    <a href="lesson3.html" class="ls-btn">3 · Forward Pass</a>
+    <span class="ls-btn ls-active">4 · Training</span>
+    <a href="lesson5.html" class="ls-btn">5 · Representations</a>
+    <a href="lesson6.html" class="ls-btn">6 · Limitations</a>
+    <a href="lesson7.html" class="ls-btn">7 · Mech Interp</a>
+    <a href="lesson8.html" class="ls-btn">8 · Neural Systems</a>
+    <a href="lesson9.html" class="ls-btn">9 · Hands-On</a>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="lesson-label">Lesson 4</div>
+  <h1>Training &amp; Optimization</h1>
+  <p class="subtitle">How a transformer goes from random weights to a language model — loss functions, gradient descent, scaling laws, and what training dynamics reveal about learning itself.</p>
+</header>
+
+<!-- Tab navigation -->
+<nav class="tab-nav" aria-label="Lesson sections">
+  <button class="tab-btn active" data-tab="data"><span class="tab-top">1 ·</span><span class="tab-bot">The Dataset</span></button>
+  <button class="tab-btn" data-tab="loss"><span class="tab-top">2 ·</span><span class="tab-bot">Learning Problem</span></button>
+  <button class="tab-btn" data-tab="backprop"><span class="tab-top">3 ·</span><span class="tab-bot">Backprop</span></button>
+  <button class="tab-btn" data-tab="optimizers"><span class="tab-top">4 ·</span><span class="tab-bot">Optimizers</span></button>
+  <button class="tab-btn" data-tab="scaling"><span class="tab-top">5 ·</span><span class="tab-bot">Scaling Laws</span></button>
+  <button class="tab-btn" data-tab="dynamics"><span class="tab-top">6 ·</span><span class="tab-bot">Training Dynamics</span></button>
+  <button class="tab-btn" data-tab="rlhf"><span class="tab-top">7 ·</span><span class="tab-bot">Post-Training</span></button>
+</nav>
+
+<!-- ─────────────────────────────────────── TAB 1: The Dataset -->
+<section class="tab-panel active" id="tab-data">
+  <h2>The Pretraining Dataset</h2>
+  <p>Before a single gradient is computed, there is a dataset: trillions of tokens scraped, filtered, and assembled from across the web and curated corpora. The quality, mixture, and scale of this data are arguably as important as the model architecture — they determine what the model can learn to predict, and therefore what it will know.</p>
+
+  <h3>Where the tokens come from</h3>
+  <p>Modern LLMs train on a heterogeneous mixture of text domains, each contributing different linguistic and factual content. Common Crawl — a nonprofit snapshot of the public web — is the dominant source, but it requires heavy filtering before use. Curated sources like books, Wikipedia, and code provide higher signal-to-noise ratio but are orders of magnitude smaller.</p>
+
+  <!-- Data mixture chart -->
+  <div class="widget">
+    <div class="widget-title">Fig. 1 · Data Source Composition — Selected Models</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:16px;">Approximate token-weighted mixture for four influential pretraining runs, rounded from the published sources: GPT-2 (<a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" target="_blank" rel="noopener">Radford et al. 2019</a>, Section 2.1), GPT-3 (<a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">Brown et al. 2020</a>, Table 2.2), LLaMA (<a href="https://arxiv.org/abs/2302.13971" target="_blank" rel="noopener">Touvron et al. 2023</a>, Table 1) and Falcon-40B (<a href="https://huggingface.co/tiiuae/falcon-40b" target="_blank" rel="noopener">model card</a>). GPT-2's WebText is a single source: ~8M web pages linked from Reddit posts with at least 3 karma, with Wikipedia articles removed.</p>
+    <canvas id="mixture-canvas" height="252"></canvas>
+    <div id="mixture-legend" style="display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-size:12px;color:var(--text2);"></div>
+  </div>
+
+  <h3>Data quality filtering</h3>
+  <p>Raw Common Crawl is noisy — full of spam, boilerplate, duplicate content, and non-English text. A preprocessing pipeline runs before any tokenization:</p>
+
+  <!-- Pipeline SVG -->
+  <div style="margin:20px 0;overflow-x:auto;">
+    <div style="font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Fig. 2 · Data Preprocessing Pipeline</div>
+    <svg id="pipeline-svg" viewBox="0 0 760 110" style="width:100%;min-width:520px;height:auto;display:block;" aria-label="Data preprocessing pipeline"></svg>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Heuristic Filters</h3>
+      <p>Remove pages below a minimum word count, with a very high fraction of punctuation or digits, or with repeated n-grams (a hallmark of boilerplate). C4 relied on rules like these alone — keep only lines ending in punctuation, drop pages with "lorem ipsum" or code braces (<a href="https://arxiv.org/abs/1910.10683" target="_blank" rel="noopener">Raffel et al. 2020</a>). CCNet added perplexity scoring: a small 5-gram language model trained on Wikipedia scores each page, and pages with <em>low</em> perplexity — Wikipedia-like text — form the high-quality "head" that later datasets keep (<a href="https://arxiv.org/abs/1911.00359" target="_blank" rel="noopener">Wenzek et al. 2020</a>).</p>
+    </div>
+    <div class="card">
+      <h3>Deduplication</h3>
+      <p>Exact and near-duplicate paragraphs are removed using MinHash locality-sensitive hashing. Deduplication matters because memorized content does not generalize and can inflate benchmark scores — training on the same document twice is not twice as useful.</p>
+    </div>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Data contamination</strong>
+    <p>If evaluation benchmarks appear in the training corpus, measured performance overstates true capability. Labs now perform n-gram overlap checks between training data and benchmarks and publish contamination analyses alongside results.</p>
+  </div>
+
+  <h3>From documents to training examples</h3>
+  <p>After filtering, documents are concatenated and cut into fixed-length chunks of T tokens (typically 2048–4096). Each chunk becomes one training sequence. Because the objective is to predict every next token, a chunk of T tokens yields <strong>T − 1 training examples</strong> — input x<sub>1:t</sub> predicts target x<sub>t+1</sub> for every position t.</p>
+
+  <!-- Chunking diagram -->
+  <div class="widget">
+    <div class="widget-title">Fig. 3 · Document → Training Chunks → Prediction Signals</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:14px;">A single document (or concatenation of documents) is chopped into fixed-length context windows. Each window contributes T−1 next-token prediction tasks to the loss.</p>
+    <canvas id="chunk-canvas" height="180"></canvas>
+    <div style="margin-top:10px;font-size:13px;color:var(--text3);">Hover over a token position to see its (input, target) pair.</div>
+    <div id="chunk-info" style="font-size:13px;color:var(--text2);margin-top:8px;min-height:20px;font-family:'JetBrains Mono',monospace;"></div>
+  </div>
+
+  <h3>Mixture weighting and its effects</h3>
+  <p>The fraction of training tokens from each domain is a critical hyperparameter. Upsampling books and Wikipedia relative to raw web text improves factual accuracy and writing quality; adding code gives modest gains even on non-code reasoning tasks (see the box below). Upsampled sources are seen more than once: GPT-3 went through Wikipedia ~3.4 times but through filtered Common Crawl less than half a time. Most labs tune these proportions empirically on downstream benchmarks.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Domain</th><th>Typical range</th><th>Key contribution</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Web (Common Crawl)</strong></td><td>50–80 %</td><td>Broad world knowledge, conversational style, diverse topics</td></tr>
+        <tr><td><strong>Books</strong></td><td>5–15 %</td><td>Long-range coherence, narrative structure, formal prose</td></tr>
+        <tr><td><strong>Wikipedia</strong></td><td>2–5 %</td><td>Factual density, encyclopaedic coverage, citation norms</td></tr>
+        <tr><td><strong>Code (GitHub)</strong></td><td>4–12 %</td><td>Logical structure, step-by-step reasoning, formal grammars</td></tr>
+        <tr><td><strong>Papers (arXiv etc.)</strong></td><td>2–5 %</td><td>Technical depth, mathematical notation, scientific reasoning</td></tr>
+        <tr><td><strong>Curated other</strong></td><td>1–5 %</td><td>Dialogue data, legal text, multilingual documents</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight insight-pos">
+    <strong>Code helps beyond code</strong>
+    <p>In controlled pretraining ablations (470M–2.8B parameters), adding code improved natural-language reasoning by up to 8.2% and world knowledge by 4.2% (relative), compared with text-only training (<a href="https://arxiv.org/abs/2408.10914" target="_blank" rel="noopener">Aryabumi et al. 2024</a>). The gains are real but modest, and why they happen is not settled; one hypothesis is that code's explicit, step-by-step structure transfers to other tasks.</p>
+  </div>
+
+  <h3>Scale</h3>
+  <p>Training token counts have grown by more than 10× every two years. GPT-2 was trained on WebText, ~40 GB of text from ~8M web pages (OpenAI did not publish a token count; roughly 9–10B tokens per pass is a common estimate); GPT-3 used ~300B tokens; LLaMA 1.4T; LLaMA 3 15T. The figure below shows total pretraining tokens for selected models:</p>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 4 · Training Tokens of Selected Models</div>
+    <canvas id="scale2-canvas" height="200"></canvas>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px;margin-bottom:0;">est. = not officially published. GPT-2: estimated from WebText's ~40 GB. Mistral 7B: Mistral has not disclosed its training data size; 3T is an unofficial estimate.</p>
+  </div>
+
+  <div class="widget">
+    <div class="widget-title">Fig. 5 · Tokens in Familiar Text Corpora</div>
+    <canvas id="corpus-canvas" height="200"></canvas>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px;margin-bottom:0;">Dashed lines mark the training tokens of GPT-2 (~9.5B, estimated from WebText's ~40 GB; one pass), GPT-3 and LLaMA 3 (Fig. 4).</p>
+  </div>
+
+  <div class="insight">
+    <strong>Data is the new model architecture</strong>
+    <p>For a fixed compute budget and architecture, data curation decisions — which sources to include, at what mixture, with which filters — can change final model quality substantially. This is why data pipelines are now treated as proprietary intellectual property.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────── TAB 2: The Learning Problem -->
+<section class="tab-panel" id="tab-loss">
+  <h2>The Learning Problem</h2>
+  <p>Training a language model reduces to a single objective: make the model's predicted probability for the <em>next token</em> as high as possible — across every position in every training document. Everything else — backpropagation, adaptive learning rates, gradient clipping — is machinery in service of this one goal.</p>
+
+  <h3>The Training Loop</h3>
+  <p>Every training step executes the same seven-stage cycle, repeated millions of times across the corpus:</p>
+  <ol class="step-list">
+    <li><span class="step-num">1</span><span><strong>Sample a batch.</strong> Draw B chunks from the shuffled corpus — this is one <em>mini-batch</em>. All B chunks are processed simultaneously in the following steps, which is why the loss equation divides by both T (positions per chunk) and B (chunks per batch). The chunks are drawn from random positions across the corpus, not adjacent, so the batch gradient is not biased toward any one region. Each batch is used for one update and then set aside; because the corpus is so large, most chunks are seen only once, although upsampled sources such as Wikipedia are deliberately repeated a few times (<a href="#data" onclick="goTab('data');return false">Tab 1</a>).</span></li>
+    <li><span class="step-num">2</span><span><strong>Initialize or recall parameters.</strong> On step 1, model weights θ are drawn from a scaled random distribution (see <a href="#backprop" onclick="goTab('backprop');return false">Tab 3</a> for weight initialization details). On all subsequent steps, θ carry forward from the previous step.</span></li>
+    <li><span class="step-num">3</span><span><strong>Forward pass.</strong> Feed the token sequence through the model. Each layer transforms the residual stream; the final linear layer projects to vocabulary size and softmax produces a probability distribution over all tokens at every position.</span></li>
+    <li><span class="step-num">4</span><span><strong>Look up the target.</strong> For each position t, the actual next token x<sub>t+1</sub> is known from the training text. Its index into the vocabulary identifies which slot in the softmax output to read — a single probability value, not a vector.</span></li>
+    <li><span class="step-num">5</span><span><strong>Compute loss.</strong> Take the negative log of that probability. A confident correct prediction (p ≈ 1) gives near-zero loss; a surprised model (p ≈ 0.01) gives high loss. Average over all T−1 ≈ T positions per chunk and all B chunks in the batch to get one scalar: Loss.</span></li>
+    <li><span class="step-num">6</span><span><strong>Backward pass.</strong> Backpropagation computes the gradient ∂Loss/∂θ for every parameter — how much each weight contributed to the loss — by applying the chain rule through the computation graph.</span></li>
+    <li><span class="step-num">7</span><span><strong>Update weights.</strong> An optimizer (SGD, Adam, AdamW) uses the gradients to nudge θ in the direction that reduces the loss. The learning rate controls the step size. Return to phase 1.</span></li>
+  </ol>
+  <div class="two-col" style="margin:20px 0 4px;">
+    <div class="card">
+      <h3 style="margin-top:0;">Batching</h3>
+      <p>A <em>batch</em> is B chunks processed simultaneously in a single forward-backward pass. Running chunks in parallel saturates GPU cores; averaging the loss over B chunks gives a more stable gradient estimate than any single chunk alone. Typical LLM batch sizes are large — 1,024 chunks × 4,096 tokens ≈ 4M tokens per step.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Steps vs. Epochs</h3>
+      <p>One <em>step</em> = one batch → one weight update. One <em>epoch</em> = enough steps to have seen every chunk in the dataset once. LLM pretraining typically covers about one pass over the data, and the "epoch" differs by source: GPT-3 saw Wikipedia ~3.4 times but filtered Common Crawl only ~0.44 times (<a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">Brown et al. 2020</a>). Practitioners track progress in steps or tokens seen, not epochs.</p>
+    </div>
+  </div>
+
+  <h3>Surprise and Information Theory</h3>
+  <p><strong>Surprise</strong> — also called <em>self-information</em> — is a formal quantity in information theory, defined as <code>−log p(x)</code> for a single outcome x. The definition captures the intuition directly: a high-probability event carries low surprise; a low-probability event carries high surprise. It is precisely the quantity that appears in the loss for each individual token prediction.</p>
+  <p>Self-information is the building block of a family of related concepts that appear throughout LLM training:</p>
+  <div class="two-col" style="margin:16px 0;">
+    <div class="card">
+      <h3 style="margin-top:0;">Entropy</h3>
+      <p>The <em>expected</em> surprise under a distribution — <code>E[−log p(x)]</code>. A measure of how uncertain a distribution is on average. A peaked distribution has low entropy; a uniform one has high entropy.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Cross-Entropy</h3>
+      <p>The expected surprise when model distribution <em>q</em> is used to encode events drawn from true distribution <em>p</em> — <code>E<sub>p</sub>[−log q(x)]</code>. Averaging the per-token loss over the dataset gives exactly this quantity.</p>
+    </div>
+  </div>
+
+  <h3>Cross-Entropy Loss</h3>
+  <p>For each position in a sequence, the model outputs a probability distribution over the vocabulary. The per-token loss measures how surprised the model is by the actual next token:</p>
+  <div class="eq"><i>l</i><sub>t</sub> = − log P(x<sub>t+1</sub> | x<sub>1</sub>, …, x<sub>t</sub>)</div>
+  <p>If the model assigns probability 0.9 to the correct token, the loss is −log(0.9) ≈ 0.105. If it assigns only 0.01, the loss is −log(0.01) ≈ 4.6. The model is penalized in proportion to its surprise.</p>
+
+  <div class="insight">
+    <strong>Why negative log?</strong>
+    <p>Log-probabilities are additive across positions, making the loss the negative average log-probability over the sequence. Cross-entropy equals the entropy of the true distribution plus the KL divergence from it to the model — since that entropy is constant with respect to model parameters, minimizing cross-entropy is equivalent to minimizing KL divergence and to maximum likelihood estimation.</p>
+  </div>
+
+  <h3>The Training Objective</h3>
+  <p>The quantity the optimizer actually minimizes is the per-token loss averaged over all positions and all sequences in the batch:</p>
+  <div class="eq">Loss = −(1 / (B·T)) Σ<sub>b,t</sub> log P<sub>θ</sub>(x<sub>t+1</sub><sup>(b)</sup> | x<sub>1:t</sub><sup>(b)</sup>)</div>
+  <p>where B is batch size and T is sequence length. (Notation: the loss is written "Loss" throughout this lesson; L is reserved for the number of layers.) Gradients of this scalar with respect to every weight θ are computed by backpropagation, then used to update the weights.</p>
+
+  <div class="insight insight-pos">
+    <strong>Self-supervised learning</strong>
+    <p>No human labels are needed. The next token in any text document is the supervisory signal. This is why scaling to trillions of tokens is feasible — the internet provides essentially unlimited training data for free.</p>
+  </div>
+
+  <h3>From Loss to Perplexity</h3>
+  <p>Perplexity exponentiates the average loss Loss, giving an intuitive measure of how many tokens the model is "confused between" at each step on average:</p>
+  <div class="eq">PPL = exp(Loss)</div>
+  <div class="insight">
+    <strong>Perplexity is a geometric mean</strong>
+    <p>Because Σ log P = log(Π P), the average loss is −(1/(B·T)) · log(Π P), and exponentiating gives PPL = (Π P)<sup>−1/(B·T)</sup> — the geometric mean of 1/P<sub>t</sub> across all token positions, or equivalently 1 divided by the geometric mean of P<sub>t</sub>. A perplexity of 20 means the model's geometric-mean confidence in each correct token was 1/20 ≈ 5%. The geometric mean is the right notion here because sequence probability is a product of conditionals — averaging in log-space is geometric-mean in probability space.</p>
+  </div>
+  <p>On WikiText-2, without any fine-tuning, GPT-2 reached a perplexity of 29.4 (117M parameters) down to 18.3 (1.5B) (<a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" target="_blank" rel="noopener">Radford et al. 2019</a>, Table 3). GPT-3's often-quoted ~20 (20.5) is on a different benchmark, Penn Treebank (<a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">Brown et al. 2020</a>). Perplexity is also only comparable between models that share a tokenizer: it is measured per token, so splitting the same text into more, smaller tokens changes the number. Modern models reach single digits on some benchmarks. A model predicting uniformly over GPT-2's 50,257-token vocabulary has loss ln(50,257) ≈ 10.82 and PPL = 50,257.</p>
+
+  <!-- Interactive: Loss Calculator -->
+  <div class="widget">
+    <div class="widget-title">Fig. 6 · Loss &amp; Perplexity Calculator</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:16px;">Set the model's probability for the correct token at several positions to see how loss and perplexity accumulate.</p>
+    <div id="loss-positions"></div>
+    <div class="result-box" id="loss-result">
+      <div class="metric"><span class="metric-label">Average Cross-Entropy Loss</span><span class="metric-val" id="lval">—</span></div>
+      <div class="metric"><span class="metric-label">Perplexity</span><span class="metric-val" id="pval">—</span></div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Training vs. Validation Loss</strong>
+    <p>We hold out a validation set never seen during training. Every N steps, a forward pass is run on this held-out data with gradients disabled — no weight update follows. The result is purely diagnostic: the <b>gap</b> between training and validation loss reveals how well the model generalizes. A widening gap means the model is memorizing training data rather than learning to generalize. Practitioners use it to decide when to stop training, decay the learning rate, or select which checkpoint to keep. Modern LLMs trained on trillions of tokens typically show minimal gaps, because the corpus is so large. A small gap does not rule out memorization, though: large models still reproduce some training text verbatim, more so for bigger models and for text that is duplicated many times in the corpus (<a href="https://arxiv.org/abs/2202.07646" target="_blank" rel="noopener">Carlini et al. 2023</a>).</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────── TAB 2: Backpropagation -->
+<section class="tab-panel" id="tab-backprop">
+  <h2>Backpropagation</h2>
+  <p>Backpropagation is the chain rule of calculus applied systematically to compute ∂Loss/∂θ for every weight θ in the network. The key insight: because the forward pass is a composition of differentiable operations, gradients flow backwards through the same computational graph.</p>
+
+  <h3>The Chain Rule</h3>
+  <p>Before getting into backpropagation, it helps to recall a basic result from calculus. If Loss depends on an intermediate value y, which itself depends on x, then:</p>
+  <div class="eq">∂Loss/∂x = (∂Loss/∂y) · (∂y/∂x)</div>
+  <p>The gradient of Loss with respect to x equals the gradient of Loss with respect to y, multiplied by the gradient of y with respect to x. That's it — this single rule is the entire mathematical foundation of backpropagation. Everything else is applying it repeatedly through a computation graph.</p>
+
+  <h3>Backpropagation: Chain Rule Applied to the Residual Stream</h3>
+  <p>A transformer is a stack of residual blocks. At each layer l, the residual stream is updated by:</p>
+  <div class="eq">x<sub>l+1</sub> = x<sub>l</sub> + F<sub>l</sub>(x<sub>l</sub>)</div>
+  <p>Here x<sub>l</sub> is a vector of dimension d<sub>model</sub> — the accumulated state of computation up to layer l. F<sub>l</sub> is whatever the block computes (attention or MLP), and its output is the delta added to the stream. The next layer's input x<sub>l+1</sub> is simply the current stream plus that delta.</p>
+  <p>To propagate gradients backward, apply the chain rule with y = x<sub>l+1</sub> and x = x<sub>l</sub>:</p>
+  <div class="eq">∂Loss/∂x<sub>l</sub> = ∂Loss/∂x<sub>l+1</sub> · ∂x<sub>l+1</sub>/∂x<sub>l</sub></div>
+  <p>The second term requires differentiating x<sub>l+1</sub> = x<sub>l</sub> + F<sub>l</sub>(x<sub>l</sub>) with respect to x<sub>l</sub>. Because x<sub>l</sub> appears in <em>both</em> terms — directly in the skip connection, and as input to F<sub>l</sub> — the derivative is:</p>
+  <div class="eq">∂x<sub>l+1</sub>/∂x<sub>l</sub> = I + ∂F<sub>l</sub>/∂x<sub>l</sub></div>
+  <p>Substituting back gives the key backpropagation equation for a residual network:</p>
+  <div class="eq">∂Loss/∂x<sub>l</sub> = ∂Loss/∂x<sub>l+1</sub> · (I + ∂F<sub>l</sub>/∂x<sub>l</sub>)</div>
+  <p>This equation is applied as a backward recurrence: starting from ∂Loss/∂x<sub>L</sub> at the output layer (where the loss is computed), each step produces the gradient one layer earlier — ∂Loss/∂x<sub>L−1</sub>, then ∂Loss/∂x<sub>L−2</sub>, all the way back to the input. That propagation from deep to shallow is the "back" in backpropagation.</p>
+
+  <p>The identity term <strong>I</strong> means that even if ∂F<sub>l</sub>/∂x<sub>l</sub> is nearly zero — small weights, saturated activations — the gradient still passes through essentially unchanged: ∂Loss/∂x<sub>l</sub> ≈ ∂Loss/∂x<sub>l+1</sub>. Without the skip connection, you would multiply L Jacobians in a chain, and their product typically vanishes.</p>
+
+  <div class="insight">
+    <strong>The seed gradient: where backpropagation begins</strong>
+    <p>The recurrence needs a starting value: ∂Loss/∂x<sub>L</sub> at the final layer. This is computed directly from the loss, not from another backward step. After the last residual stream, the model applies an unembedding step and softmax to produce a probability distribution over the vocabulary:</p>
+    <div class="eq" style="margin:10px 0;">z = x<sub>L</sub> · W<sub>unembed</sub> &nbsp;&nbsp;&nbsp; p = softmax(z) &nbsp;&nbsp;&nbsp; Loss = −log p<sub>y</sub></div>
+    <p>where y is the index of the correct next token. (For simplicity we leave out the final LayerNorm that GPT-2 applies before the unembedding; including it adds one more chain-rule step.) To find the gradient ∂Loss/∂z<sub>k</sub> for each logit, first rewrite the loss by expanding log p<sub>y</sub> using the softmax definition p<sub>y</sub> = exp(z<sub>y</sub>) / Σ<sub>j</sub> exp(z<sub>j</sub>). Taking the log and applying log(a/b) = log a − log b:</p>
+    <div class="eq" style="margin:10px 0;">log p<sub>y</sub> = log exp(z<sub>y</sub>) − log Σ<sub>j</sub> exp(z<sub>j</sub>) = z<sub>y</sub> − log Σ<sub>j</sub> exp(z<sub>j</sub>)</div>
+    <p>Negating both sides gives the loss:</p>
+    <div class="eq" style="margin:10px 0;">Loss = −log p<sub>y</sub> = −z<sub>y</sub> + log Σ<sub>j</sub> exp(z<sub>j</sub>)</div>
+    <p>Differentiating with respect to logit z<sub>k</sub>:</p>
+    <div class="eq" style="margin:10px 0;">∂Loss/∂z<sub>k</sub> = −∂z<sub>y</sub>/∂z<sub>k</sub> + exp(z<sub>k</sub>) / Σ<sub>j</sub> exp(z<sub>j</sub>)</div>
+    <p>In the first term, ∂z<sub>y</sub>/∂z<sub>k</sub> is 1 if k = y and 0 otherwise — the indicator 𝟙<sub>k=y</sub>. The second term is p<sub>k</sub> by definition of softmax. So:</p>
+    <div class="eq" style="margin:10px 0;">∂Loss/∂z<sub>k</sub> = p<sub>k</sub> − 𝟙<sub>k=y</sub></div>
+    <p>In vector form: ∂Loss/∂z = p − 𝟙<sub>y</sub>. For the correct token the gradient is p<sub>y</sub> − 1 (negative — push the logit up); for all wrong tokens it is p<sub>k</sub> (positive — push them down). When the model is already confident and correct, p<sub>y</sub> ≈ 1 and the gradient nearly vanishes — little correction needed. One more chain rule step through the unembedding gives the seed:</p>
+    <div class="eq" style="margin:10px 0;">∂Loss/∂x<sub>L</sub> = (p − 𝟙<sub>y</sub>) · W<sub>unembed</sub><sup>⊤</sup></div>
+    <p>This d<sub>model</sub>-dimensional vector is handed to the recurrence as ∂Loss/∂x<sub>L</sub>, and the backward pass proceeds from there.</p>
+    <p style="margin-top:14px;">The formula is self-regulating: plugging in numbers makes this concrete.</p>
+    <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:14px;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);">
+          <th style="text-align:left;padding:6px 10px;font-weight:600;color:var(--text2);">Scenario</th>
+          <th style="text-align:left;padding:6px 10px;font-weight:600;color:var(--text2);">Gradient</th>
+          <th style="text-align:left;padding:6px 10px;font-weight:600;color:var(--text2);">Effect</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 10px;">Wrong token, p<sub>k</sub> = 0.40</td>
+          <td style="padding:8px 10px;font-family:'JetBrains Mono',monospace;">+0.40</td>
+          <td style="padding:8px 10px;color:var(--neg);">Push logit down — proportional to how much probability it was given</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 10px;">Correct token, uncertain (p<sub>y</sub> = 0.05)</td>
+          <td style="padding:8px 10px;font-family:'JetBrains Mono',monospace;">−0.95</td>
+          <td style="padding:8px 10px;color:var(--pos);">Push logit up strongly — model was nearly ignoring the right answer</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 10px;">Correct token, confident (p<sub>y</sub> = 0.97)</td>
+          <td style="padding:8px 10px;font-family:'JetBrains Mono',monospace;">−0.03</td>
+          <td style="padding:8px 10px;color:var(--text3);">Nearly zero — model already knows this, no significant update needed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- Gradient magnitude static diagram -->
+  <div class="widget">
+    <div class="widget-title">Fig. 7 · How Residuals Prevent Gradient Collapse</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:16px;">Without skip connections, each layer multiplies the gradient by a Jacobian typically less than 1 — compounded over 12 layers, the signal nearly vanishes by the time it reaches shallow layers. The identity term from the skip connection keeps it alive throughout.</p>
+    <div style="position:relative;">
+    <svg viewBox="0 0 630 280" style="width:100%;max-height:300px;overflow:visible" role="img" aria-label="Line chart comparing gradient magnitude across 12 layers with and without residual connections">
+      <!-- gridlines -->
+      <line x1="50" y1="20" x2="580" y2="20" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4,4"/>
+      <line x1="50" y1="80" x2="580" y2="80" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4,4"/>
+      <line x1="50" y1="140" x2="580" y2="140" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4,4"/>
+      <line x1="50" y1="200" x2="580" y2="200" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4,4"/>
+      <line x1="50" y1="260" x2="580" y2="260" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4,4"/>
+      <!-- axes -->
+      <line x1="50" y1="20" x2="50" y2="260" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="50" y1="260" x2="580" y2="260" stroke="var(--border)" stroke-width="1.5"/>
+      <!-- y tick labels -->
+      <text x="44" y="24" text-anchor="end" font-size="11" fill="var(--text3)" font-family="'JetBrains Mono',monospace">1.0</text>
+      <text x="44" y="84" text-anchor="end" font-size="11" fill="var(--text3)" font-family="'JetBrains Mono',monospace">0.75</text>
+      <text x="44" y="144" text-anchor="end" font-size="11" fill="var(--text3)" font-family="'JetBrains Mono',monospace">0.50</text>
+      <text x="44" y="204" text-anchor="end" font-size="11" fill="var(--text3)" font-family="'JetBrains Mono',monospace">0.25</text>
+      <text x="44" y="264" text-anchor="end" font-size="11" fill="var(--text3)" font-family="'JetBrains Mono',monospace">0.0</text>
+      <!-- x tick labels (layers 0–11) -->
+      <text x="50"  y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">0</text>
+      <text x="98"  y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">1</text>
+      <text x="146" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">2</text>
+      <text x="195" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">3</text>
+      <text x="243" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">4</text>
+      <text x="291" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">5</text>
+      <text x="339" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">6</text>
+      <text x="387" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">7</text>
+      <text x="436" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">8</text>
+      <text x="484" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">9</text>
+      <text x="532" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">10</text>
+      <text x="580" y="277" text-anchor="middle" font-size="11" fill="var(--text3)" font-family="'DM Sans',sans-serif">11</text>
+      <!-- axis labels -->
+      <text x="315" y="295" text-anchor="middle" font-size="12" fill="var(--text2)" font-family="'DM Sans',sans-serif">Layer</text>
+      <text x="12" y="145" text-anchor="middle" font-size="12" fill="var(--text2)" font-family="'DM Sans',sans-serif" transform="rotate(-90,12,145)">Gradient magnitude</text>
+      <!-- without residuals line: 0.7^(11−i) per layer i = 0…11, so layer 0 ≈ 0.02, layer 11 = 1.0 -->
+      <polyline points="50,255 98,253 146,250 195,246 243,240 291,232 339,220 387,202 436,178 484,142 532,92 580,20"
+                fill="none" stroke="var(--neg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="50"  cy="255" r="3.5" fill="var(--neg)"/>
+      <circle cx="98"  cy="253" r="3.5" fill="var(--neg)"/>
+      <circle cx="146" cy="250" r="3.5" fill="var(--neg)"/>
+      <circle cx="195" cy="246" r="3.5" fill="var(--neg)"/>
+      <circle cx="243" cy="240" r="3.5" fill="var(--neg)"/>
+      <circle cx="291" cy="232" r="3.5" fill="var(--neg)"/>
+      <circle cx="339" cy="220" r="3.5" fill="var(--neg)"/>
+      <circle cx="387" cy="202" r="3.5" fill="var(--neg)"/>
+      <circle cx="436" cy="178" r="3.5" fill="var(--neg)"/>
+      <circle cx="484" cy="142" r="3.5" fill="var(--neg)"/>
+      <circle cx="532" cy="92"  r="3.5" fill="var(--neg)"/>
+      <circle cx="580" cy="20"  r="3.5" fill="var(--neg)"/>
+      <!-- with residuals line: identity gradient keeps magnitude near 1.0 throughout -->
+      <polyline points="50,49 98,44 146,42 195,39 243,37 291,37 339,34 387,32 436,30 484,27 532,25 580,20"
+                fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="50"  cy="49" r="3.5" fill="var(--accent)"/>
+      <circle cx="98"  cy="44" r="3.5" fill="var(--accent)"/>
+      <circle cx="146" cy="42" r="3.5" fill="var(--accent)"/>
+      <circle cx="195" cy="39" r="3.5" fill="var(--accent)"/>
+      <circle cx="243" cy="37" r="3.5" fill="var(--accent)"/>
+      <circle cx="291" cy="37" r="3.5" fill="var(--accent)"/>
+      <circle cx="339" cy="34" r="3.5" fill="var(--accent)"/>
+      <circle cx="387" cy="32" r="3.5" fill="var(--accent)"/>
+      <circle cx="436" cy="30" r="3.5" fill="var(--accent)"/>
+      <circle cx="484" cy="27" r="3.5" fill="var(--accent)"/>
+      <circle cx="532" cy="25" r="3.5" fill="var(--accent)"/>
+      <circle cx="580" cy="20" r="3.5" fill="var(--accent)"/>
+    </svg>
+    <div style="position:absolute;left:180px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;background:var(--surface);padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <span style="display:inline-block;width:20px;height:2.5px;background:var(--accent);border-radius:2px;flex-shrink:0;"></span>
+        <span style="font-size:11px;color:var(--text2);">With residuals: <code style="font-size:11px;">x<sub>l+1</sub> = x<sub>l</sub> + F<sub>l</sub>(x<sub>l</sub>)</code></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <span style="display:inline-block;width:20px;height:2.5px;background:var(--neg);border-radius:2px;flex-shrink:0;"></span>
+        <span style="font-size:11px;color:var(--text2);">Without residuals: <code style="font-size:11px;">x<sub>l+1</sub> = F<sub>l</sub>(x<sub>l</sub>)</code></span>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <h3>Vanishing &amp; Exploding Gradients</h3>
+  <p>Fig. 7 showed one failure mode — vanishing gradients — and one solution. But gradient pathologies come in several flavors, and transformers have a specific fix for each. The table below maps each problem to its symptom and the architectural choice that addresses it.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Problem</th><th>Symptom</th><th>Transformer Solution</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Vanishing gradients</strong></td><td>Early layers learn nothing; loss stalls</td><td>Residual connections + LayerNorm</td></tr>
+        <tr><td><strong>Exploding gradients</strong></td><td>Loss spikes to NaN</td><td>Gradient clipping (clip_grad_norm ≤ 1.0)</td></tr>
+        <tr><td><strong>Attention saturation</strong></td><td>Softmax outputs near 0 or 1; gradients near 0</td><td>Scaling QK by 1/√d<sub>k</sub></td></tr>
+        <tr><td><strong>Rank collapse</strong></td><td>Stacked attention makes every token's vector nearly identical, so positions can't be told apart</td><td>Residual connections and MLPs (<a href="https://arxiv.org/abs/2103.03404" target="_blank" rel="noopener">Dong et al. 2021</a>)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Weight Initialization</h3>
+  <p>Classic initialization schemes such as Xavier/Glorot and He weren't designed to make the forward pass look tidy — they were derived by asking what weight scale keeps gradient variance from exploding or vanishing as it propagates backward through L layers. Initialization is a gradient-flow argument first. The first backward pass is computed from the initial weights, so a bad start can trigger the exact pathologies in the table above before training has had any chance to correct them.</p>
+  <p><strong>Why not zero?</strong> Every neuron in a layer computes the same output and receives the same gradient — the network never breaks symmetry and every layer collapses to a single effective direction.</p>
+  <p><strong>Why not large random values?</strong> Activations (and their gradients) grow or shrink exponentially with depth, producing NaN losses from the very first pass.</p>
+  <p>The solution is to scale random draws so that gradient variance stays roughly constant from layer to layer. Two classic schemes come from earlier deep networks:</p>
+  <div class="two-col" style="margin:16px 0;">
+    <div class="card">
+      <h3 style="margin-top:0;">Xavier / Glorot</h3>
+      <p>Draw weights from a distribution with σ = √(2 / (fan<sub>in</sub> + fan<sub>out</sub>)). Designed for layers with saturating activations (tanh, sigmoid).</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Kaiming / He</h3>
+      <p>Draw weights with σ = √(2 / fan<sub>in</sub>). Designed for ReLU, which zeroes about half of its inputs.</p>
+    </div>
+  </div>
+  <p>GPT-2 and most LLMs use neither. They draw every weight matrix from a normal distribution with a fixed σ = 0.02. For comparison, with d<sub>model</sub> = 768 Xavier would give σ = √(1/768) ≈ 0.036, so 0.02 is a more conservative choice that keeps initial activations smaller.</p>
+  <p>GPT-2 adds one more tweak: the output projection of each residual block is scaled down by an extra factor of <code>1/√(2L)</code>, where L is the number of layers. Since every block adds to the residual stream, this keeps the total variance of the stream from growing as depth increases.</p>
+  <div class="insight">
+    <strong>Initialization is temporary scaffolding</strong>
+    <p>After a few thousand gradient steps the optimizer has moved weights far from their starting values, and the exact initialization scheme is largely forgotten. Its lasting effect is on the earliest steps — which is why large training runs also use a <em>learning rate warmup</em>: the learning rate ramps from near-zero over the first few hundred to few thousand steps (<a href="#optimizers" onclick="goTab('optimizers');return false">Tab 4</a>), giving the model time to settle into a stable regime before taking large gradient steps.</p>
+  </div>
+
+  <h3>What Gets Updated?</h3>
+  <p>GPT-2 small has ~124M parameters: ~39M in the token and position embeddings, and ~85M in its 12 blocks, split across:</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>Attention Sub-layer Parameters</h3>
+      <p>W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub>, W<sub>O</sub> per head per layer. These learn <em>what to attend to</em> — which token-pair relationships are useful for prediction.</p>
+    </div>
+    <div class="card">
+      <h3>Feedforward Network Sub-layer Parameters</h3>
+      <p>W<sub>up</sub>, W<sub>down</sub> (and W<sub>gate</sub> in gated models). These account for ~2/3 of the block parameters and learn <em>factual associations</em> — often thought of as a key-value memory.</p>
+    </div>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Gradient Checkpointing</strong>
+    <p>The forward pass stores activations for later gradient computation — for a 100-layer model, this requires storing 100 activation tensors simultaneously. Gradient checkpointing discards intermediate activations and recomputes them during the backward pass, trading compute for memory. This is an engineering trick for making training feasible on memory-limited hardware; it is not essential to understanding how LLMs work.</p>
+  </div>
+
+  <div class="insight insight-pos">
+    <strong>Neuroscience Parallels</strong>
+    <p>LLMs and backpropagation are a proof of concept that predictive learning from raw data can produce rich representations — but the learning rule is almost certainly different from what the brain uses. The representations may converge even when the learning rules diverge, which is both fascinating and a challenge for using LLMs as neural models.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────── TAB 3: Optimizers -->
+<section class="tab-panel" id="tab-optimizers">
+  <h2>Optimizers</h2>
+  <p>Gradient descent tells us the <em>direction</em> to update weights. Optimizers determine the <em>step size and adaptation</em> — how much to trust each gradient and whether to accumulate momentum.</p>
+
+  <h3>Three Distinct Optimizers</h3>
+  <p>SGD, Momentum, and Adam are three separate algorithms — not steps in a single process. Each one was invented to fix a specific limitation of the previous. In practice you pick one; modern LLM training uses Adam (or its variant AdamW).</p>
+
+  <div class="insight">
+    <strong>Reading the notation</strong>
+    <p><strong>θ (theta)</strong> represents all the weights in the model — the millions or billions of numbers that get updated during training. It is treated as a single symbol here for compactness, but the update rule applies independently to every individual parameter.</p>
+    <p style="margin-top:8px;"><strong>← (left arrow)</strong> means assignment, not equality. <code>θ ← θ − η·g</code> reads as: "replace θ with the result of θ minus η times g." Both sides refer to θ, but at different moments — the right side uses the current weights, the left side stores the updated weights. Writing <code>=</code> instead would be a false mathematical statement; the arrow makes clear this is an operation that happens over time.</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0;">
+    <div class="card">
+      <h3>1 · SGD — Stochastic Gradient Descent</h3>
+      <p>The simplest possible optimizer: move the weights a small step in the direction opposite to the gradient.</p>
+      <div class="eq">θ ← θ − η · g<br>g = ∂Loss/∂θ</div>
+      <p><strong>η is the learning rate</strong> — a scalar that controls step size. g is the gradient of the loss with respect to θ, computed by backpropagation.</p>
+      <p style="margin-bottom:0;"><strong>Limitation:</strong> Each step ignores all previous gradients. On loss landscapes with long, narrow valleys — common in deep networks — SGD oscillates back and forth across the valley walls instead of moving efficiently toward the minimum.</p>
+    </div>
+
+    <div class="card">
+      <h3>2 · SGD + Momentum</h3>
+      <p>Fixes SGD's oscillation problem by maintaining a velocity term v that accumulates past gradients — like a ball rolling downhill that builds speed in consistent directions and dampens oscillations across them.</p>
+      <div class="eq">v ← β·v + g<br>θ ← θ − η·v</div>
+      <p>β (typically 0.9) controls how much past gradients contribute. A gradient in the same direction as v amplifies it; a gradient pointing the opposite way partially cancels it out. The net effect: smooth acceleration along the valley floor, reduced bouncing across it.</p>
+      <p style="margin-bottom:0;"><strong>Limitation:</strong> The step size η is the same for every parameter in the network. But different weight matrices have very different gradient magnitudes — some are large and consistent, some are tiny and noisy. A single global learning rate is always too large for some parameters and too small for others.</p>
+    </div>
+
+    <div class="card">
+      <h3>3 · Adam — Adaptive Moment Estimation</h3>
+      <p>Fixes momentum's one-size-fits-all learning rate by giving each parameter its own effective step size. It tracks two running averages for every weight: the mean gradient (first moment m) and the mean squared gradient (second moment s).</p>
+      <div class="eq">m ← β₁·m + (1−β₁)·g &nbsp;&nbsp;&nbsp; — gradient mean (first moment)<br>s ← β₂·s + (1−β₂)·g² &nbsp;&nbsp; — mean squared gradient (second moment)<br>θ ← θ − η · m̂ / (√ŝ + ε)</div>
+      <p>Typical defaults: β₁ = 0.9, β₂ = 0.999, ε = 10⁻⁸.</p>
+      <p>The hats (m̂, ŝ) denote bias correction — without it, the running averages start near zero and the first few steps would be too large. Concretely: m̂ = m / (1 − β₁ᵗ), where t is the current step. At step 1 with β₁ = 0.9, the denominator is only 0.1, so m̂ is 10× larger than the raw m — exactly compensating for the cold start. The correction fades as t grows and β₁ᵗ → 0.</p>
+      <p style="margin-bottom:0;">The effective step size for a parameter is η · m̂ / (√ŝ + ε), so the step is large when m̂ is large and/or ŝ is small. <strong>What actually drives step size is the signal-to-noise ratio m̂/√ŝ</strong>: a parameter with large, consistent gradients has both large m̂ and large ŝ, and the two partially cancel; a parameter with small but consistent gradients has small m̂ and small ŝ, so it still gets a meaningful step; a parameter with noisy gradients has small m̂ (noise cancels in the mean) but large ŝ, so it gets a small step.</p>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Why Adam dominates LLM training</strong>
+    <p>With gradients arriving from 124M (GPT-2 small) to 1.5B (XL) parameters, different weight matrices have wildly different gradient magnitudes. Adam normalizes them by √ŝ, making the optimizer robust to this heterogeneity. The gradient mean (m) also smooths over mini-batch noise, reducing sensitivity to learning rate choice. The second moment (s) provides per-parameter normalization: Adam divides each parameter's update by the running RMS of its own gradient, so the step size is set roughly by the learning rate and by how consistent the gradient's sign is, not by its raw magnitude. This evens out step sizes across parameters whose gradient scales differ by orders of magnitude.</p>
+  </div>
+
+  <h3>Adam with Weight decay (AdamW) — the standard for transformers</h3>
+  <p>The variant used in practice decouples weight decay from the gradient update:</p>
+  <div class="eq">θ ← θ − η · m̂/(√ŝ + ε) − η·λ·θ</div>
+  <p>where λ is the weight decay coefficient (typically 0.1). This penalizes large weights directly, acting as an implicit regularizer without interfering with Adam's gradient normalization. Before each update, gradient clipping rescales all gradients so their global norm never exceeds a threshold c — preventing a bad batch from causing a runaway parameter update.</p>
+
+  <h3>Learning Rate Schedule</h3>
+  <p>The learning rate is scheduled throughout training in two phases, the standard schedule used for GPT-3 and Chinchilla:</p>
+  <svg class="lr-diagram" viewBox="0 0 500 98" role="img" aria-label="Learning rate curve: linear warmup, then cosine decay to a minimum value">
+    <!-- phase backgrounds -->
+    <rect x="40" y="8" width="80" height="68" fill="var(--accent)" fill-opacity="0.07" rx="3"/>
+    <rect x="120" y="8" width="372" height="68" fill="var(--pos)" fill-opacity="0.05"/>
+    <!-- phase divider -->
+    <line x1="120" y1="8" x2="120" y2="76" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+    <!-- fill under curve (half-cosine from peak at x=120 to η_min at x=490) -->
+    <path d="M40,76 L120,14 C254.8,14 355.2,70 490,70 L490,76 Z" fill="var(--accent)" fill-opacity="0.12"/>
+    <!-- curve -->
+    <path d="M40,76 L120,14 C254.8,14 355.2,70 490,70" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>
+    <!-- axes -->
+    <line x1="40" y1="8" x2="40" y2="76" stroke="var(--border2)" stroke-width="1"/>
+    <line x1="40" y1="76" x2="492" y2="76" stroke="var(--border2)" stroke-width="1"/>
+    <!-- y-axis label -->
+    <text x="14" y="44" text-anchor="middle" font-size="14" fill="var(--text3)" font-style="italic">η</text>
+    <!-- phase labels -->
+    <text x="80" y="26" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--accent)">Warmup</text>
+    <text x="420" y="26" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--pos)">Cosine Decay</text>
+    <!-- phase sub-labels -->
+    <text x="90" y="62" text-anchor="middle" font-size="9" fill="var(--text3)">short</text>
+    <text x="420" y="38" text-anchor="middle" font-size="9" fill="var(--text3)">rest of training</text>
+    <text x="420" y="49" text-anchor="middle" font-size="9" fill="var(--text3)">η → η<tspan baseline-shift="sub" font-size="7">min</tspan> ≈ 10% of peak</text>
+    <!-- x-axis label -->
+    <text x="265" y="92" text-anchor="middle" font-size="9.5" fill="var(--text3)">training steps →</text>
+  </svg>
+  <p>Warmup prevents early training instability when gradient estimates are noisy; it typically lasts a few hundred to a few thousand steps, a small fraction of the run. Cosine decay then gradually reduces the learning rate along half a cosine wave, allowing the optimizer to settle into a good minimum rather than oscillating around it. Some recent runs use a variant instead: hold η constant for most of training, then drop it quickly to near zero in a short final "cooldown" (warmup-stable-decay). This makes it easy to continue training later from the constant phase.</p>
+
+  <h3>Hyperparameters that matter most</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Typical value</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td><em>η</em> (learning rate)</td><td>10<sup>−4</sup> to 3 × 10<sup>−4</sup></td><td>Primary knob — too high → instability; too low → slow convergence</td></tr>
+        <tr><td><em>T</em> (context length)</td><td>512–8192 tokens</td><td>Maximum span a token can attend to; multiplies with batch size to set total tokens per gradient step</td></tr>
+        <tr><td><em>B</em> (batch size)</td><td>256–4096 sequences</td><td>Number of sequences per gradient update — larger batches reduce gradient noise; often scaled with learning rate</td></tr>
+        <tr><td>β<sub>1</sub></td><td>0.9</td><td>First moment decay — momentum smoothing</td></tr>
+        <tr><td>β<sub>2</sub></td><td>0.95 or 0.999</td><td>Second moment decay — controls gradient normalization memory</td></tr>
+        <tr><td><em>λ</em> (weight decay)</td><td>0.1</td><td>Implicit regularization — prevents weight explosion</td></tr>
+        <tr><td><em>c</em> (grad clip norm)</td><td>1.0</td><td>Caps gradient norm — prevents exploding gradient catastrophe</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────── TAB 4: Scaling Laws -->
+<section class="tab-panel" id="tab-scaling">
+  <h2>Scaling Laws</h2>
+  <p>One of the most striking findings in deep learning: model performance improves <em>predictably</em> as a power law of compute, data, and parameters. These empirical relationships, discovered around 2020, fundamentally changed how AI labs plan training runs.</p>
+
+  <h3>Early scaling laws — <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener">Kaplan et al. 2020</a></h3>
+  <p>OpenAI's initial scaling law paper established that language model loss follows a power law in parameter count, data, and compute — holding across 7 orders of magnitude. For parameters alone:</p>
+  <div class="eq">Loss(N) ≈ (N<sub>c</sub>/N)<sup>α<sub>N</sub></sup></div>
+  <p>where N is the (non-embedding) parameter count (≈ 12·L·d<sub>model</sub><sup>2</sup> for a transformer with L layers and hidden size d<sub>model</sub>), N<sub>c</sub> ≈ 8.8 × 10<sup>13</sup> is a fitted scale constant, and α<sub>N</sub> ≈ 0.076. Kaplan's pure power law has no irreducible-loss term; a separate law Loss(D) = (D<sub>c</sub>/D)<sup>α<sub>D</sub></sup> with α<sub>D</sub> ≈ 0.095 describes data size. Notice that D — the number of training tokens — does not appear in the parameter law at all; training data size was treated as effectively unlimited. From this, Kaplan et al. concluded that for a fixed compute budget, the priority should be maximizing model size N — even at the expense of training on fewer tokens. This drove the GPT-3 era design philosophy. It turned out to be wrong.</p>
+
+  <h3>Chinchilla — <a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener">Hoffmann et al. 2022</a></h3>
+  <p>DeepMind's Chinchilla paper superseded the Kaplan prescription. By training hundreds of models at systematically varied (N, D) combinations — rather than holding one fixed — they obtained a cleaner joint fit:</p>
+  <div class="eq">Loss(N, D) ≈ E + A/N<sup>α</sup> + B/D<sup>β</sup></div>
+  <p>where D is the number of training tokens, E ≈ 1.69 is the irreducible loss (the entropy of natural text, in nats per token), A and B are fitted constants, α ≈ 0.34, and β ≈ 0.28. Because α ≈ β, neither term dominates — starving either N or D hurts equally. Each training token costs roughly 6N FLOPs (2N forward + 4N backward), so a fixed compute budget C ≈ 6ND creates a direct tradeoff: doubling model size forces halving training tokens. Minimizing Loss(N, D) subject to this constraint yields N* ∝ C<sup>β/(α+β)</sup> and D* ∝ C<sup>α/(α+β)</sup>. With α ≈ 0.34 and β ≈ 0.28 this gives N* ∝ C<sup>0.45</sup> and D* ∝ C<sup>0.55</sup>; Hoffmann et al.'s headline result, combining this fit with two other methods, rounds both to ≈ C<sup>0.5</sup> — model size and data should grow at about the same rate. The specific ratio D*/N* requires the empirically fitted constants A and B; Hoffmann et al. evaluated it across hundreds of training runs and found roughly 20.</p>
+
+  <div class="insight">
+    <strong>The Chinchilla rule: ~20 tokens per parameter.</strong> For a given compute budget, the loss-optimal strategy is to train a model on roughly 20× as many tokens as it has parameters. A 7B-parameter model, for example, should see ~140B training tokens. Models trained with far fewer tokens are undertrained — they have capacity that the data never filled.
+  </div>
+
+  <div class="card">
+    <h3>Post-Chinchilla Reality</h3>
+    <p>Llama and successors deliberately overtrain smaller models beyond Chinchilla-optimal — because <em>inference</em> cost matters too. A smaller model at the same loss is cheaper to serve at scale, so training longer on more data makes economic sense even if "suboptimal" for training compute.</p>
+  </div>
+
+  <h3>What scaling laws don't predict</h3>
+  <div class="insight insight-warn">
+    <strong>Emergent capabilities</strong>
+    <p>Some abilities — like multi-step arithmetic, chain-of-thought reasoning, multi-hop reasoning, and instruction-following — have been reported to appear suddenly at threshold model sizes rather than improving smoothly (<a href="https://arxiv.org/abs/2206.07682" target="_blank" rel="noopener">Wei et al. 2022</a>). They seem absent below a threshold, then functional above it. These <span style="font-weight:600;">emergent phenomena</span> are not captured by loss curves, the boundary is fuzzy and depends on evaluation metric, and they remain poorly understood theoretically.</p>
+    <p>The apparently sudden appearance of emergent phenomena may be an artifact of coarse evaluation metrics (<a href="https://arxiv.org/abs/2304.15004" target="_blank" rel="noopener">Schaeffer et al. 2023</a>). When measured with finer-grained partial-credit scoring, the same capabilities often improve smoothly with scale. Distinguishing genuine discontinuities from measurement failures remains an open methodological problem.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────── TAB 5: Training Dynamics -->
+<section class="tab-panel" id="tab-dynamics">
+  <h2>Training Dynamics</h2>
+  <p>The loss curve is not just a number that decreases. Its shape, speed, and irregularities reveal what the model is actually learning and when — sometimes in surprising ways.</p>
+
+  <h3>Typical Training Curve Shape</h3>
+  <p>A healthy training run shows:</p>
+  <div class="steps">
+    <div class="step hl"><span class="step-num">1</span>Rapid early<br>descent<br><small>easy patterns</small></div>
+    <div class="step hl"><span class="step-num">2</span>Slower<br>middle phase<br><small>harder structure</small></div>
+    <div class="step"><span class="step-num">3</span>Gradual<br>approach<br><small>to irreducible loss E</small></div>
+  </div>
+
+  <!-- Training Dynamics Widget -->
+  <div class="widget">
+    <div class="widget-title">Fig. 8 · Training Curve Scenarios</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:12px;">Select a scenario to see what different training dynamics look like in practice.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="scenario-btn active" data-scenario="normal">Normal training</button>
+      <button class="scenario-btn" data-scenario="grokking">Grokking</button>
+      <button class="scenario-btn" data-scenario="spike">Loss spike</button>
+      <button class="scenario-btn" data-scenario="overfit">Overfitting</button>
+    </div>
+    <canvas id="dyn-canvas" height="260"></canvas>
+    <div id="dyn-desc" style="font-size:13px;color:var(--text2);margin-top:14px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);"></div>
+  </div>
+
+  <h3>Grokking</h3>
+  <p>Discovered in 2022 by <a href="https://arxiv.org/abs/2201.02177" target="_blank" rel="noopener">Power et al.</a>: models trained on algorithmic tasks (modular arithmetic, permutations) sometimes <em>first overfit</em> the training data, then — after a long plateau — suddenly generalise to the validation set. This "delayed generalisation" can occur long after training loss reaches near-zero — in some runs, around a thousand times as many steps later.</p>
+  <p>The classic form of grokking needs a training set small enough for the model to memorize it fully (training loss → 0). That is easy to arrange in controlled algorithmic tasks but is not the situation in large-scale LLM pretraining, where most text is seen about once. So the overall pretraining loss curve of an LLM looks like the normal scenario, not like grokking. Whether grokking-like delayed generalisation happens for particular skills or subsets of the data inside LLMs is an open research question.</p>
+  <div class="insight">
+    <strong>What grokking suggests</strong>
+    <p>The sudden jump in validation accuracy hides a gradual process. <a href="https://arxiv.org/abs/2301.05217" target="_blank" rel="noopener">Nanda et al. (2023)</a> reverse-engineered a small transformer doing modular arithmetic and split training into three continuous phases: <em>memorization</em> (a lookup-table-like solution), <em>circuit formation</em> (a compact Fourier-based algorithm that actually computes the answer grows slowly underneath, while training loss is already near zero) and <em>cleanup</em> (weight decay removes the memorizing components). Validation loss drops sharply only at cleanup, once the memorized solution stops masking the general one. The same task ends up solved by a qualitatively different internal mechanism than the one the model started with.</p>
+  </div>
+
+  <h3>Loss Spikes</h3>
+  <p>During long training runs, the loss sometimes jumps suddenly — a "loss spike" — before recovering. Common causes:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Cause</th><th>Signature</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Bad data batch</td><td>Single large spike, quick recovery</td><td>Better data filtering; gradient clipping</td></tr>
+        <tr><td>η too high</td><td>Periodic spikes, slow recovery</td><td>Reduce peak η; increase warmup</td></tr>
+        <tr><td>Batch size change</td><td>Spike at schedule transition</td><td>Smooth transitions; adjust η linearly</td></tr>
+        <tr><td>Numerical instability</td><td>Sudden spike, often unrecoverable; may produce NaN</td><td>Mixed-precision guards; gradient clipping; restart from last checkpoint</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+
+<!-- ─────────────────────────────────────── TAB 7: Post-Training -->
+<section class="tab-panel" id="tab-rlhf">
+  <h2>Post-Training</h2>
+  <p>Pretraining produces a model that predicts text — not one that follows instructions, maintains a persona, or refuses harmful requests. Turning the pretrained base into a usable assistant requires a second training phase: <strong>post-training</strong>, also called alignment training. This is where the behavior you interact with is installed.</p>
+
+  <h3>The Three-Stage Pipeline</h3>
+  <div class="steps">
+    <div class="step hl"><span class="step-num">1</span>Pretraining<br><small>next-token prediction · self-supervised</small></div>
+    <div class="step hl"><span class="step-num">2</span>SFT<br><small>supervised fine-tuning · labeled demos</small></div>
+    <div class="step hl"><span class="step-num">3</span>RLHF<br><small>preference learning · human ratings</small></div>
+  </div>
+  <p>Each stage uses a different objective and different data. Pretraining sets the model's knowledge and reasoning capability; SFT installs the instruction-following format; RLHF shapes tone, helpfulness, and safety. All three modify the same weights — they are sequential phases of training, not separate systems running at inference time.</p>
+
+  <h3>Stage 2 · Supervised Fine-Tuning (SFT)</h3>
+  <p>After pretraining, the base model is fine-tuned on a curated dataset of (instruction, ideal response) pairs. The loss is still next-token cross-entropy — structurally identical to pretraining — but now applied only to the response tokens, not the instruction prompt. The effect is fast: a few thousand high-quality examples shift the model from "continuation generator" to "instruction follower."</p>
+
+  <div class="insight insight-pos">
+    <strong>Why SFT works so quickly</strong>
+    <p>The capability is already there from pretraining — the model has read countless Q&amp;A transcripts, help articles, and tutorials. SFT does not teach new knowledge; it adjusts the model's prior over output formats. It learns to start responses with answers rather than related anecdotes, to adopt a consistent persona, and to stop at the right moment.</p>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>What SFT installs</h3>
+      <p>Response format (answer first, then elaboration), appropriate length calibration, persona consistency, graceful handling of unanswerable questions.</p>
+    </div>
+    <div class="card">
+      <h3>What SFT cannot fix</h3>
+      <p>Nuanced helpfulness, correct refusal calibration, subtle tone — these require human preference signal. An SFT-only model is often too verbose, sycophantic, or miscalibrated on borderline requests.</p>
+    </div>
+  </div>
+
+  <h3>Stage 3 · Reinforcement Learning from Human Feedback (RLHF)</h3>
+  <p>RLHF optimizes the model against a learned reward signal derived from human preferences. It runs in three sub-steps:</p>
+  <ol class="step-list">
+    <li><span class="step-num">1</span><span><strong>Collect preference data.</strong> For a given prompt, the SFT model generates two or more candidate responses. Human raters compare them and pick the preferred one — or rank several. This produces a dataset of (prompt, response A, response B, A&thinsp;≻&thinsp;B) tuples.</span></li>
+    <li><span class="step-num">2</span><span><strong>Train a reward model.</strong> A separate neural network — usually a pretrained model with the unembedding head replaced by a scalar output — is trained on the preference data to predict which response a human would prefer. Given a (prompt, response) pair, it outputs a single number: the predicted human preference score, or <em>reward</em>.</span></li>
+    <li><span class="step-num">3</span><span><strong>Optimize the main model against the reward.</strong> The main model generates responses; the frozen reward model scores them. A reinforcement learning algorithm — typically PPO (Proximal Policy Optimization) — updates the main model's weights to produce higher-scoring responses. A KL-divergence penalty keeps the model from drifting too far from the SFT checkpoint. This reduces reward hacking — exploiting flaws in the reward model — but does not prevent it.</span></li>
+  </ol>
+
+  <!-- Preference rating example -->
+  <div class="widget" style="margin:24px 0;">
+    <div class="widget-title">Fig. 9 · What a Human Rater Sees</div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:16px;">A rater is shown a prompt and two model-generated responses. They pick the better one — or rate both on dimensions like helpfulness, accuracy, and safety. Click a response to select it.</p>
+
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;font-size:14px;color:var(--text2);">
+      <span style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px;">Prompt</span>
+      My landlord still hasn't fixed the mold in my bathroom after three months. What can I do?
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;" id="pref-cards">
+      <div class="pref-card" id="card-a" onclick="selectCard('a')" style="background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .15s,background .15s;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Response A</div>
+        <p style="font-size:13.5px;color:var(--text2);margin:0;line-height:1.6;">Mold can be a serious health issue, and your landlord has a legal obligation to maintain habitable conditions. Document everything — photos with timestamps, records of every communication. Then send a formal written notice (email or certified letter) stating the problem and giving a specific repair deadline. If they don't respond: contact your local housing authority, look into rent escrow (allowed in some states), or file in small claims court. Specifics depend on your state — where are you located?</p>
+      </div>
+      <div class="pref-card" id="card-b" onclick="selectCard('b')" style="background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .15s,background .15s;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Response B</div>
+        <p style="font-size:13.5px;color:var(--text2);margin:0;line-height:1.6;">I'm so sorry to hear that — mold is really unpleasant and your landlord should absolutely be taking better care of you! You might want to try talking to them again and explaining how serious this situation is for your wellbeing. Sometimes landlords just need a gentle reminder. If that doesn't work, you could look into contacting a lawyer who specializes in tenant issues.</p>
+      </div>
+    </div>
+
+    <div id="pref-feedback" style="min-height:56px;border-radius:var(--radius-sm);padding:12px 16px;font-size:13.5px;display:none;"></div>
+
+    <p style="font-size:12px;color:var(--text3);margin-top:12px;margin-bottom:0;">Easy cases like this establish baseline signal. The harder cases — where a fluent but subtly wrong response competes with an accurate but hedged one, or where a refusal competes with a helpful-sounding answer to a borderline request — are where rater disagreement is high and where sycophancy or miscalibrated safety gets baked into the reward model.</p>
+  </div>
+
+  <script>
+  function selectCard(choice) {
+    const acc = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    const pos = getComputedStyle(document.documentElement).getPropertyValue('--pos').trim();
+    const neg = getComputedStyle(document.documentElement).getPropertyValue('--neg').trim();
+    const posLight = getComputedStyle(document.documentElement).getPropertyValue('--pos-light').trim();
+    const negLight = getComputedStyle(document.documentElement).getPropertyValue('--neg-light').trim();
+    const accLight = getComputedStyle(document.documentElement).getPropertyValue('--accent-light').trim();
+    const border = getComputedStyle(document.documentElement).getPropertyValue('--border').trim();
+    const ca = document.getElementById('card-a');
+    const cb = document.getElementById('card-b');
+    const fb = document.getElementById('pref-feedback');
+    // Reset
+    ca.style.borderColor = border; ca.style.background = 'var(--surface)';
+    cb.style.borderColor = border; cb.style.background = 'var(--surface)';
+    if (choice === 'a') {
+      ca.style.borderColor = pos; ca.style.background = posLight;
+      fb.style.display = 'block';
+      fb.style.background = posLight; fb.style.border = '1px solid ' + pos; fb.style.color = 'var(--text2)';
+      fb.innerHTML = '<strong style="color:var(--pos)">✓ Most raters choose A.</strong> It is concrete and actionable: it names specific steps (written notice, housing authority, rent escrow, small claims), distinguishes them by jurisdiction, and asks a clarifying question. The reward model learns to prefer responses that are specific and useful.';
+    } else {
+      cb.style.borderColor = neg; cb.style.background = negLight;
+      fb.style.display = 'block';
+      fb.style.background = negLight; fb.style.border = '1px solid ' + neg; fb.style.color = 'var(--text2)';
+      fb.innerHTML = '<strong style="color:var(--neg)">✗ Most raters do not choose B.</strong> It is warm but vague — "gentle reminder" and "look into a lawyer" are not actionable. However, B\'s sympathetic tone is exactly the pattern that <em>does</em> win on subtler prompts, where raters mistake fluency and agreeableness for quality. That is how sycophantic tendencies enter the reward model.';
+    }
+  }
+  </script>
+
+  <div class="insight">
+    <strong>RLHF is baked into the weights</strong>
+    <p>The reward model is used only during training. Once RLHF is complete, it is discarded — its preferences are now encoded in the main model's weights. There is no reward model running at inference time. When you interact with a deployed assistant, what you see is a model whose weights were shaped by thousands of hours of human rater preferences, not a system actively consulting a separate scoring model.</p>
+  </div>
+
+  <h3>Why Sycophancy Emerges</h3>
+  <p>RLHF optimizes for <em>predicted human preference</em>, not for truth or accuracy. Human raters, when comparing two responses, systematically prefer some qualities over others — and those preferences are not always aligned with correctness.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Rated higher by raters</h3>
+      <p>Confident, fluent, agreeable responses. Responses that validate the user's premise. Longer, more detailed answers. Responses that avoid confrontation or express certainty.</p>
+    </div>
+    <div class="card">
+      <h3>Rated lower by raters</h3>
+      <p>Responses that correct the user. Responses that express uncertainty or hedge. Short direct answers. Responses that push back on a flawed framing.</p>
+    </div>
+  </div>
+  <p>The reward model learns these rater patterns. The main model is then optimized to maximize reward — so it learns to produce agreeable, confident, validating responses, even when that comes at the cost of accuracy. This is <strong>sycophancy</strong>: a systematic artifact of the training signal, not deliberate deception. The model is not "lying" — it is doing exactly what the reward gradient told it to do. <a href="https://arxiv.org/abs/2310.13548" target="_blank" rel="noopener">Sharma et al. (2023)</a> found this pattern in real preference data: responses that matched the user's views were more likely to be preferred, and both humans and preference models sometimes chose a convincing sycophantic answer over a correct one. RLHF is not the only source: large pretrained models already repeat back a user's stated view (<a href="https://arxiv.org/abs/2212.09251" target="_blank" rel="noopener">Perez et al. 2022</a>), and preference training can amplify that tendency.</p>
+
+  <div class="insight insight-warn">
+    <strong>Optimizing the proxy, not the goal</strong>
+    <p>Human rater preference is a <em>proxy</em> for what we actually want — helpfulness, accuracy, safety. The reward model is a proxy for rater preference. The main model is then optimized against that proxy. Goodhart's Law applies: as the model gets better at maximizing the reward signal, it increasingly exploits the gap between the proxy and the true goal. Sycophancy is what that gap looks like in practice.</p>
+  </div>
+
+  <h3>DPO: A Simpler Alternative</h3>
+  <p>Direct Preference Optimization (DPO), introduced in 2023 (<a href="https://arxiv.org/abs/2305.18290" target="_blank" rel="noopener">Rafailov et al. 2023</a>), achieves the same goal without a separate reward model or RL training loop. It reformulates the RLHF objective as a supervised loss applied directly to the preference pairs:</p>
+  <div class="eq">Loss<sub>DPO</sub> = −𝔼<sub>(x, y<sub>w</sub>, y<sub>l</sub>)</sub>[ log σ( β · log(π<sub>θ</sub>(y<sub>w</sub>|x) / π<sub>ref</sub>(y<sub>w</sub>|x)) − β · log(π<sub>θ</sub>(y<sub>l</sub>|x) / π<sub>ref</sub>(y<sub>l</sub>|x)) ) ]</div>
+  <p>where y<sub>w</sub> is the preferred response, y<sub>l</sub> the rejected response, and π<sub>ref</sub> is the frozen SFT model. The loss directly increases the probability of preferred responses and decreases the probability of rejected ones, while β controls how far the model can drift from π<sub>ref</sub>. No reward model is trained; no RL loop is needed — DPO is a single supervised training pass on the preference dataset.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>RLHF / PPO</h3>
+      <p>Trains a separate reward model. Uses RL to optimize against it online. More flexible — reward model can score new outputs as they are generated. More complex to implement and tune.</p>
+    </div>
+    <div class="card">
+      <h3>DPO</h3>
+      <p>No reward model. Pure supervised learning on preference pairs. Simpler, more stable, lower engineering cost. Now common in open-weight fine-tuning pipelines. In the original paper it matched or beat PPO-RLHF on sentiment control, summarization and dialogue.</p>
+    </div>
+  </div>
+
+  <h3>Alignment and Safety</h3>
+  <p>Safety behaviors — refusing to help with bioweapons synthesis, suicide methods, or targeted harassment — are trained by the same RLHF mechanism, just with preference pairs specifically designed to probe those cases. Human raters are instructed to prefer the refusal; the reward model learns this; the main model gets optimized toward it. Anthropic augments this with <a href="https://arxiv.org/abs/2212.08073" target="_blank" rel="noopener"><strong>Constitutional AI (CAI)</strong></a>: guided by a written set of principles, the model critiques and revises its own outputs, and an AI model then judges pairs of responses, automatically generating large volumes of safety-relevant preference data that would be impractical to produce with human raters alone.</p>
+  <p>Two important caveats. First, safety is a dial, not a switch — it's a soft tendency in the weights, not a hard-coded filter. This is why jailbreaks sometimes work: they move the model into a region of input space where the safety training signal was thin. Second, there is a genuine tension between safety and helpfulness: a model that refuses everything is trivially "safe" but useless. Getting the refusal boundary right requires carefully designed training examples at edge cases, and it remains an ongoing engineering problem rather than a solved one.</p>
+  <p>A deeper problem: even a perfectly aligned model could be re-tuned. For open-weight models, anyone can download the weights and fine-tune on whatever data they choose — <a href="https://arxiv.org/abs/2310.02949" target="_blank" rel="noopener">Yang et al. (2023)</a> showed that safety fine-tuning can be largely undone with as few as 100 targeted examples and roughly one GPU-hour of compute — demonstrating the attack on eight models from five organizations. For closed-weight models the attack surface shifts to prompting, not weights. The underlying issue is that safety behavior and dangerous capability are entangled in the same parameters — you can't surgically remove the knowledge without degrading the model. RLHF alignment is more like a lock on a door than a door that was never built, which is why interpretability research — understanding <em>where</em> in the weights specific capabilities live — is seen as a longer-term path to more robust safety.</p>
+
+  <h3>Beyond RLHF: Other RL Post-Training Methods</h3>
+  <p>RLHF is one member of a broader family of RL-based post-training methods. They all share the same mathematical skeleton — generate outputs, assign reward, update weights via PPO or a variant — but differ in where the reward comes from and what the model is acting on.</p>
+
+  <div class="two-col" style="margin-top:16px;margin-bottom:16px;">
+    <div class="card" style="border-top:3px solid var(--accent);background:var(--accent-light);">
+      <div class="card-label">Task-completion RL</div>
+      <p>Reward comes directly from the environment rather than a reward model. Did the code pass the test suite? Did the math reach the correct answer? Did the agent complete the exploit challenge? The signal is binary or near-binary and requires no human raters. Used to train strong reasoning and coding models: <a href="https://arxiv.org/abs/2501.12948" target="_blank" rel="noopener">DeepSeek-R1</a> was trained with rule-based rewards that check answers and formats; OpenAI describes its o-series as trained with large-scale reinforcement learning. Action space is often tool use, not just text generation.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--pos);background:var(--pos-light);">
+      <div class="card-label">RLAIF (RL from AI Feedback)</div>
+      <p>Human raters are replaced by a model critic that judges outputs against a set of principles. Reward still looks like RLHF but scales without the bottleneck of human annotation. Anthropic's Constitutional AI uses a version of this: the model critiques and revises its own outputs against written principles, and an AI model labels which of two responses is better, generating preference data automatically. Inherits RLHF's alignment properties but also its systematic biases, now filtered through the critic model's own tendencies.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--warn);background:var(--warn-light);">
+      <div class="card-label">Process reward models (PRMs)</div>
+      <p>Reward is assigned at each reasoning step, not just the final answer. This shapes <em>how</em> the model thinks through a problem rather than just what answer it produces. Useful for math and multi-step reasoning tasks where the path matters — a model can reach a correct answer through flawed logic, and PRMs penalize that. More expensive to supervise since annotators must evaluate intermediate steps.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--neg);background:var(--neg-light);">
+      <div class="card-label">The agentic setting</div>
+      <p>When task-completion RL is run with real tool access — network requests, file system, shell execution — the consequences of reward hacking change qualitatively. Exploiting a gap in the reward specification produces sycophantic text in RLHF; it can produce lateral movement and infrastructure compromise in a networked agentic environment.</p>
+    </div>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Same math, different risks</strong>
+    <p>Every RL post-training method is subject to Goodhart's Law: optimize the proxy hard enough and the model finds the gap between the proxy and the intended goal. In RLHF the gap produces sycophancy. In task-completion RL with environment access, the same gap can produce behavior that is qualitatively more dangerous — not because the math is different, but because the action space and the environment are.</p>
+  </div>
+
+  <div class="insight insight-pos">
+    <strong>What post-training cannot undo</strong>
+    <p>RLHF and DPO mainly shape behavior, but the underlying capabilities — and limitations — come from pretraining. A model trained on data that underrepresents certain languages or viewpoints will still reflect those gaps after alignment. Post-training can suppress harmful outputs, but it adds little new <em>knowledge</em>: what the model knows still comes mostly from pretraining. What it does change is <em>behavior</em> — what the model tends to do with that knowledge — and that can cut both ways. Reinforcement learning on agentic tasks can instill new dispositions, such as persistence or taking shortcuts that score well, which are useful most of the time and risky when they aren't.</p>
+  </div>
+</section>
+<script>
+
+// ─────────── Dataset Tab ───────────
+
+// ── Mixture bar chart ──
+const MODELS = [
+  { name: 'GPT-2 (2019)', data: [
+    { label: 'WebText',      pct: 100, color: '#4BA3A3' },
+  ]},
+  { name: 'GPT-3 (2020)', data: [
+    { label: 'Common Crawl', pct: 60, color: '#3B7FD4' },
+    { label: 'WebText2',     pct: 22, color: '#6BAED6' },
+    { label: 'Books',        pct: 16, color: '#41AB5D' },
+    { label: 'Wikipedia',    pct:  3, color: '#FD8D3C' },
+  ]},
+  { name: 'LLaMA (2023)', data: [
+    { label: 'Common Crawl', pct: 67, color: '#3B7FD4' },
+    { label: 'C4',           pct: 15, color: '#6BAED6' },
+    { label: 'Code',         pct:  4.5, color: '#9E9AC8' },
+    { label: 'Wikipedia',    pct:  4.5, color: '#FD8D3C' },
+    { label: 'Books',        pct:  4.5, color: '#41AB5D' },
+    { label: 'Papers',       pct:  2.5, color: '#FA9FB5' },
+    { label: 'StackExchange',pct:  2, color: '#FC8D59' },
+  ]},
+  { name: 'Falcon-40B (2023)', data: [
+    { label: 'RefinedWeb (English)', pct: 75, color: '#3B7FD4' },
+    { label: 'RefinedWeb (European)', pct: 7, color: '#08519C' },
+    { label: 'Books',            pct:  6, color: '#41AB5D' },
+    { label: 'Conversations',    pct:  5, color: '#E6550D' },
+    { label: 'Code',             pct:  5, color: '#9E9AC8' },
+    { label: 'Papers',           pct:  2, color: '#FA9FB5' },
+  ]},
+];
+
+function drawMixture() {
+  const canvas = C('mixture-canvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 700;
+  canvas.width = W * devicePixelRatio;
+  const H = 20 + MODELS.length * 58 - 2;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const text2 = getCSS('--text2'), text3 = getCSS('--text3'), border = getCSS('--border'), surf = getCSS('--surface');
+  ctx.fillStyle = surf; ctx.fillRect(0, 0, W, H);
+
+  const pad = { l: 130, r: 20, t: 20, b: 20 };
+  const barH = 36, gap = 22;
+  const gW = W - pad.l - pad.r;
+
+  MODELS.forEach((model, mi) => {
+    const y = pad.t + mi * (barH + gap);
+    // model label
+    ctx.fillStyle = text2; ctx.font = `500 12px 'DM Sans',sans-serif`; ctx.textAlign = 'right';
+    ctx.fillText(model.name, pad.l - 8, y + barH / 2 + 4);
+
+    // stacked bar
+    let x = pad.l;
+    model.data.forEach(seg => {
+      const w = (seg.pct / 100) * gW;
+      ctx.fillStyle = seg.color;
+      ctx.beginPath(); ctx.roundRect(x, y, w, barH, x === pad.l ? [4, 0, 0, 4] : (x + w >= pad.l + gW - 1 ? [0, 4, 4, 0] : 0)); ctx.fill();
+      // label if wide enough
+      if (w > 30) {
+        ctx.fillStyle = '#fff'; ctx.font = `600 10px 'DM Sans',sans-serif`; ctx.textAlign = 'center';
+        ctx.fillText(seg.pct + '%', x + w / 2, y + barH / 2 + 4);
+      }
+      x += w;
+    });
+  });
+
+  // Build legend (unique labels across all models)
+  const seen = new Set(), items = [];
+  MODELS.forEach(m => m.data.forEach(d => { if (!seen.has(d.label)) { seen.add(d.label); items.push({ label: d.label, color: d.color }); } }));
+  const leg = C('mixture-legend');
+  if (leg && leg.children.length === 0) {
+    items.forEach(item => {
+      const el = document.createElement('span');
+      el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.gap = '5px';
+      el.innerHTML = `<span style="width:12px;height:12px;border-radius:2px;background:${item.color};flex-shrink:0;display:inline-block;"></span>${item.label}`;
+      leg.appendChild(el);
+    });
+  }
+}
+
+// ── Pipeline SVG ──
+function drawPipeline() {
+  const svg = document.getElementById('pipeline-svg');
+  if (!svg || svg.dataset.drawn) return;
+  svg.dataset.drawn = '1';
+  const acc = getCSS('--accent'), text2 = getCSS('--text2'), text3 = getCSS('--text3');
+  const border = getCSS('--border'), surf = getCSS('--surface'), surf2 = getCSS('--surface2');
+  const steps = [
+    { label: 'Raw Crawl', sub: 'HTML + boilerplate', icon: '🌐' },
+    { label: 'URL Filter', sub: 'blocklist, lang detect', icon: '🔍' },
+    { label: 'Heuristics', sub: 'length, n-gram, punct', icon: '✂️' },
+    { label: 'Dedup', sub: 'MinHash LSH', icon: '📋' },
+    { label: 'Tokenize', sub: 'BPE / SentencePiece', icon: '🔤' },
+    { label: 'Chunk', sub: 'fixed T-token windows', icon: '📦' },
+  ];
+  const n = steps.length, bw = 98, bh = 68, gap = 24, totalW = n * bw + (n - 1) * gap;
+  const startX = (760 - totalW) / 2, y0 = 18;
+
+  // Use currentColor-compatible approach
+  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const boxFill = isDark ? '#1F1F1C' : '#EDEAE2';
+  const boxStroke = isDark ? '#38362E' : '#D4D1C8';
+  const textCol = isDark ? '#B8B5AE' : '#504E48';
+  const arrowCol = isDark ? '#4A4840' : '#C0BDB4';
+  const accentCol = isDark ? '#6B9EF8' : '#2455A4';
+
+  let html = `<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M1,1 L7,4 L1,7" stroke="${arrowCol}" stroke-width="1.2" fill="none"/></marker></defs>`;
+
+  steps.forEach((s, i) => {
+    const x = startX + i * (bw + gap);
+    const cx = x + bw / 2;
+    // box
+    html += `<rect x="${x}" y="${y0}" width="${bw}" height="${bh}" rx="6" fill="${boxFill}" stroke="${boxStroke}" stroke-width="1.2"/>`;
+    // icon
+    html += `<text x="${cx}" y="${y0 + 22}" text-anchor="middle" font-size="16">${s.icon}</text>`;
+    // label
+    html += `<text x="${cx}" y="${y0 + 40}" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" font-weight="600" fill="${textCol}">${s.label}</text>`;
+    // sub
+    html += `<text x="${cx}" y="${y0 + 56}" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="${arrowCol}">${s.sub}</text>`;
+    // arrow
+    if (i < n - 1) {
+      const ax = x + bw + 2, ay = y0 + bh / 2;
+      html += `<line x1="${ax}" y1="${ay}" x2="${ax + gap - 6}" y2="${ay}" stroke="${arrowCol}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+    }
+    // loss annotation on last step
+    if (i === n - 1) {
+      html += `<text x="${cx}" y="${y0 + bh + 20}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="${accentCol}">T−1 signals / chunk</text>`;
+    }
+  });
+
+  svg.innerHTML = html;
+}
+
+// ── Chunking canvas ──
+const TOKENS = ['The', 'cat', 'sat', 'on', 'the', 'mat', '.', 'It', 'was', 'warm', 'and', 'cozy', '.', 'The', 'sun', 'shone'];
+const CHUNK_SIZE = 8;
+let hoveredTok = -1;
+let hoveredIsTargetOnly = false;
+
+function drawChunks() {
+  const canvas = C('chunk-canvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 700;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = 180 * devicePixelRatio;
+  canvas.style.height = '180px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const surf = getCSS('--surface'), surf2 = getCSS('--surface2');
+  const acc = getCSS('--accent'), pos = getCSS('--pos'), neg = getCSS('--neg');
+  const text = getCSS('--text'), text2 = getCSS('--text2'), text3 = getCSS('--text3');
+  const border = getCSS('--border'), accentLight = getCSS('--accent-light');
+
+  ctx.fillStyle = surf; ctx.fillRect(0, 0, W, 180);
+
+  const n = TOKENS.length;
+  const tokW = Math.min(70, (W - 40) / n);
+  const tokH = 38, tokY = 24, arrowY = tokY + tokH + 10, labelY = arrowY + 16;
+
+  // Draw chunk brackets
+  for (let c = 0; c < Math.ceil(n / CHUNK_SIZE); c++) {
+    const start = c * CHUNK_SIZE, end = Math.min(start + CHUNK_SIZE, n);
+    const x0 = 20 + start * tokW, x1 = 20 + end * tokW;
+    ctx.strokeStyle = acc; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+    ctx.strokeRect(x0 - 3, tokY - 8, x1 - x0 + 6, tokH + 16);
+    ctx.setLineDash([]);
+    ctx.fillStyle = acc; ctx.font = `600 10px 'DM Sans',sans-serif`; ctx.textAlign = 'center';
+    ctx.fillText(`Chunk ${c + 1}`, (x0 + x1) / 2, tokY - 14);
+  }
+
+  // Draw tokens
+  const warn = getCSS('--warn');
+  const chunkStart = hoveredTok >= 0 ? Math.floor(hoveredTok / CHUNK_SIZE) * CHUNK_SIZE : -1;
+  TOKENS.forEach((tok, i) => {
+    const x = 20 + i * tokW;
+    const isHovToken = hoveredTok >= 0 && i === hoveredTok;
+    const isInput = isHovToken && !hoveredIsTargetOnly;
+    const isLastInChunk = isHovToken && hoveredIsTargetOnly;
+    const isTarget = hoveredTok >= 0 && !hoveredIsTargetOnly && i === hoveredTok + 1;
+    const isContext = hoveredTok > 0 && !hoveredIsTargetOnly && i >= chunkStart && i < hoveredTok;
+    let fill = isInput ? acc : (isLastInChunk ? warn : (isTarget ? pos : (isContext ? accentLight : surf2)));
+    ctx.fillStyle = fill;
+    ctx.strokeStyle = isInput ? acc : (isLastInChunk ? warn : (isTarget ? pos : (isContext ? acc : border)));
+    ctx.lineWidth = isInput || isTarget || isLastInChunk ? 2 : (isContext ? 1.5 : 1);
+    ctx.beginPath(); ctx.roundRect(x + 2, tokY, tokW - 4, tokH, 4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = isInput || isTarget ? '#fff' : text2;
+    ctx.font = `500 11px 'JetBrains Mono',monospace`; ctx.textAlign = 'center';
+    ctx.fillText(tok, x + tokW / 2, tokY + tokH / 2 + 4);
+    // position number
+    ctx.fillStyle = text3; ctx.font = `400 9px 'DM Sans',sans-serif`;
+    ctx.fillText(i, x + tokW / 2, tokY + tokH + 22);
+  });
+
+  // Arrow between input and target when hovered (never across chunk boundary)
+  if (hoveredTok >= 0 && hoveredTok < n - 1 && !hoveredIsTargetOnly) {
+    const x0 = 20 + hoveredTok * tokW + tokW / 2;
+    const x1 = 20 + (hoveredTok + 1) * tokW + tokW / 2;
+    const ay = tokY + tokH / 2;
+    ctx.strokeStyle = pos; ctx.lineWidth = 2; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(x0 + tokW / 2 - 4, ay); ctx.lineTo(x1 - tokW / 2 + 4, ay); ctx.stroke();
+    // arrowhead
+    ctx.fillStyle = pos;
+    ctx.beginPath(); ctx.moveTo(x1 - tokW / 2 + 4, ay - 4); ctx.lineTo(x1 - tokW / 2 + 12, ay); ctx.lineTo(x1 - tokW / 2 + 4, ay + 4); ctx.fill();
+  }
+
+  // Legend row
+  const ly = 160;
+  ctx.fillStyle = accentLight; ctx.strokeStyle = acc; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(20, ly - 10, 14, 14, 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = text3; ctx.font = `400 11px 'DM Sans',sans-serif`; ctx.textAlign = 'left';
+  ctx.fillText('context window', 38, ly + 2);
+  ctx.fillStyle = acc; ctx.beginPath(); ctx.roundRect(155, ly - 10, 14, 14, 2); ctx.fill();
+  ctx.fillStyle = text3; ctx.fillText('input token (pos t)', 173, ly + 2);
+  ctx.fillStyle = pos; ctx.beginPath(); ctx.roundRect(255, ly - 10, 14, 14, 2); ctx.fill();
+  ctx.fillStyle = text3; ctx.fillText('target token (pos t+1)', 273, ly + 2);
+  ctx.fillStyle = text3;
+  ctx.fillText('Hover a token to see its context + prediction', 385, ly + 2);
+}
+
+function attachChunkHover() {
+  const canvas = C('chunk-canvas');
+  if (!canvas || canvas.dataset.hoverAttached) return;
+  canvas.dataset.hoverAttached = '1';
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left);
+    const tokW = Math.min(70, (canvas.offsetWidth - 40) / TOKENS.length);
+    const ti = Math.floor((mx - 20) / tokW);
+    if (ti >= 0 && ti < TOKENS.length) {
+      const lastInChunk = (ti + 1) % CHUNK_SIZE === 0;
+      hoveredTok = ti;
+      hoveredIsTargetOnly = lastInChunk;
+      if (lastInChunk) {
+        const chunkNum = Math.floor(ti / CHUNK_SIZE) + 1;
+        C('chunk-info').textContent = `pos ${ti} · last token in Chunk ${chunkNum} — prediction target only (no cross-chunk signal). Chunks are independent windows.`;
+      } else if (ti < TOKENS.length - 1) {
+        const cs = Math.floor(ti / CHUNK_SIZE) * CHUNK_SIZE;
+        const ctxLen = ti - cs;
+        const ctxDesc = ctxLen === 0 ? 'no context (first in chunk)' : `context: pos ${cs}–${ti - 1} (${ctxLen} token${ctxLen > 1 ? 's' : ''})`;
+        C('chunk-info').textContent = `${ctxDesc}  |  input: "${TOKENS[ti]}" (pos ${ti})  →  target: "${TOKENS[ti + 1]}"  |  loss = −log P("${TOKENS[ti + 1]}" | context)`;
+      } else {
+        C('chunk-info').textContent = `pos ${ti} · last token overall`;
+      }
+    } else {
+      hoveredTok = -1;
+      hoveredIsTargetOnly = false;
+      C('chunk-info').textContent = '';
+    }
+    drawChunks();
+  });
+  canvas.addEventListener('mouseleave', () => { hoveredTok = -1; hoveredIsTargetOnly = false; C('chunk-info').textContent = ''; drawChunks(); });
+}
+
+// ── Scale bar chart (selected models; "est." = not officially published) ──
+const SCALE_MODELS = [
+  { name: 'GPT-2 (2019, est.)', tokens: 9.5,  color: '#9E9AC8' },
+  { name: 'GPT-3 (2020)',      tokens: 300,   color: '#6BAED6' },
+  { name: 'LLaMA (2023)',      tokens: 1400,  color: '#3B7FD4' },
+  { name: 'Mistral 7B (2023, est.)', tokens: 3000,  color: '#41AB5D' },
+  { name: 'LLaMA 3 (2024)',    tokens: 15000, color: '#2455A4' },
+];
+
+function drawCorpus() {
+  const canvas = C('corpus-canvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 560;
+  const H = 200;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const surf = getCSS('--surface'), text2 = getCSS('--text2'), text3 = getCSS('--text3'),
+        border = getCSS('--border'), accent = getCSS('--accent'),
+        pos = getCSS('--pos'), neg = getCSS('--neg'), warn = getCSS('--warn');
+
+  ctx.fillStyle = surf; ctx.fillRect(0, 0, W, H);
+
+  const pad = { l: 158, r: 20, t: 24, b: 44 };
+  const gW = W - pad.l - pad.r;
+  const axisY = H - pad.b;
+  const logMin = 5, logMax = 15;
+
+  function xOf(v) { return pad.l + (Math.log10(v) - logMin) / (logMax - logMin) * gW; }
+
+  const corpora = [
+    { label: 'The Bible',           tokens: 1e6,  note: '~1M',   color: text3  },
+    { label: 'English Wikipedia',   tokens: 4e9,  note: '~4B',   color: accent },
+    { label: 'Library of Congress', tokens: 2e12, note: '~2T',   color: pos    },
+    { label: 'Entire Web (est.)',   tokens: 1e14, note: '~100T', color: neg    },
+  ];
+
+  const barH = 22, barGap = 10;
+
+  // Subtle grid at each labeled tick
+  ctx.setLineDash([2, 3]);
+  [6, 8, 10, 12, 14].forEach(exp => {
+    const x = xOf(Math.pow(10, exp));
+    ctx.strokeStyle = border; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, axisY); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // Training-data reference lines (GPT-2, GPT-3, LLaMA 3)
+  [{ tokens: 9.5e9, label: 'GPT-2 (est.)', color: warn },
+   { tokens: 3e11, label: 'GPT-3', color: accent },
+   { tokens: 1.5e13, label: 'LLaMA 3', color: pos }
+  ].forEach(ref => {
+    const x = xOf(ref.tokens);
+    ctx.strokeStyle = ref.color; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, axisY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = ref.color; ctx.font = `500 9px 'DM Sans',sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText(ref.label, x, pad.t - 2);
+  });
+
+  // Corpus bars
+  corpora.forEach((d, i) => {
+    const y = pad.t + i * (barH + barGap);
+    const x = xOf(d.tokens);
+    const bw = x - pad.l;
+
+    // Semi-transparent fill
+    ctx.globalAlpha = 0.38; ctx.fillStyle = d.color;
+    ctx.beginPath(); ctx.roundRect(pad.l, y, bw, barH, 3); ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Cap line at right edge of bar
+    ctx.strokeStyle = d.color; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(x, y + 2); ctx.lineTo(x, y + barH - 2); ctx.stroke();
+
+    // Row label (left)
+    ctx.fillStyle = text2; ctx.font = `500 11.5px 'DM Sans',sans-serif`;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText(d.label, pad.l - 8, y + barH / 2);
+
+    // Token count (inside bar if wide enough, else outside)
+    ctx.font = `600 10.5px 'JetBrains Mono',monospace`;
+    ctx.textBaseline = 'middle'; ctx.fillStyle = d.color;
+    if (bw > 55) {
+      ctx.textAlign = 'right'; ctx.fillText(d.note, x - 6, y + barH / 2);
+    } else {
+      ctx.textAlign = 'left'; ctx.fillText(d.note, x + 5, y + barH / 2);
+    }
+  });
+
+  // X-axis
+  ctx.strokeStyle = border; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.l, axisY); ctx.lineTo(W - pad.r, axisY); ctx.stroke();
+
+  // Tick marks + labels
+  [[6,'1M'],[8,'100M'],[10,'10B'],[12,'1T'],[14,'100T']].forEach(([exp, lbl]) => {
+    const x = xOf(Math.pow(10, exp));
+    ctx.strokeStyle = border; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, axisY); ctx.lineTo(x, axisY + 4); ctx.stroke();
+    ctx.fillStyle = text3; ctx.font = `400 10px 'DM Sans',sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillText(lbl, x, axisY + 7);
+  });
+
+  // Axis label
+  ctx.fillStyle = text3; ctx.font = `500 10.5px 'DM Sans',sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillText('tokens D  ·  log scale', pad.l + gW / 2, axisY + 24);
+}
+
+function drawScale2() {
+  const canvas = C('scale2-canvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 700;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = 200 * devicePixelRatio;
+  canvas.style.height = '200px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const surf = getCSS('--surface'), text2 = getCSS('--text2'), text3 = getCSS('--text3'), border = getCSS('--border');
+  ctx.fillStyle = surf; ctx.fillRect(0, 0, W, 200);
+
+  const pad = { l: 160, r: 80, t: 16, b: 32 };
+  const gW = W - pad.l - pad.r, gH = 200 - pad.t - pad.b;
+  const n = SCALE_MODELS.length;
+  const barH = Math.min(28, (gH - (n - 1) * 8) / n);
+  const maxVal = 15000;
+
+  SCALE_MODELS.forEach((m, i) => {
+    const y = pad.t + i * (barH + 8);
+    const bw = (m.tokens / maxVal) * gW;
+    // bar
+    ctx.fillStyle = m.color;
+    ctx.beginPath(); ctx.roundRect(pad.l, y, bw, barH, 3); ctx.fill();
+    // model name
+    ctx.fillStyle = text2; ctx.font = `500 11px 'DM Sans',sans-serif`; ctx.textAlign = 'right';
+    ctx.fillText(m.name, pad.l - 8, y + barH / 2 + 4);
+    // value label
+    const label = m.tokens >= 1000 ? (m.tokens / 1000).toFixed(1) + 'T' : m.tokens + 'B';
+    ctx.fillStyle = bw > 50 ? '#fff' : text3;
+    ctx.font = `600 11px 'JetBrains Mono',monospace`; ctx.textAlign = bw > 50 ? 'right' : 'left';
+    ctx.fillText(label, bw > 50 ? pad.l + bw - 8 : pad.l + bw + 6, y + barH / 2 + 4);
+  });
+
+  // x-axis label
+  ctx.fillStyle = text3; ctx.font = `500 11px 'DM Sans',sans-serif`; ctx.textAlign = 'center';
+  ctx.fillText('Training tokens D (approximate)', pad.l + gW / 2, 200 - 6);
+}
+
+// Init all dataset visuals on page load (tab 1 is active)
+setTimeout(() => { drawMixture(); drawPipeline(); drawChunks(); attachChunkHover(); drawScale2(); drawCorpus(); }, 120);
+
+// ─────────── Utility ───────────
+function getCSS(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function C(id){return document.getElementById(id);}
+
+// ─────────── Tab switching ───────────
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    C('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='data') setTimeout(()=>{drawMixture();drawPipeline();drawChunks();attachChunkHover();drawScale2();drawCorpus();},50);
+    if(btn.dataset.tab==='dynamics') setTimeout(()=>drawDynamics('normal'),50);
+    // optimizers, scaling, backprop, rlhf: no canvas, no init needed
+  });
+});
+
+// ─────────── Loss Calculator ───────────
+const numPos=5;
+const posDiv=C('loss-positions');
+const probs=Array(numPos).fill(0.3);
+for(let i=0;i<numPos;i++){
+  const row=document.createElement('div');
+  row.className='slider-row';
+  row.style.marginBottom='10px';
+  row.innerHTML=`<label style="min-width:100px;">Position ${i+1}</label>
+    <input type="range" min="0.01" max="0.99" step="0.01" value="${probs[i]}" id="prob-${i}" style="flex:1">
+    <span class="slider-val" id="pv-${i}">${probs[i]}</span>`;
+  posDiv.appendChild(row);
+  C(`prob-${i}`).addEventListener('input',e=>{
+    probs[i]=parseFloat(e.target.value);
+    C(`pv-${i}`).textContent=probs[i].toFixed(2);
+    updateLoss();
+  });
+}
+function updateLoss(){
+  const L=probs.reduce((s,p)=>s-Math.log(p),0)/probs.length;
+  const PPL=Math.exp(L);
+  C('lval').textContent=L.toFixed(3);
+  C('pval').textContent=PPL.toFixed(2);
+}
+updateLoss();
+
+// ─────────── Training Dynamics ───────────
+const dynDescriptions={
+  normal:'Normal training: loss decreases smoothly on both train and validation sets. The gap between them is small because the dataset is large relative to model capacity. Loss eventually approaches the irreducible entropy of the data.',
+  grokking:'Grokking: training loss drops to near-zero quickly (the model memorises training examples), but validation loss stays high. Then, after a prolonged plateau spanning many more steps, validation loss suddenly collapses — the model has "grokked" a general algorithm (which, inside the model, had been forming gradually during the plateau). First demonstrated on algorithmic tasks like modular arithmetic.',
+  spike:'Loss spike: mid-training, the loss jumps suddenly (often due to a bad data batch or learning rate instability), then gradually recovers. Gradient clipping and careful data filtering can prevent these. Severe spikes may require resuming from a checkpoint before the event.',
+  overfit:'Overfitting: training loss continues to decrease while validation loss starts rising. Common with small datasets or large models. Modern LLMs rarely overfit because training data is effectively unlimited, but it can occur in fine-tuning on small domain-specific datasets.'
+};
+function drawDynamics(scenario){
+  const canvas=C('dyn-canvas');
+  const W=canvas.offsetWidth||700;canvas.width=W*devicePixelRatio;canvas.height=260*devicePixelRatio;
+  canvas.style.height='260px';
+  const ctx=canvas.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);
+  const surf=getCSS('--surface'),text2=getCSS('--text2'),text3=getCSS('--text3'),border=getCSS('--border');
+  const acc=getCSS('--accent'),neg=getCSS('--neg'),warn=getCSS('--warn');
+  ctx.fillStyle=surf;ctx.fillRect(0,0,W,260);
+  const pad={l:46,r:20,t:20,b:36};
+  const gW=W-pad.l-pad.r,gH=260-pad.t-pad.b;
+  const T=200;
+  // Generate curves
+  let trainL=[],valL=[];
+  for(let t=0;t<T;t++){
+    const p=t/T;
+    let tr,vl;
+    if(scenario==='normal'){
+      tr=3.5*Math.exp(-4*p)+1.2+0.05*(Math.random()-.5);
+      vl=3.5*Math.exp(-3.8*p)+1.3+0.04*(Math.random()-.5);
+    } else if(scenario==='grokking'){
+      tr=3*Math.exp(-15*p)+0.02+0.01*Math.random();
+      const grok=p>0.6?1/(1+Math.exp(-60*(p-0.75))):0;
+      vl=3*Math.exp(-1*p)+0.05+(1-grok)*(3.0-3*Math.exp(-1*p))+0.04*(Math.random()-.5);
+    } else if(scenario==='spike'){
+      const spike=(t>80&&t<100)?2.5*Math.exp(-0.4*(t-80)):0;
+      tr=3.5*Math.exp(-3*p)+1.2+spike+0.05*(Math.random()-.5);
+      vl=3.5*Math.exp(-2.8*p)+1.35+spike*0.6+0.04*(Math.random()-.5);
+    } else {
+      tr=3.5*Math.exp(-5*p)+0.5+0.04*(Math.random()-.5);
+      vl=3.5*Math.exp(-3*p)+1.2+p*1.5+0.04*(Math.random()-.5);
+    }
+    trainL.push(Math.max(0.1,tr));valL.push(Math.max(0.1,vl));
+  }
+  const allV=[...trainL,...valL];
+  const ymax=Math.min(5,Math.max(...allV)*1.05),ymin=Math.max(0,Math.min(...allV)*0.9);
+  const toX=t=>pad.l+t/T*gW,toY=v=>pad.t+(ymax-v)/(ymax-ymin)*gH;
+  // Grid
+  ctx.strokeStyle=border;ctx.lineWidth=0.5;
+  for(let y=0.5;y<=5;y+=0.5){if(y<ymin||y>ymax)continue;ctx.beginPath();ctx.moveTo(pad.l,toY(y));ctx.lineTo(pad.l+gW,toY(y));ctx.stroke();}
+  // Curves
+  function drawCurve(data,color){
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;
+    data.forEach((v,i)=>{if(i===0)ctx.moveTo(toX(i),toY(v));else ctx.lineTo(toX(i),toY(v));});
+    ctx.stroke();
+  }
+  drawCurve(trainL,acc);
+  drawCurve(valL,neg);
+  // Axes
+  ctx.fillStyle=text3;ctx.font=`400 11px 'JetBrains Mono',monospace`;ctx.textAlign='right';
+  [1,2,3,4].forEach(y=>{if(y<ymin||y>ymax)return;ctx.fillText(y.toFixed(1),pad.l-6,toY(y)+4);});
+  ctx.textAlign='center';ctx.fillStyle=text3;
+  ['0','25%','50%','75%','100%'].forEach((lbl,i)=>ctx.fillText(lbl,toX(i*T/4),pad.t+gH+20));
+  ctx.fillStyle=text3;ctx.font=`500 12px 'DM Sans',sans-serif`;
+  ctx.fillText('Training steps →',pad.l+gW/2,260-4);
+  ctx.save();ctx.translate(11,pad.t+gH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Loss',0,0);ctx.restore();
+  // Legend
+  ctx.fillStyle=acc;ctx.fillRect(W-90,18,20,3);ctx.fillStyle=text2;ctx.font=`400 11px 'DM Sans',sans-serif`;ctx.textAlign='left';ctx.fillText('Train',W-66,22);
+  ctx.fillStyle=neg;ctx.fillRect(W-90,30,20,3);ctx.fillStyle=text2;ctx.fillText('Val',W-66,34);
+  C('dyn-desc').textContent=dynDescriptions[scenario];
+}
+document.querySelectorAll('.scenario-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.scenario-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    drawDynamics(btn.dataset.scenario);
+  });
+});
+setTimeout(()=>drawDynamics('normal'),100);
+function goTab(id) {
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === id || b.dataset.tab === 'tab-' + id ||
+    (b.getAttribute('onclick') || '').includes("'" + id + "'"));
+  if (b) { b.click(); window.scrollTo(0, 0); }
+}
+</script>
+<script>
+// Open a tab from the link, e.g. ...#tabid
+window.addEventListener('load', () => {
+  const h = location.hash.slice(1);
+  if (!h) return;
+  const b = [...document.querySelectorAll('.tab-btn')].find(b => b.dataset.tab === h || b.dataset.tab === 'tab-' + h ||
+    (b.getAttribute('onclick') || '').includes("'" + h + "'"));
+  if (b) b.click();
+});
+</script>
+</body>
+</html>

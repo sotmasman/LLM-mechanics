@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LLM Mechanics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap">
+<style>
+:root {
+  --bg: #F7F5F0; --surface: #EDEAE2; --text: #1A1916; --text2: #504E48; --text3: #7A7870;
+  --accent: #2455A4; --accent-light: #D8E4F7; --border: #D4D1C8;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #171715; --surface: #1F1F1C; --text: #F0EDE6; --text2: #B8B5AE; --text3: #8A877F;
+    --accent: #6B9EF8; --accent-light: #1A2A4A; --border: #38362E;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; line-height: 1.6; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 48px 20px 64px; }
+.label { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-size: clamp(30px, 6vw, 44px); line-height: 1.15; margin: 0 0 14px; }
+.intro { color: var(--text2); font-size: 17px; font-weight: 300; max-width: 680px; margin: 0 0 36px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.card { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; background: var(--surface); border: 1px solid var(--border);
+        border-radius: 10px; text-decoration: none; color: inherit; transition: border-color .15s, background .15s; }
+.card:hover, .card:focus-visible { border-color: var(--accent); background: var(--accent-light); }
+.num { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); }
+.title { font-family: 'DM Serif Display', Georgia, serif; font-size: 21px; line-height: 1.25; color: var(--text); }
+.sub { font-size: 14px; color: var(--text2); }
+.foot { margin-top: 40px; font-size: 14px; color: var(--text3); max-width: 680px; }
+.foot code { font-size: 13px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="label">LLM Mechanics</div>
+  <h1>How large language models work, and how to study them</h1>
+  <p class="intro">Nine lessons, from the artificial neuron to hands-on interpretability experiments on GPT-2. Lessons 1–8 explain the ideas with interactive figures; Lesson 9 applies the methods to a real model, with MATLAB scripts that reproduce every result.</p>
+  <nav class="grid" aria-label="Lessons">
+    <a class="card" href="lesson1.html">
+      <span class="num">Lesson 1</span>
+      <span class="title">Neural Networks and Language as Probability</span>
+      <span class="sub">Tabs 1–5 cover the substrate underlying every LLM: what a neural network computes, how it learns, and how it represents information. Tabs 6–10 cover the framing that turns such a network into a language model: text as tokens, …</span>
+    </a>
+    <a class="card" href="lesson2.html">
+      <span class="num">Lesson 2</span>
+      <span class="title">The Transformer</span>
+      <span class="sub">Almost every modern language model is built from a stack of transformer blocks (state-space models such as Mamba, and hybrids, are the main exceptions). This lesson traces exactly how information flows through one block — from …</span>
+    </a>
+    <a class="card" href="lesson3.html">
+      <span class="num">Lesson 3</span>
+      <span class="title">From Tokens to Probabilities</span>
+      <span class="sub">With every architectural component in place, this lesson traces a single sentence through the complete transformer — from raw text to a next-token probability distribution — and then steps through how a model actually generates …</span>
+    </a>
+    <a class="card" href="lesson4.html">
+      <span class="num">Lesson 4</span>
+      <span class="title">Training &amp; Optimization</span>
+      <span class="sub">How a transformer goes from random weights to a language model — loss functions, gradient descent, scaling laws, and what training dynamics reveal about learning itself.</span>
+    </a>
+    <a class="card" href="lesson5.html">
+      <span class="num">Lesson 5</span>
+      <span class="title">Representations</span>
+      <span class="sub">What does a transformer actually learn? What computational structures emerge when LLMs learn, and what is the geometry of this feature space?</span>
+    </a>
+    <a class="card" href="lesson6.html">
+      <span class="num">Lesson 6</span>
+      <span class="title">What LLMs Get Wrong — and Why</span>
+      <span class="sub">Modern language models are remarkably fluent. Fluency is not accuracy. This lesson catalogues the systematic failure modes baked into the architecture, the training objective, and the fine-tuning process — and explains why each …</span>
+    </a>
+    <a class="card" href="lesson7.html">
+      <span class="num">Lesson 7</span>
+      <span class="title">Mechanistic Interpretability</span>
+      <span class="sub">Reverse-engineering the algorithm learned by gradient descent — probing what the network knows, tracing how it computes, and finding the circuits that implement specific behaviors.</span>
+    </a>
+    <a class="card" href="lesson8.html">
+      <span class="num">Lesson 8</span>
+      <span class="title">LLMs as Neural Systems to Study: The Electrophysiology Angle</span>
+      <span class="sub">What does it look like to study a language model the way a neuroscientist studies a brain? From the fundamental analogy to the geometry of residual stream dynamics.</span>
+    </a>
+    <a class="card" href="lesson9.html">
+      <span class="num">Lesson 9</span>
+      <span class="title">Playing with GPT-2</span>
+      <span class="sub">Hands-on experiments with a real language model — activations, attention, and the residual stream under the microscope.</span>
+    </a>
+  </nav>
+  <p class="foot">The code for Lesson 9 (<code>Matlab code</code>, <code>Python code</code>) and the instructions for running it are in this site's repository; see its README.</p>
+</main>
+</body>
+</html>

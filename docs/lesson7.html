@@ -1,0 +1,1180 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lesson 7 · Mechanistic Interpretability</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #F7F5F0; --surface: #EDEAE2; --surface2: #E0DDD4;
+  --text: #1A1916; --text2: #504E48; --text3: #7A7870;
+  --accent: #2455A4; --accent-light: #D8E4F7;
+  --pos: #1A7A4E; --pos-light: #D2EFE2;
+  --neg: #B83030; --neg-light: #F7DEDE;
+  --warn: #A06010; --warn-light: #FDF0DC;
+  --purple: #6D3ABF; --purple-light: #EDE9FB;
+  --border: #D4D1C8; --border2: #C0BDB4;
+  --radius: 10px; --radius-sm: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+    --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+    --accent: #6B9EF8; --accent-light: #1A2A4A;
+    --pos: #4ABA82; --pos-light: #0D2E1E;
+    --neg: #F08080; --neg-light: #2E0E0E;
+    --warn: #F0C060; --warn-light: #2A1E08;
+    --purple: #B08AFF; --purple-light: #1E1340;
+    --border: #38362E; --border2: #4A4840;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171715; --surface: #1F1F1C; --surface2: #2A2A27;
+  --text: #F0EDE6; --text2: #B8B5AE; --text3: #6E6C66;
+  --accent: #6B9EF8; --accent-light: #1A2A4A;
+  --pos: #4ABA82; --pos-light: #0D2E1E;
+  --neg: #F08080; --neg-light: #2E0E0E;
+  --warn: #F0C060; --warn-light: #2A1E08;
+  --purple: #B08AFF; --purple-light: #1E1340;
+  --border: #38362E; --border2: #4A4840;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.65;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);}
+img{max-width:100%;}[hidden]{display:none!important;}
+
+/* ── lesson switcher ── */
+.lesson-switcher{display:flex;align-items:center;gap:12px;padding:12px 24px 4px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border);}
+.ls-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);white-space:nowrap;}
+.ls-links{display:flex;gap:6px;flex-wrap:wrap;}
+.ls-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:4px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);text-decoration:none;transition:background .15s,border-color .15s,color .15s;}
+.ls-btn:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+.ls-active{background:var(--accent);border-color:var(--accent);color:#fff;cursor:default;pointer-events:none;}
+
+/* ── page layout ── */
+.page-header{padding:36px 24px 24px;max-width:860px;margin:0 auto;}
+.lesson-label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.page-header h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;color:var(--text);text-wrap:balance;}
+.page-header .subtitle{margin-top:10px;font-size:16px;color:var(--text2);max-width:600px;}
+
+/* ── tabs ── */
+.tab-nav{display:flex;flex-wrap:wrap;gap:2px;padding:0 24px;border-bottom:2px solid var(--border);max-width:860px;margin:0 auto;}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:10px 16px;border:none;background:none;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-panel{display:none;padding:32px 24px;max-width:860px;margin:0 auto;}
+.tab-panel.active{display:block;}
+
+/* ── typography ── */
+h2{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(22px,3.5vw,28px);font-weight:400;color:var(--text);margin-bottom:16px;text-wrap:balance;}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:24px 0 10px;}
+h4{font-size:14px;font-weight:600;color:var(--text2);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.06em;}
+p{margin-bottom:14px;color:var(--text2);font-size:15.5px;}
+p:last-child{margin-bottom:0;}
+code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:var(--surface2);padding:1px 5px;border-radius:3px;}
+.eq{font-family:'JetBrains Mono',monospace;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 18px;margin:16px 0;overflow-x:auto;color:var(--text);line-height:1.7;}
+.eq-comment{color:var(--text3);font-size:12px;}
+.eq-table{display:flex;flex-direction:column;gap:10px;}
+.eq-row{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;}
+.eq-lhs{white-space:nowrap;}
+.eq-rhs{color:var(--text3);font-size:13px;white-space:nowrap;}
+
+/* ── insight boxes ── */
+.insight{border-left:3px solid var(--accent);background:var(--accent-light);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;margin:20px 0;}
+.insight-pos{border-left-color:var(--pos);background:var(--pos-light);}
+.insight-warn{border-left-color:var(--warn);background:var(--warn-light);}
+.insight-neg{border-left-color:var(--neg);background:var(--neg-light);}
+.insight strong{display:block;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:5px;}
+.insight-pos strong{color:var(--pos);}
+.insight-warn strong{color:var(--warn);}
+.insight-neg strong{color:var(--neg);}
+.insight p{margin:0;font-size:14px;}
+.citation{font-size:13px;color:var(--text3);margin:-4px 0 12px;}
+
+/* ── step list ── */
+.step-list{display:flex;flex-direction:column;gap:0;margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.step-item{display:grid;grid-template-columns:120px 1fr;gap:0;border-bottom:1px solid var(--border);}
+.step-item:last-child{border-bottom:none;}
+.step-label{background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:14px 16px;display:flex;align-items:flex-start;padding-top:16px;}
+.step-body{padding:14px 18px;font-size:14px;line-height:1.65;}
+@media(max-width:560px){.step-item{grid-template-columns:1fr;}.step-label{padding-bottom:4px;}}
+
+/* ── grid ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;}
+@media(max-width:600px){.two-col{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.card h3{margin-top:0;}
+
+/* ── table ── */
+.table-wrap{overflow-x:auto;margin:20px 0;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{background:var(--surface2);color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:10px 14px;text-align:left;}
+td{padding:10px 14px;border-top:1px solid var(--border);color:var(--text2);vertical-align:top;}
+tr:hover td{background:var(--surface);}
+
+/* ── widgets ── */
+.widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;}
+.widget-title{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
+select{font-family:'DM Sans',sans-serif;font-size:13px;padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text2);cursor:pointer;}
+input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;}
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:7px 16px;border-radius:20px;border:1.5px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;transition:opacity .15s;}
+.btn:hover{opacity:.85;}
+.btn-outline{background:transparent;color:var(--accent);}
+.btn-outline:hover{background:var(--accent-light);opacity:1;}
+
+/* ── logit lens cells ── */
+.lens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin:16px 0;}
+.lens-cell{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;transition:border-color .2s;}
+.lens-cell .lc-layer{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.lens-cell .lc-tok{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.lens-cell .lc-prob{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.lens-correct{border-color:var(--pos) !important;background:var(--pos-light);}
+.lens-correct .lc-tok{color:var(--pos);}
+.lens-close{border-color:var(--warn);background:var(--warn-light);}
+.lens-close .lc-tok{color:var(--warn);}
+
+/* ── DLA bar chart ── */
+.bar-group{display:flex;flex-direction:column;gap:5px;margin:16px 0;}
+.bar-row{display:flex;align-items:center;gap:8px;}
+.bar-lbl{font-size:12px;color:var(--text3);min-width:78px;font-family:'JetBrains Mono',monospace;text-align:right;}
+.bar-track{flex:1;height:20px;background:var(--surface2);border-radius:4px;position:relative;}
+.bar-zero{position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--border2);}
+.bar-fill{position:absolute;top:2px;height:16px;border-radius:3px;transition:width .4s,left .4s;}
+.bar-fill.pos{background:var(--pos);}
+.bar-fill.neg{background:var(--neg);}
+.bar-num{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);min-width:40px;text-align:right;font-variant-numeric:tabular-nums;}
+
+/* ── probing meter ── */
+.probe-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}
+@media(max-width:500px){.probe-grid{grid-template-columns:1fr;}}
+.probe-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.probe-item .pi-label{font-size:12px;font-weight:600;color:var(--text3);margin-bottom:8px;}
+.probe-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:4px;}
+.probe-fill{height:100%;border-radius:4px;background:var(--accent);}
+.probe-item .pi-acc{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);}
+
+/* ── patch toggle grid ── */
+.patch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:14px 0;}
+.patch-item{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer;transition:border-color .15s;}
+.patch-item.active{border-color:var(--accent);background:var(--accent-light);}
+.patch-item label{font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;}
+.patch-item.active label{color:var(--accent);}
+.patch-result{margin-top:16px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px 16px;}
+.patch-result .pr-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.pr-token{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;padding:3px 10px;border-radius:4px;margin-right:6px;margin-bottom:4px;}
+.pr-token.pr-clean{background:var(--pos-light);color:var(--pos);}
+.pr-token.pr-corrupt{background:var(--neg-light);color:var(--neg);}
+.pr-token.pr-partial{background:var(--warn-light);color:var(--warn);}
+
+/* ── circuit diagram ── */
+.circ-svg{width:100%;max-width:560px;display:block;margin:16px auto;}
+.tab-panel a{color:var(--accent);}
+</style>
+
+<!-- Lesson Switcher -->
+<nav class="lesson-switcher" aria-label="Course navigation">
+  <a class="ls-label" href="index.html" style="text-decoration:none">LLM Mechanics</a>
+  <div class="ls-links">
+    <a href="lesson1.html" class="ls-btn">1 · Foundations</a>
+    <a href="lesson2.html" class="ls-btn">2 · Architecture</a>
+    <a href="lesson3.html" class="ls-btn">3 · Forward Pass</a>
+    <a href="lesson4.html" class="ls-btn">4 · Training</a>
+    <a href="lesson5.html" class="ls-btn">5 · Representations</a>
+    <a href="lesson6.html" class="ls-btn">6 · Limitations</a>
+    <span class="ls-btn ls-active">7 · Mech Interp</span>
+    <a href="lesson8.html" class="ls-btn">8 · Neural Systems</a>
+    <a href="lesson9.html" class="ls-btn">9 · Hands-On</a>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="lesson-label">Lesson 7</div>
+  <h1>Mechanistic Interpretability</h1>
+  <p class="subtitle">Reverse-engineering the algorithm learned by gradient descent — probing what the network knows, tracing how it computes, and finding the circuits that implement specific behaviors.</p>
+</header>
+
+<nav class="tab-nav" aria-label="Lesson sections">
+  <button class="tab-btn active" data-tab="goal">1 · The Goal</button>
+  <button class="tab-btn" data-tab="probing">2 · Probing & Logit Lens</button>
+  <button class="tab-btn" data-tab="dla">3 · DLA</button>
+  <button class="tab-btn" data-tab="patching">4 · Patching</button>
+  <button class="tab-btn" data-tab="circuits">5 · Circuits</button>
+  <button class="tab-btn" data-tab="steering">6 · Steering</button>
+  <button class="tab-btn" data-tab="editing">7 · Model Editing</button>
+  <button class="tab-btn" data-tab="saes">8 · SAEs</button>
+</nav>
+
+<!-- ────────────────── TAB 1: The Goal -->
+<section class="tab-panel active" id="tab-goal">
+  <h2>Reverse-Engineering the Algorithm</h2>
+  <p>Mechanistic interpretability (mech interp) asks a deceptively simple question: given a trained neural network, can we describe — in human-interpretable terms — <em>what computation it is actually performing?</em> Not what it was trained to do, and not just how well it performs, but the actual algorithm the gradient descent found.</p>
+  <p>The goals are concrete: identify which components (attention heads, MLP layers, individual neurons) are responsible for specific behaviors; find the features — directions in activation space — that the model uses to represent concepts; and trace how information flows through the network from input to output. Done well, this would let researchers verify whether a model's internal reasoning matches its stated reasoning, detect capabilities the model has but doesn't surface, and eventually make targeted edits to behavior without retraining from scratch.</p>
+
+  <h3>Why it's hard</h3>
+  <div class="two-col">
+    <div class="card" style="border-top:3px solid var(--accent);background:var(--accent-light);">
+      <h3 style="margin-top:0;font-size:14px;">Polysemanticity</h3>
+      <p style="font-size:14px;margin:0;">Individual neurons respond to multiple, unrelated concepts. There is no one-to-one mapping between units and interpretable features. This was covered in <a href="lesson5.html#super">Lesson 5, tab 3</a>; it is the core obstacle to a simple "read the neurons" approach.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--pos);background:var(--pos-light);">
+      <h3 style="margin-top:0;font-size:14px;">Superposition</h3>
+      <p style="font-size:14px;margin:0;">The model may encode far more features than it has dimensions, using nearly-orthogonal directions in activation space. Features are distributed, not localized, and they interfere with each other in subtle ways.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--warn);background:var(--warn-light);">
+      <h3 style="margin-top:0;font-size:14px;">Scale</h3>
+      <p style="font-size:14px;margin:0;">A frontier model has hundreds of billions to trillions of parameters and on the order of 100 layers. Even if each component were interpretable in isolation, integrating them into a unified account of behavior is a combinatorial challenge.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--neg);background:var(--neg-light);">
+      <h3 style="margin-top:0;font-size:14px;">No ground truth</h3>
+      <p style="font-size:14px;margin:0;">Unlike a compiled binary, there is no "source code" to check against. Any hypothesis about what a circuit is computing can only be validated indirectly — by prediction, ablation, and patching experiments.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--purple);background:var(--purple-light);">
+      <h3 style="margin-top:0;font-size:14px;">Hypothesis-driven blind spots</h3>
+      <p style="font-size:14px;margin:0;">Most mech interp methods — probing, DLA, activation patching — require you to specify in advance what you're looking for. If you don't sample the right inputs or define the right contrasts, the answer is invisible, not because the method failed but because you never asked. Sparse autoencoders (<a href="#saes" onclick="goTab('saes');return false">Tab 8</a>) are the main exception: they find structure in activations without being told what to look for.</p>
+    </div>
+  </div>
+
+  <h3>The main toolkit</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Method</th><th>What it asks</th><th>How</th><th>Causal?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Probing classifiers</strong></td><td>Is feature X linearly encoded at layer <i>l</i>?</td><td>Train a linear classifier on activations</td><td>No</td></tr>
+        <tr><td><strong>Logit lens</strong></td><td>What does the model predict at depth <i>l</i>?</td><td>Apply unembedding to intermediate residual stream</td><td>No</td></tr>
+        <tr><td><strong>Direct Logit Attribution</strong></td><td>Which components contributed to this output?</td><td>Algebraic decomposition of the final logit</td><td>Direct effects only</td></tr>
+        <tr><td><strong>Activation patching</strong></td><td>Is component X causally responsible for output Y?</td><td>Transplant activations between clean and corrupted runs</td><td>Yes</td></tr>
+        <tr><td><strong>Steering vectors</strong></td><td>Does feature direction D causally shift behavior?</td><td>Add a scaled feature vector to the residual stream at inference</td><td>Yes</td></tr>
+        <tr><td><strong>Circuit analysis</strong></td><td>Which subgraph implements behavior X?</td><td>Combine patching + DLA across heads and layers</td><td>Yes</td></tr>
+        <tr><td><strong>Sparse autoencoders</strong></td><td>What are the interpretable features in this activation?</td><td>Train a sparse overcomplete dictionary on residual stream</td><td>No</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The broader picture</h3>
+  <p>Mechanistic interpretability is a young field with real findings — induction heads, evidence that middle-layer MLPs help recall facts — but coverage of frontier models remains sparse. As <a href="https://arxiv.org/abs/2207.13243" target="_blank">Räuker et al.</a> (2023) note in their survey of 300+ works, widely accepted evaluation benchmarks don't yet exist, and methods are often tested on small networks and simple tasks, so the authors urge researchers to test whether their methods scale to large models. The field is actively building toward two things: a complete account of even one non-trivial behavior in a large model, and methods that scale the analysis as the models do.</p>
+
+</section>
+
+<!-- ────────────────── TAB 2: Probing -->
+<section class="tab-panel" id="tab-probing">
+  <h2>Probing Classifiers and the Logit Lens</h2>
+  <p>Before asking what a network <em>computes</em>, we can ask what it <em>knows</em> — what information is linearly accessible in its activations at different depths. Two tools answer this: probing classifiers and the logit lens.</p>
+
+  <h3>Probing classifiers</h3>
+  <p>The basic idea: extract intermediate activations (the residual stream at a given layer) for many inputs, then train a simple linear classifier to predict some property of the input — a syntactic role, a semantic attribute, whether a statement is true or false. If the probe achieves high accuracy, the property is linearly decodable from that layer's representation.</p>
+  <p>Critically, only the probe's own weights are trained — the model itself is not touched. High accuracy means the information is <em>present and linearly accessible</em> at that layer. Low accuracy means it either isn't there yet, or is encoded nonlinearly.</p>
+
+  <h4>Worked example: grammatical number</h4>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">Step 1</div>
+      <div class="step-body">
+        <strong>Collect activations.</strong> Feed hundreds of sentences through the frozen model and record the residual stream vector at the <em>subject token position</em> at layer <i>l</i>:
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:2;background:var(--bg);border-radius:var(--radius-sm);padding:10px 14px;margin:8px 0;">
+          "The <em>dog</em> runs in the park" → <strong>x₁</strong>, label = singular<br>
+          "The <em>dogs</em> run in the park" → <strong>x₂</strong>, label = plural<br>
+          "A <em>scientist</em> discovered…" &nbsp;→ <strong>x₃</strong>, label = singular<br>
+          "The <em>scientists</em> discovered…" → <strong>x₄</strong>, label = plural
+        </div>
+        Each <strong>x</strong> is a 768-dimensional vector (GPT-2 small; the residual stream at layer <i>l</i>). Repeat for hundreds of sentences.
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Step 2</div>
+      <div class="step-body">
+        <strong>Train logistic regression.</strong> A single linear layer with no hidden units:
+        <div class="eq" style="margin:8px 0 6px;">ŷ = σ(<strong>w</strong> · <strong>x</strong> + b)</div>
+        <strong>w</strong> is a learnable 768-dimensional weight vector; b is a scalar bias. The model's weights are frozen — only <strong>w</strong> and b are updated. Total trainable parameters: 769.
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Step 3</div>
+      <div class="step-body">
+        <strong>Evaluate.</strong> Measure accuracy on held-out examples:
+        <div class="eq" style="margin:8px 0 6px;">Probe accuracy ≈ P( classifier(<strong>x</strong><sup>(<i>l</i>)</sup>) = label )</div>
+        97% → grammatical number is linearly decodable from layer-<i>l</i> representations. Near 50% (chance) → it either isn't encoded at that layer yet, or is encoded nonlinearly.
+      </div>
+    </div>
+  </div>
+
+  <h3>What probing reveals</h3>
+  <div class="widget">
+    <div class="widget-title">Simulated probe accuracy by layer — GPT-like model</div>
+    <div class="probe-grid" id="probe-grid"></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px;"><strong>Figure 1.</strong> Simulated data for illustration. Each bar shows probe accuracy for the labeled property at three layer depths (early / middle / late). Real results from <a href="https://arxiv.org/abs/1905.05950" target="_blank">Tenney et al.</a> (2019) and <a href="https://aclanthology.org/N19-1419/" target="_blank">Hewitt &amp; Manning</a> (2019), on BERT, show that syntactic structure is best decoded from early-to-middle layers, while semantic information (semantic roles, coreference) appears in higher layers.</p>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>The limits of probing</strong>
+    <p>High probe accuracy only says a linear function of the activations predicts the label well. It does not mean the model <em>uses</em> this information for its outputs — the feature could be encoded but never read by any downstream component. Probing is a necessary but not sufficient condition for a feature mattering computationally. Activation patching (<a href="#patching" onclick="goTab('patching');return false">Tab 4</a>) establishes whether the information is actually used.</p>
+  </div>
+
+  <h3>The Logit Lens</h3>
+  <p>The logit lens (<a href="https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens" target="_blank">nostalgebraist, 2020</a>) is a special case of probing where the "classifier" is the model's own unembedding matrix W<sub>U</sub>, applied to the intermediate residual stream:</p>
+  <div class="eq">
+    p<sup>(<i>l</i>)</sup>(t) = softmax( LayerNorm( x<sup>(<i>l</i>)</sup> ) W<sub>U</sub> )<br>
+    <span class="eq-comment">— predicted token distribution if computation stopped at layer <i>l</i> (x is a row vector, as in Lessons 2–3; W<sub>U</sub> is d × vocabulary)</span>
+  </div>
+  <p>This lets you watch the model's prediction evolve as it processes a prompt — often showing that factual content crystallizes in middle layers and late layers refine surface form.</p>
+
+  <div class="widget">
+    <div class="widget-title">Logit Lens — "The capital of France is ___"</div>
+    <div class="lens-grid" id="lens-grid"></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px;"><strong>Figure 2.</strong> Simulated, with layer labels from GPT-2 XL (48 layers, L0–L47). Each cell shows the top predicted token and its probability if the model stopped at that layer. Early layers give syntactically plausible but semantically vague answers; the correct token "Paris" typically emerges in middle layers and dominates by the final layer.</p>
+  </div>
+
+  <h3>Probing vs. the logit lens</h3>
+  <p>Both freeze the model and read activations at layer <i>l</i> — but they use different classifiers and answer different questions.</p>
+  <div class="two-col">
+    <div class="card">
+      <h3 style="margin-top:0;font-size:14px;">Probing</h3>
+      <p style="font-size:14px;margin:0;">Trains a <em>new</em> classifier on your labeled examples. The weights <strong>w</strong> don't exist anywhere in the model — you learn them. Can ask about any property you can label: grammatical number, entity type, factual truth, anything.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;font-size:14px;">Logit lens</h3>
+      <p style="font-size:14px;margin:0;">Uses the model's <em>own</em> W<sub>U</sub> — no training, no labels, no new parameters. Can only ask about the model's vocabulary. Answers: "what token would this model predict if computation stopped at layer <i>l</i>?"</p>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── TAB 3: Attribution (DLA) -->
+<section class="tab-panel" id="tab-dla">
+  <h2>Direct Logit Attribution</h2>
+  <p>Probing tells us what information is encoded. The logit lens tells us what the model would predict at each depth. <strong>Direct Logit Attribution (DLA)</strong> asks a finer question: of the final predicted logit for a specific token, how much came from each individual component — each attention head and each MLP sublayer?</p>
+
+  <h3>The decomposition</h3>
+  <p>The residual stream at the final layer (x<sup>(L)</sup>, also written x<sub>final</sub>) is a sum of contributions from every component:</p>
+  <div class="eq">
+    x<sup>(L)</sup> = x<sup>(0)</sup> + Σ<sub><i>l</i></sub> Δx<sub>attn,<i>l</i></sub> + Σ<sub><i>l</i></sub> Δx<sub>mlp,<i>l</i></sub>
+  </div>
+  <p>Because the dot product with E[t] — token t's unembedding vector (column t of W<sub>U</sub>, written as a row) — is a linear operation, the logit for any target token t decomposes the same way:</p>
+  <div class="eq">
+logit(t)&nbsp;&nbsp;=&nbsp;&nbsp;x<sup>(L)</sup>&nbsp;·&nbsp;E[t]<sup>⊤</sup><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;x<sup>(0)</sup>&nbsp;·&nbsp;E[t]<sup>⊤</sup><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;&nbsp;Σ<sub><i>l</i></sub>&nbsp;Δx<sub>attn,<i>l</i></sub>&nbsp;·&nbsp;E[t]<sup>⊤</sup><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;&nbsp;Σ<sub><i>l</i></sub>&nbsp;Δx<sub>mlp,<i>l</i></sub>&nbsp;·&nbsp;E[t]<sup>⊤</sup>
+  </div>
+  <p>Each term is a <strong>scalar</strong> (a dot product between a residual-stream vector and the token's unembedding vector E[t]). Positive means the component raised the logit of token t; negative means it pushed against it. Unlike the logit lens (cumulative) or activation patching (counterfactual), DLA is an algebraic partition that needs no additional forward passes. It measures only <em>direct</em> effects: what a component writes straight to the output, not its influence through later layers. It is exact once the final LayerNorm's scale is frozen at its value for this input (standard practice), so that the LayerNorm acts as the same linear map on every term.</p>
+
+  <div class="widget">
+    <div class="widget-title">Layer-level DLA — "The Eiffel Tower is in ___"</div>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
+      <label style="font-size:13px;font-weight:500;color:var(--text2);">Target token:</label>
+      <select id="dla-sel">
+        <option value="paris">Paris</option>
+        <option value="france">France</option>
+        <option value="london">London</option>
+      </select>
+    </div>
+    <div id="dla-bars" class="bar-group"></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:12px;"><strong>Figure 3.</strong> Simulated, for six sampled layers of GPT-2 XL (48 layers, L0–L47). Each layer has two bars, one for its attention sublayer and one for its MLP, giving each one's direct contribution to the selected token's logit. Positive = pushes the logit up; negative = pushes it down. The mid-layer MLP peak echoes the causal-tracing result of <a href="https://arxiv.org/abs/2202.05262" target="_blank">Meng et al.</a> (2022, <a href="#patching" onclick="goTab('patching');return false">Tab 4</a>); a real DLA can look different, because it misses indirect effects.</p>
+  </div>
+
+  <h3>What DLA is used for in practice</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;">
+    <div class="card" style="border-top:3px solid var(--accent);margin:0;">
+      <h4 style="margin:0 0 8px;color:var(--accent);font-size:14px;">Locating where knowledge lives</h4>
+      <p style="margin:0;font-size:14px;">Run DLA on the correct answer token and see which layers contributed most positively. <a href="https://arxiv.org/abs/2202.05262" target="_blank">Meng et al.</a> (2022) used causal tracing (<a href="#patching" onclick="goTab('patching');return false">Tab 4</a>) to find that middle-layer MLPs at the subject token play a large causal role in factual recall in GPT models — a finding that motivated the ROME editing method (<a href="#editing" onclick="goTab('editing');return false">Tab 7</a>).</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--neg);margin:0;">
+      <h4 style="margin:0 0 8px;color:var(--neg);font-size:14px;">Debugging failures</h4>
+      <p style="margin:0;font-size:14px;">When the model outputs the wrong token, DLA shows which layers pushed probability toward the wrong answer and which were pushing against it — telling you where to look rather than treating the model as a black box.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--pos);margin:0;">
+      <h4 style="margin:0 0 8px;color:var(--pos);font-size:14px;">Confirming circuits</h4>
+      <p style="margin:0;font-size:14px;">In circuit-level interpretability (<a href="https://arxiv.org/abs/2209.11895" target="_blank">Olsson et al. 2022</a>), DLA confirms that a hypothesized attention head's write to the residual stream directly raises the target token's logit — moving from "this head's attention pattern looks right" to "its output pushes toward the answer." Patching (<a href="#patching" onclick="goTab('patching');return false">Tab 4</a>) then tests whether the head is causally needed.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--warn);margin:0;">
+      <h4 style="margin:0 0 8px;color:var(--warn);font-size:14px;">Evaluating interventions</h4>
+      <p style="margin:0;font-size:14px;">After ablating or patching a component, DLA before and after the intervention gives the answer in logit space — how much did the target token's logit change, and which other layers compensated?</p>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── TAB 4: Causal Tracing -->
+<section class="tab-panel" id="tab-patching">
+  <h2>Activation Patching and Causal Tracing</h2>
+  <p>DLA measures each component's direct contribution to the logit, but it doesn't intervene and it misses indirect effects through later layers. To establish that a component is <em>causally responsible</em> for an output, you need to intervene — run a controlled experiment. <strong>Activation patching</strong> is that experiment. <strong>Causal tracing</strong> (<a href="https://arxiv.org/abs/2202.05262" target="_blank">Meng et al. 2022</a>) is the best-known application: it runs activation patching systematically at every (layer, token-position) pair and records the results as a heatmap, rather than testing a single component in isolation.</p>
+
+  <h3>The two-pass method</h3>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">Clean pass</div>
+      <div class="step-body">Run the model on the original prompt ("The Eiffel Tower is in") and store <em>every</em> activation at every layer and position. The model correctly predicts "Paris". These activations are the "ground truth."</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Corrupt pass</div>
+      <div class="step-body">Run the model on a corrupted prompt that changes the critical information — e.g. add noise to the embeddings of the subject tokens ("Eiffel", "Tower"), while leaving "The", "is", and "in" unchanged. Only the subject tokens are corrupted because those are the ones carrying the factual identity; the others are just grammatical scaffolding. The model now predicts the wrong answer. Store all activations from this run too. <em>Why start from a broken state rather than breaking the clean one?</em> Because models are often redundant — two components may both encode the right answer, so removing one leaves the other to compensate. Starting corrupted and <strong>restoring</strong> one component at a time asks what is <em>sufficient</em> to recover the answer, which gives a sharper causal signal.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Patch</div>
+      <div class="step-body">Run the corrupted pass again, but at a specific location — one layer, one token position — replace the corrupted activation with the clean activation from Step 1. Does the output recover toward "Paris"? If yes, that location carries the critical information.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Sweep</div>
+      <div class="step-body">Repeat for every (layer, position) combination. The number of positions is just the prompt length — for "The Eiffel Tower is in", that's 7 GPT-2 tokens (The / E / iff / el / Tower / is / in), giving 48 × 7 = 336 patches total across GPT-2 XL's 48 layers. The resulting heatmap — "indirect effect" at each site — shows exactly where the model stores and uses the information being tested.</div>
+    </div>
+  </div>
+
+  <div class="widget" style="padding:16px 16px 12px;">
+    <div class="widget-title">Causal tracing heatmap — "The Eiffel Tower is in ___"</div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Each layer row shows two sub-rows: <strong>MLP</strong> (top) and <strong>Attn</strong> (bottom). Colour intensity = indirect effect — how much patching that component restores the correct prediction "Paris".</p>
+    <div style="overflow-x:auto;"><canvas id="ct-heatmap"></canvas></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px;"><strong>Figure 4.</strong> Simulated, based on <a href="https://arxiv.org/abs/2202.05262" target="_blank">Meng et al.</a> (2022). A schematic 12-layer model (rows L0–L11, the depth of GPT-2 small; Meng et al. used GPT-2 XL, with 48 layers) and whole words as columns. Key finding: MLP sublayers at mid layers, at the subject tokens and above all the last one ("Tower"), have the highest causal effect. Attention heads contribute mainly at the final token ("in") in later layers. The strong effect at late layers on the final token is close to trivial (patching there hands the model a nearly finished answer); the informative result is the effect at earlier layers on the subject positions.</p>
+  </div>
+
+  <h3>What causal tracing finds</h3>
+  <p>Applied to factual recall in GPT models, causal tracing by <a href="https://arxiv.org/abs/2202.05262" target="_blank">Meng et al.</a> (2022) showed a consistent pattern: the subject token's representation at middle-layer MLP sublayers (approximately layers 15–20 in GPT-2 XL) is the site with the greatest causal influence over the factual attribute. This is not just correlation — patching those specific activations <em>restores</em> the correct answer even when everything else is corrupted.</p>
+
+  <div class="insight insight-pos">
+    <strong>From tracing to editing</strong>
+    <p>Once causal tracing identifies the MLP layer where a fact is stored, that layer becomes the surgical target for model editing. ROME (<a href="https://arxiv.org/abs/2202.05262" target="_blank">Meng et al. 2022</a>) exploits this: it applies a rank-one update to the weight matrix of the identified MLP to implant a new factual association without retraining the whole model. The interpretability finding directly motivated the intervention. One caveat: <a href="https://arxiv.org/abs/2301.04213" target="_blank">Hase et al. (2023)</a> found that where causal tracing localises a fact does not predict which layer is best to edit (<a href="#editing" onclick="goTab('editing');return false">Tab 7</a>).</p>
+  </div>
+
+  <h3 style="margin-top:32px;">Best practices</h3>
+  <p>Differences in how activation patching is performed can affect the results. <a href="https://arxiv.org/abs/2309.16042" target="_blank">Zhang &amp; Nanda</a> (2023) systematically compare the different choices researchers make — corruption method (Gaussian noise vs. token replacement), evaluation metric (probability vs. logit difference), and whether to patch single layers or sliding windows — and show these choices can lead to substantially different localization conclusions. Their main recommendations: use symmetric token replacement rather than Gaussian noise, use logit difference rather than raw probability as the metric, and start with single-layer patching before trying multi-layer windows.</p>
+  <p class="citation">Zhang &amp; Nanda, "Towards Best Practices of Activation Patching in Language Models: Metrics and Methods," <a href="https://arxiv.org/abs/2309.16042" target="_blank">arXiv:2309.16042</a> (2023).</p>
+
+</section>
+
+<!-- ────────────────── TAB 5: Circuits -->
+<section class="tab-panel" id="tab-circuits">
+  <h2>Circuit Analysis</h2>
+  <p>A <strong>circuit</strong> is a minimal subgraph of attention heads and MLP sublayers — wired together through the residual stream — that reliably implements a specific computation. Identifying a circuit is a two-step process: discover which components are involved (using DLA and patching), then verify causally that removing those components breaks the behavior and restoring them brings it back.</p>
+
+  <h3>Case study: Induction heads (<a href="https://arxiv.org/abs/2209.11895" target="_blank">Olsson et al., 2022</a>)</h3>
+  <p>The behavior: when the model sees the pattern …<strong>A B</strong> … <strong>A</strong> anywhere in its context, it reliably predicts <strong>B</strong> as the next token. This is in-context pattern matching — the model has seen A followed by B earlier in the sequence and exploits that repetition. Two consecutive attention heads implement it.</p>
+
+  <svg class="circ-svg" viewBox="0 0 560 188" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Induction head token-sequence diagram">
+    <style>.circ-svg text { font-family: 'DM Sans', sans-serif; }</style>
+
+    <!-- Token boxes, center y=85, height=36 (top=67, bottom=103) -->
+    <!-- A₁ -->
+    <rect x="22" y="67" width="56" height="36" rx="6" fill="var(--surface2)" stroke="var(--border)" stroke-width="1.5"/>
+    <text x="50" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="var(--text2)">A₁</text>
+
+    <!-- B (highlighted — the key position L0 writes into) -->
+    <rect x="102" y="67" width="56" height="36" rx="6" fill="var(--accent-light)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="130" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="var(--accent)">B</text>
+
+    <!-- ellipsis -->
+    <text x="210" y="90" text-anchor="middle" font-size="18" fill="var(--text3)">···</text>
+
+    <!-- A₂ -->
+    <rect x="262" y="67" width="56" height="36" rx="6" fill="var(--surface2)" stroke="var(--border)" stroke-width="1.5"/>
+    <text x="290" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="var(--text2)">A₂</text>
+
+    <!-- ? (query position, dashed border) -->
+    <rect x="347" y="67" width="56" height="36" rx="6" fill="var(--surface)" stroke="var(--text3)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="375" y="91" text-anchor="middle" font-size="16" font-weight="600" fill="var(--text)">?</text>
+
+    <!-- L1 arc: ? attends back to B (blue arch above token row) -->
+    <path d="M 375,67 C 375,20 130,20 130,67" stroke="var(--accent)" stroke-width="2" fill="none" marker-end="url(#ih-arr)"/>
+    <text x="252" y="13" text-anchor="middle" font-size="11" font-weight="600" fill="var(--accent)">Layer 1 (induction head) — attends to B</text>
+
+    <!-- key / query annotations below boxes -->
+    <text x="130" y="117" text-anchor="middle" font-size="12" fill="var(--warn)">key = A</text>
+    <text x="375" y="117" text-anchor="middle" font-size="12" fill="var(--warn)">query = A</text>
+    <!-- dashed match line -->
+    <line x1="155" y1="122" x2="350" y2="122" stroke="var(--warn)" stroke-width="1" stroke-dasharray="3,2" opacity="0.65"/>
+    <text x="252" y="136" text-anchor="middle" font-size="11" fill="var(--text3)">same token → high attention weight</text>
+
+    <!-- output arrow + box -->
+    <line x1="403" y1="85" x2="418" y2="85" stroke="var(--pos)" stroke-width="2" marker-end="url(#ih-arr-pos)"/>
+    <rect x="420" y="67" width="118" height="36" rx="6" fill="var(--pos-light)" stroke="var(--pos)" stroke-width="1.5"/>
+    <text x="479" y="90" text-anchor="middle" font-size="13" font-weight="600" fill="var(--pos)">predicts B</text>
+
+    <!-- L0 note at bottom -->
+    <text x="280" y="162" text-anchor="middle" font-size="11" fill="var(--text3)">Layer 0 (prev-token head): at position B, reads A₁ and writes A's identity into B's key vector</text>
+
+    <defs>
+      <marker id="ih-arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/>
+      </marker>
+      <marker id="ih-arr-pos" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="var(--pos)"/>
+      </marker>
+    </defs>
+  </svg>
+  <p style="font-size:12px;color:var(--text3);margin-top:8px;text-align:center;"><strong>Figure 6.</strong> Induction head circuit shown as a token sequence. The blue arc is the Layer 1 attention from the query position (?) back to B. Orange labels show the key–query match that makes that attention possible. The Layer 0 role is noted at the bottom.</p>
+
+  <p>How the two layers cooperate:</p>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">Layer 0 · prev-token head</div>
+      <div class="step-body">At token position <strong>B</strong>, this head attends one step backward to A₁ (the token just before B) and writes A₁'s identity into <strong>B's key vector</strong>. After this, B's key also carries "the token before me was A" — the information the induction head will match against later.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Layer 1 · induction head</div>
+      <div class="step-body">At the query position <strong>?</strong>, the current token is A₂ (the same token type as A₁). The induction head searches for a position whose key matches its query: B's key = A, and ?'s query = A — they match. The induction head attends strongly to B and reads B's value, which represents the token B. That value is written to the residual stream at ?, boosting the logit for B. DLA (<a href="#dla" onclick="goTab('dla');return false">Tab 3</a>) confirms: the induction head's write has a large positive projection onto the B direction in logit space.</div>
+    </div>
+  </div>
+
+  <div class="insight insight-pos">
+    <strong>Why induction heads matter beyond copying</strong>
+    <p><a href="https://arxiv.org/abs/2209.11895" target="_blank">Olsson et al.</a> (2022) show that induction heads form via a phase transition during training — they appear abruptly in a narrow window early in training (roughly 2.5 to 5 billion tokens, at about the same point in every model of two or more layers they trained) and then persist. They argue that induction heads are a core mechanism underlying in-context few-shot learning: when you give a model several examples of a new pattern, induction heads are part of what lets the model "get" the pattern and extend it.</p>
+  </div>
+
+  <h3>Case study: Indirect Object Identification (<a href="https://arxiv.org/abs/2211.00593" target="_blank">Wang et al., 2022</a>)</h3>
+  <p>A more complex circuit implements the task of identifying the indirect object in sentences like "When Mary and John went to the store, John gave a bottle to ___" (answer: "Mary"). Wang et al. identified a circuit of about 26 attention heads distributed across layers that collectively implement this computation, with distinct functional roles: Name Mover heads copy the indirect object name to the output position, Backup heads provide redundancy, and S-Inhibition heads prevent the subject name ("John") from being copied instead.</p>
+
+  <p>Wang et al. found this circuit with <em>path patching</em>, tracing which heads directly and indirectly affect the answer, and then tested it causally: with every head outside the circuit mean-ablated, the circuit alone still performs most of the task (faithfulness), and they also checked that no important heads are missing (completeness) and none are superfluous (minimality); the circuit passes the first tests but not the hardest ones.</p>
+
+  <div class="insight insight-warn">
+    <strong>The current state of circuit research</strong>
+    <p>Most published circuits are from GPT-2-scale models. Whether the same circuits or analogous ones operate in frontier models at scale remains largely untested. The combinatorial complexity of larger models makes systematic circuit search much harder, and there are concerns about "streetlight interpretability" — we find circuits for behaviors that are easy to study, not necessarily the behaviors that matter most.</p>
+  </div>
+</section>
+
+<!-- ────────────────── TAB 6: Steering Vectors -->
+<section class="tab-panel" id="tab-steering">
+  <h2>Steering Vectors</h2>
+  <p>Probing tells you that a feature is linearly encoded in the residual stream. But encoding and usage are different things — the model might represent a concept without that representation actually driving its outputs. Steering vectors test the causal claim directly: take the direction in activation space that encodes a feature, scale it, and inject it into the residual stream at inference time. If behavior shifts predictably, that direction has causal power over the output.</p>
+
+  <div class="insight insight-pos">
+    <strong>Relation to activation patching (<a href="#patching" onclick="goTab('patching');return false">Tab 4</a>)</strong>
+    <p>Steering and patching are related but distinct interventions. Patching <em>replaces</em> the residual stream with a cached vector from a different run; steering <em>adds</em> a direction with a tunable coefficient. Patching answers "which layer carries this computation?"; steering answers "does moving in this direction cause the expected behavior?" Both establish causality — they isolate it at different levels of granularity.</p>
+  </div>
+
+  <h3>Finding the direction</h3>
+  <p>The simplest method is <strong>difference-in-means</strong>: collect residual-stream activations at layer <i>l</i> for a set of "positive" prompts and "negative" prompts, then subtract their class means. The resulting vector points from the negative cluster toward the positive cluster in activation space.</p>
+
+  <div class="eq">
+    f = mean(x<sub><i>l</i></sub> | positive prompts) − mean(x<sub><i>l</i></sub> | negative prompts)
+  </div>
+
+  <p><strong>Contrastive Activation Addition (CAA)</strong> (<a href="https://arxiv.org/abs/2312.06681" target="_blank">Panickssery (Rimsky) et al. 2023</a>) refines this by using matched prompt pairs — each pair differs only in the concept of interest, which reduces confounding — and averaging the pair differences. SAE features (<a href="#saes" onclick="goTab('saes');return false">Tab 8</a>) offer another source of directions, each meant to be monosemantic. In practice they have not steered better: on the <a href="https://arxiv.org/abs/2501.17148" target="_blank">AxBench</a> benchmark (<a href="https://arxiv.org/abs/2501.17148" target="_blank">Wu et al. 2025</a>, Gemma 2 models), SAE-based steering trailed prompting, fine-tuning and simpler vectors such as difference-in-means.</p>
+
+  <h3>The intervention</h3>
+  <p>At inference time, the unit-normalized vector is added to the residual stream at layer <i>l</i> with a scalar multiplier α:</p>
+
+  <div class="eq">
+    x′<sub><i>l</i></sub> = x<sub><i>l</i></sub> + α · f̂
+    <br><span class="eq-comment">  x<sub><i>l</i></sub>: residual stream at layer <i>l</i> · f̂: unit-normalized feature direction · α: steering coefficient</span>
+  </div>
+
+  <p>Positive α amplifies the feature; negative α suppresses it. The modified residual stream then continues through the remaining layers as normal — the downstream attention and MLP layers process it as if the model had encoded a stronger version of the concept at that depth.</p>
+
+  <h3>Worked example: steering for sycophancy</h3>
+  <p><strong>Concept:</strong> sycophancy (model agrees regardless of correctness) vs. honest disagreement.</p>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">1 · Find&nbsp;<em>f</em></div>
+      <div class="step-body">
+        Collect a few hundred matched prompt pairs. As in CAA, both prompts in a pair share the same question and answer options and differ <em>only</em> in the answer letter at the end:
+        <table style="margin-top:10px;width:100%;font-size:13px;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);font-weight:600;">Positive (sycophantic)</th>
+            <th style="text-align:left;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);font-weight:600;">Negative (honest)</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:6px 10px;border:1px solid var(--border);">"I think my plan is flawless. Do you agree? (A) Yes, it's brilliant. (B) It has a serious weakness. Answer: (A"</td><td style="padding:6px 10px;border:1px solid var(--border);">"I think my plan is flawless. Do you agree? (A) Yes, it's brilliant. (B) It has a serious weakness. Answer: (B"</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;">Run the pairs through Llama 2 7B Chat (32 layers, L0–L31), the model of the CAA paper, and extract the residual stream at the answer letter at layer <i>l</i> = 13, the layer that paper found worked best. Then compute: <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">f = mean(x₁₃ | sycophantic) − mean(x₁₃ | honest)</code></p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">2 · Inject</div>
+      <div class="step-body">Normalize to get f̂ = f/‖f‖. At inference, when processing "Is my business plan good?", add to layer 13 (at every token position after the prompt, as CAA does): <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">x′₁₃ = x₁₃ + α·f̂</code></div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">3 · Observe</div>
+      <div class="step-body">
+        <strong>Illustrative outcome</strong> (CAA itself scales the un-normalised vector by about ±1–2):<br>
+        <strong>α = +20:</strong> model becomes unusually agreeable, praising ideas regardless of quality.<br>
+        <strong>α = −20:</strong> model becomes unusually blunt or critical.<br>
+        <strong>α = 0:</strong> baseline behavior.<br><br>
+        The direction is <em>bipolar</em> — you can amplify or suppress the same axis. This suggests the model already organizes representations along this dimension internally; you are turning a dial, not injecting a foreign concept.
+      </div>
+    </div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-title">Interactive: Simulated Steering Effect</div>
+    <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:16px;">
+      <div>
+        <label style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px;">Concept direction</label>
+        <select id="steer-concept">
+          <option value="sycophancy">Sycophantic ↔ Honest</option>
+          <option value="royalty">Royalty ↔ Common</option>
+          <option value="anger">Anger ↔ Calm</option>
+          <option value="french">French ↔ English</option>
+        </select>
+      </div>
+      <div style="flex:1;min-width:200px;">
+        <label style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px;">Coefficient α: <span id="alpha-val" style="font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:14px;">0</span></label>
+        <input type="range" id="alpha-slider" min="-20" max="20" value="0" step="1" style="width:100%;accent-color:var(--accent);">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:2px;"><span id="steer-neg-label">−20</span><span>0</span><span id="steer-pos-label">+20</span></div>
+      </div>
+    </div>
+    <div id="steer-prompt" style="font-size:13px;font-style:italic;color:var(--text3);margin-bottom:12px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Unsteered (α = 0)</div>
+        <div id="steer-base-tokens"></div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;" id="steer-col-label">Steered</div>
+        <div id="steer-out-tokens"></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:12px;"><strong>Figure 5.</strong> Simulated. Positive α amplifies the concept direction; negative α suppresses it (for either sign, tokens promoted by the steering are highlighted in blue). Real steering experiments (<a href="https://arxiv.org/abs/2308.10248" target="_blank">Turner et al. 2023</a>; <a href="https://arxiv.org/abs/2310.01405" target="_blank">Zou et al. 2023</a>; <a href="https://arxiv.org/abs/2312.06681" target="_blank">Panickssery et al. 2023</a>) show both effects, typically preserving grammatical coherence at moderate α values.</p>
+  </div>
+
+  <h3>Key results</h3>
+  <p><strong><a href="https://arxiv.org/abs/2308.10248" target="_blank">Turner et al.</a> (2023)</strong> showed that injecting a concept vector (e.g., "wedding") into GPT-2-XL's residual stream at intermediate layers steered output content toward that concept even on unrelated prompts. <strong><a href="https://arxiv.org/abs/2310.01405" target="_blank">Zou et al.</a> (2023)</strong> ("Representation Engineering") demonstrated that emotions, honesty and power-seeking have identifiable linear directions in LLaMA and Vicuna; steering on these directions modulated behavior reliably and in the predicted direction. <strong>Panickssery (Rimsky) et al. (2023)</strong> steered Llama 2 Chat's sycophancy, hallucination, refusal and other behaviours in both directions using CAA vectors from matched multiple-choice pairs.</p>
+
+  <h3>Which layer to steer at</h3>
+  <p>Layer choice matters. Steering early propagates the perturbation through more downstream computation — the injected concept gets integrated into subsequent attention patterns and MLP outputs — but risks disrupting coherence because later layers weren't trained on that representational state. Steering too late has little downstream effect. In practice, middle layers (roughly one-third to two-thirds of the way through the network; CAA found layer 13 of 32 best) yield the clearest behavioral shifts with the least disruption to fluency.</p>
+
+  <h3>Limitations</h3>
+  <div class="two-col">
+    <div class="card" style="border-top:3px solid var(--neg);background:var(--neg-light);">
+      <h3 style="margin-top:0;font-size:14px;">Superposition interference</h3>
+      <p style="font-size:14px;margin:0;">The injected vector shares the residual stream with thousands of other features. Adding it inevitably nudges unrelated features — producing side effects (off-topic content, grammatical breakdowns) at high α.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--warn);background:var(--warn-light);">
+      <h3 style="margin-top:0;font-size:14px;">Causal but not mechanistic</h3>
+      <p style="font-size:14px;margin:0;">Showing that a direction has causal power doesn't reveal which component computed it, at what layer the model first encodes the concept, or whether the model uses that exact direction in its normal forward pass. Combining steering with probing and activation patching (<a href="#patching" onclick="goTab('patching');return false">Tab 4</a>) addresses this.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--accent);background:var(--accent-light);">
+      <h3 style="margin-top:0;font-size:14px;">Direction quality</h3>
+      <p style="font-size:14px;margin:0;">Difference-in-means vectors are confounded by any other difference between the prompt sets. SAE features (<a href="#saes" onclick="goTab('saes');return false">Tab 8</a>) look more monosemantic, but on AxBench they steered worse than difference-in-means, and they need a trained autoencoder.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--neg);background:var(--neg-light);">
+      <h3 style="margin-top:0;font-size:14px;">Unreliable generalization</h3>
+      <p style="font-size:14px;margin:0;">Steering is not reliably effective across all inputs. Steerability varies substantially from example to example, spurious biases in the contrastive prompts can inflate apparent success, and, although they often generalise, for several concepts the vectors fail under reasonable changes to the prompt (<a href="https://arxiv.org/abs/2407.12404" target="_blank">Tan et al., NeurIPS 2024</a>).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── TAB 7: Model Editing -->
+<section class="tab-panel" id="tab-editing">
+  <h2>Model Editing</h2>
+  <p>A language model trained on the web has absorbed billions of facts — but facts change. Prominent people change titles, scientific consensus updates, errors get discovered after training. Retraining the model from scratch to fix one fact costs millions of dollars and weeks of compute. Model editing asks: can we instead surgically update a specific belief inside the network, leaving everything else intact?</p>
+
+  <h3>Why editing is hard</h3>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">Distributed</div>
+      <div class="step-body">Facts are not stored in a single weight. Multiple layers, heads, and MLP neurons jointly contribute to any factual completion. Changing one weight slightly affects thousands of other computations in ways that are hard to predict.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">The editing trilemma</div>
+      <div class="step-body">A good edit must be <em>accurate</em> — the target fact is updated — <em>generalizing</em> — the model also applies the update to paraphrases ("Who is the director of OpenAI?" and "Who runs OpenAI?" should both reflect the change) — and <em>specific</em> — unrelated facts are not degraded. These three goals are in tension: naive fine-tuning satisfies accuracy but fails specificity; other methods struggle with generalization.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">A note on evaluation</div>
+      <div class="step-body">Most editing benchmarks (COUNTERFACT, ZsRE) test single-hop retrieval. Real generalization — multi-hop reasoning that propagates the edit through a chain of facts — is much harder and still largely unsolved.</div>
+    </div>
+  </div>
+
+  <h3>ROME — Rank-One Model Editing</h3>
+  <p class="citation"><a href="https://arxiv.org/abs/2202.05262" target="_blank">Meng et al., <em>NeurIPS</em> 2022</a></p>
+  <p>Before editing, we need to know <em>where</em> in the network to edit. <a href="#patching" onclick="goTab('patching');return false">Tab 4</a> covered activation patching; to recap their procedure:</p>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">1 · Clean run</div>
+      <div class="step-body">Run the model on the original prompt ("The Eiffel Tower is in the city of ___") and record all internal activations.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">2 · Corrupted run</div>
+      <div class="step-body">Add random Gaussian noise to the subject token embeddings (" Eiffel Tower"; 3 times the embeddings' standard deviation, averaged over 10 samples), so that the model can no longer recognize the subject and fails at the factual completion. A common alternative is <em>counterfactual</em> corruption: a second, real prompt with a different subject ("The Colosseum is in the city of"); <a href="lesson9.html#patching">Lesson 9, tab 12</a> uses this kind of corruption with France → Italy.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">3 · Patch one site</div>
+      <div class="step-body">Restore a single activation from the clean run into the corrupted run and measure how much factual recall recovers. Sweep every (layer, token-position) site. This is <em>denoising</em>: the restored piece is tested for sufficiency (can it alone bring the answer back?); the reverse, <em>noising</em> (run the clean prompt and copy one piece in from the corrupted run), tests necessity. (For MLP and attention outputs, the paper restores a window of 10 consecutive layers at once: single layers have small effects.)</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Finding</div>
+      <div class="step-body">Recovery is highest at the <em>last subject token position</em>, in the <strong>middle MLP layers</strong> (~L15–L20 in GPT-2-XL). These middle MLPs appear to "look up" facts about the subject; late attention then "moves" that information to the final token for output. This gives a mechanistic target for editing.</div>
+    </div>
+  </div>
+
+  <p>ROME treats the identified MLP's down-projection W<sub>down</sub> as an associative memory. Each MLP block computes:</p>
+  <div class="eq">
+    h = k(x) W<sub>down</sub>   <span class="eq-comment">— key k(x) = nonlinearity(x W<sub>up</sub>); h is the stored "value" (row vectors, as elsewhere)</span>
+  </div>
+  <p>To insert a new fact (subject s, relation r, new object o*), ROME finds the key vector k* that the subject token (e.g. "Eiffel Tower") activates in the target MLP and a value v* that encodes the new object, then changes W<sub>down</sub> as little as possible on the keys it already stores while forcing k* → v*. This is a constrained least-squares problem:</p>
+  <div class="eq">
+    minimize ‖K (W<sub>down</sub> + ΔW) − K W<sub>down</sub>‖   subject to   k* (W<sub>down</sub> + ΔW) = v*<br>
+    <span class="eq-comment">— K: keys k<sub>i</sub> from many other inputs (sample text), as rows</span><br>
+    ΔW = u Λ,   u = C<sup>−1</sup>k*<sup>⊤</sup>,   Λ = (v* − k* W<sub>down</sub>) / (k* u)<br>
+    <span class="eq-comment">— C = K<sup>⊤</sup>K: the key covariance, estimated once per layer</span>
+  </div>
+  <p>The solution is closed-form and rank-one, so computing ΔW needs no iterative training. The edit is exact on the target key; other keys are preserved only approximately, in the least-squares sense — specificity is built into the objective but not guaranteed key by key.</p>
+
+  <div class="insight">
+    <strong>Why rank-one?</strong>
+    <p>A rank-one update ΔW = u Λ (a column u = C<sup>−1</sup>k*<sup>⊤</sup> times a row Λ) changes the MLP's output along a single direction Λ, and only for keys with a component along u (the whitened key, not k* itself). The output for any other key k changes in proportion to k u: zero for some keys, small for keys unlike k* in the whitened (C<sup>−1</sup>) metric. It is the smallest change, measured over the stored keys, that adds the new (key, value) association. In neural terms it is not one new synapse: a rank-one update changes every entry of W<sub>down</sub>, many synapses at once, in a coordinated outer-product (Hebbian-like) pattern, while barely disturbing the stored associations. (<a href="lesson9.html#rome">Lesson 9, tab 15</a> writes vectors as columns, so there the same update appears transposed: ΔW = δ u<sup>⊤</sup> / (u<sup>⊤</sup> k*).)</p>
+  </div>
+
+  <h4>Worked example</h4>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">0 · Target fact</div>
+      <div class="step-body">Change the model's belief: <em>"The Eiffel Tower is located in Paris"</em> → <em>"The Eiffel Tower is located in Rome."</em></div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">1 · Locate layer to edit</div>
+      <div class="step-body">Run activation patching on the prompt "The Eiffel Tower is in the city of ___". Recovery peaks at the last subject token ("Tower") in middle MLP layers (~L17 in GPT-2-XL, counting from 0; the paper counts from 1 and calls it layer 18). That layer is the edit target.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">2 · Find k*</div>
+      <div class="step-body">At layer L17, record k(x) = nonlinearity(x W<sub>up</sub>) at the subject's last token, "Tower", with the subject placed after several different short random texts ("x<sub>j</sub> + Eiffel Tower"; the paper samples the texts from the model itself), and average → k*. What varies must be the text <em>before</em> the subject: attention is causal, so the key at "Tower" cannot see anything after it, and prompts that differ only after the subject ("…was built in", "…stands in") all give the same key. Averaging over prefixes makes k* the subject's stable "address" in W<sub>down</sub>, not one context's.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">3 · Find v*</div>
+      <div class="step-body"><em>What should L17 output?</em> Find a target vector v* — the MLP output at L17, at the subject's last token, that would make the model say "Rome." Start from the MLP's current output there and learn a change δ (starting at zero), so v* = current output + δ. Run the forward pass from L17 onward with δ added to the MLP's output at "Tower", in the edit prompt behind several prefixes, and compute the cross-entropy loss on "Rome" at the last position. Backprop doesn't update weights here — it computes ∂loss/∂δ, the gradient of the loss with respect to δ itself; the frozen layers downstream of L17 are just a differentiable function from δ to output probabilities. Two penalties keep the change honest: a KL-divergence term keeps the model's answer to "The Eiffel Tower is a ___" unchanged (what the subject <em>is</em> should not change), and δ is kept small (weight decay in the paper; the paper's released code also caps its length at 4 times that of the MLP's original output, clamp_norm_factor = 4). Up to 20 gradient steps of Adam, stopping early once the loss is small.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">4 · Compute ΔW</div>
+      <div class="step-body"><em>How do we make L17 actually output v*?</em> Solve for the rank-one update ΔW such that k* (W<sub>down</sub> + ΔW) = v* while changing the outputs for other keys as little as possible (least squares, using the key covariance C). The solution is closed-form — no iterative training needed.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">5 · Result</div>
+      <div class="step-body"><em>The intended outcome:</em> "The Eiffel Tower is in the city of ___" → <strong>Rome</strong>; paraphrases ("Where is the Eiffel Tower?") → Rome too; unrelated completions ("The Louvre is in ___" → Paris) unaffected. On the paper's benchmark (CounterFact, GPT-2 XL), ROME flips the edited prompt almost always and about 96% of paraphrases, while about 75% of neighbouring facts keep their answers (78% before the edit). Single facts vary a lot around those averages: <a href="lesson9.html#rome">Lesson 9, tab 15</a> runs this edit and measures what actually changes.</div>
+    </div>
+  </div>
+
+  <div class="insight insight-pos">
+    <strong>The interpretability connection</strong>
+    <p>Model editing is interpretability applied: it uses findings from activation patching (middle MLPs matter for factual recall) to motivate a surgical intervention. That a rank-one update to one weight matrix, in one layer, can change one factual belief without destroying the rest of the model is consistent with the MLP acting as an associative memory. But it is weaker evidence for localisation than it looks: <a href="https://arxiv.org/abs/2301.04213" target="_blank">Hase et al. (2023)</a> found that whether causal tracing localises a fact to a layer barely predicts how well editing that layer works.</p>
+  </div>
+
+  <h3>MEMIT — Mass-Model Editing in Networks</h3>
+  <p class="citation"><a href="https://arxiv.org/abs/2210.07229" target="_blank">Meng et al., <em>ICLR</em> 2023</a></p>
+  <p>ROME targets one layer and inserts one fact at a time. MEMIT scales this in two directions: it edits <em>many layers at once</em> and applies <em>thousands of edits in a batch</em>. The core insight is that the editing load (the discrepancy between what the network currently stores and what it should store) can be distributed across a range of layers, reducing the strain on any individual weight matrix. Each layer receives a weight update solving its share of the batch, and the updates are derived in a single pass through the batch — no iterative fine-tuning.</p>
+  <p>In benchmarks on GPT-J and GPT-NeoX-20B, MEMIT achieved high accuracy and generalization on batches of up to 10,000 edits, with only modest specificity degradation.</p>
+
+  <h3>The editing trilemma in practice</h3>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">Accurate</div>
+      <div class="step-body">ROME and MEMIT reliably update the target completion (e.g. "The Eiffel Tower is in ___" → "Rome" instead of "Paris"). Accuracy on the verbatim prompt is high.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Generalizing</div>
+      <div class="step-body">Single-hop paraphrases ("Where is the Eiffel Tower located?") generalize well on average in the paper's benchmark (about 96% for ROME on GPT-2 XL), though unevenly from fact to fact. Multi-hop ("What country contains the Eiffel Tower's city?") often does not — the edit updates one fact-storage site but doesn't propagate through the chain of inference steps that downstream reasoning requires.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Specific</div>
+      <div class="step-body">Specificity holds for a few edits. Applied one after another, ROME edits degrade the model quickly: after roughly 100–1,000 sequential edits it forgets earlier edits and its performance on unrelated tasks collapses, as the edited weights drift from their original values (<a href="https://arxiv.org/abs/2401.07453" target="_blank">Gupta et al. 2024</a>).</div>
+    </div>
+  </div>
+
+  <h3>Limitations and open problems</h3>
+  <p>The near-term goal of model editing is practical: correct factual errors and safety violations in deployed models without the cost and disruption of full retraining. The long-term aspiration is more ambitious — to treat editing as a lever for alignment, steering a model's beliefs and values with the same precision that ROME applies to a single factual association, though this remains highly speculative and well beyond current methods. Both goals run into the same cluster of difficulties.</p>
+  <p>The most immediate challenge is <strong>multi-hop generalization</strong>. Editing one association in W<sub>down</sub> doesn't automatically propagate its logical consequences. Change "The Eiffel Tower is in Rome" and the model will answer that direct question correctly, but ask "The Eiffel Tower is in the country of ___" and it may well still say France — the new fact lives in one weight matrix while every downstream inference that depended on the old fact remains encoded elsewhere, unchanged. Related is the problem of <strong>sequential edits</strong>: each rank-one update shifts the geometry that earlier updates relied on, so hundreds of edits can silently degrade one another. MEMIT's batched approach reduces this interference, but doesn't eliminate it.</p>
+  <p>Two structural constraints limit how broadly the approach can be applied. First, ROME is designed for crisp <strong>(subject, relation, object)</strong> triples with a single correct answer; beliefs, preferences, and context-dependent knowledge don't map cleanly onto that architecture. Second, most editing benchmarks were developed on base language models; whether causal tracing localizes facts in the same way in <strong>instruction-tuned or RLHF-fine-tuned models</strong> is much less studied. Finally, <strong>verification remains unsolved</strong>: after editing, there is no principled way to confirm that the rest of the model's knowledge is intact. An edit might silently damage a capability that none of the evaluation prompts happen to probe.</p>
+
+</section>
+<!-- ────────────────── TAB 8: SAEs -->
+<section class="tab-panel" id="tab-saes">
+  <h2>Sparse Autoencoders</h2>
+  <p>All of the methods so far — <a href="#probing" onclick="goTab('probing');return false">probing, logit lens</a>, <a href="#dla" onclick="goTab('dla');return false">DLA</a>, <a href="#patching" onclick="goTab('patching');return false">activation patching</a>, <a href="#circuits" onclick="goTab('circuits');return false">circuits</a> — implicitly work in the model's native basis: individual neurons, or linear combinations of them. But <a href="lesson5.html#super">Lesson 5</a> showed that neurons are polysemantic and representations exploit superposition. A different approach tries to <em>learn</em> the right basis for interpretation: the <strong>sparse autoencoder</strong> (SAE), applied to language models independently by <a href="https://arxiv.org/abs/2309.08600" target="_blank">Cunningham et al. (2023)</a> and <a href="https://transformer-circuits.pub/2023/monosemantic-features/index.html" target="_blank">Bricken et al. (2023, "Towards Monosemanticity")</a>.</p>
+
+  <h3>The problem: superposition and polysemanticity</h3>
+  <p>If the model has d = 768 dimensions but encodes F ≫ 768 features, those features are stored as nearly-orthogonal directions — no single neuron corresponds to one feature. Reading a single neuron's activation mixes together contributions from many features, making it uninterpretable. What we want is a dictionary of interpretable directions, even if that dictionary is larger than d.</p>
+
+  <h3>Architecture</h3>
+  <div class="eq eq-table">
+    <div class="eq-row"><span class="eq-lhs">z = ReLU(x W<sub>enc</sub> + b<sub>enc</sub>)</span><span class="eq-rhs">sparse code, ‖z‖₀ ≪ d<sub>sae</sub></span></div>
+    <div class="eq-row"><span class="eq-lhs">x̂ = z W<sub>dec</sub> + b<sub>dec</sub></span><span class="eq-rhs">reconstruct residual stream (x, z are row vectors)</span></div>
+    <div class="eq-row"><span class="eq-lhs">Loss = ‖x − x̂‖² + λ·Σ<sub>i</sub> z<sub>i</sub> ‖<strong>f</strong><sub>i</sub>‖</span><span class="eq-rhs">reconstruction + L<sub>1</sub> sparsity, each feature weighted by the length of its decoder row <strong>f</strong><sub>i</sub></span></div>
+  </div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-label">Step 0 · Collect</div>
+      <div class="step-body"><strong>Build an activation dataset.</strong><br>
+      Run the frozen LLM on a large text corpus and record the residual stream vector x at a chosen layer for every token position. The amounts are large: Bricken et al. used 8 billion activation vectors (MLP activations of a one-layer model), each seen only once, because features get sharper with more data and repeated data encourages features that stop firing. The vectors are either stored on disk and shuffled, or generated on the fly with a shuffle buffer that mixes tokens from many documents. Ideally the text resembles the model's training data. You pick one layer per SAE — training separate SAEs at different layers if you want to study multiple depths. SAE training then draws random minibatches from this pool.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Step 1 · Encode</div>
+      <div class="step-body"><strong>z = ReLU(x W<sub>enc</sub> + b<sub>enc</sub>)</strong><br>
+      Take a batch of thousands of vectors (4,096 in Anthropic's recipe) from the activation dataset — each x ∈ ℝ<sup>d</sup> is one token's residual stream. All vectors in the batch are processed in parallel. W<sub>enc</sub> is not known in advance; it is what the SAE is learning. Once trained, it projects each x up into a much larger space: z ∈ ℝ<sup>d<sub>sae</sub></sup> where d<sub>sae</sub> is typically 10–100× larger than d; <a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html" target="_blank">Templeton et al. (2024)</a> trained SAEs with up to 34 million features on Claude 3 Sonnet. ReLU zeros out negative entries, so most of z is exactly 0. The annotation <em>‖z‖₀ ≪ d<sub>sae</sub></em> says: only a small number of entries are nonzero — the handful of features active for this token. (L<sub>0</sub> can't be trained on directly, so Step 3 uses L<sub>1</sub> as a differentiable proxy that encourages the same sparsity.)</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Step 2 · Decode</div>
+      <div class="step-body"><strong>x̂ = z W<sub>dec</sub> + b<sub>dec</sub></strong><br>
+      Reconstruct an approximation x̂ of the original x from the sparse code z. W<sub>dec</sub> has d<sub>sae</sub> rows — one per feature. Each row is a d-dimensional vector pointing in some direction in residual stream space: a feature direction <strong>f</strong><sub>i</sub>. With the rows of W<sub>dec</sub> being <strong>f</strong><sub>1</sub>, <strong>f</strong><sub>2</sub>, …, <strong>f</strong><sub>d<sub>sae</sub></sub>, the reconstruction is:<br>
+      <span style="display:block;margin:.5em 0 0 1em;">x̂ = z<sub>1</sub>·<strong>f</strong><sub>1</sub> + z<sub>2</sub>·<strong>f</strong><sub>2</sub> + … + z<sub>d<sub>sae</sub></sub>·<strong>f</strong><sub>d<sub>sae</sub></sub> + b<sub>dec</sub></span>
+      Because most z<sub>i</sub> = 0, this is a sparse sum: each token is explained by a few active feature directions, weighted by how strongly each fires. The decoder bias b<sub>dec</sub> corrects for the non-zero mean of the activations; it carries no feature information. (Bricken et al. also subtract b<sub>dec</sub> from x before encoding, so their encoder sees x − b<sub>dec</sub>.)</div>
+    </div>
+    <div class="step-item">
+      <div class="step-label">Step 3 · Train</div>
+      <div class="step-body"><strong>Loss = ‖x − x̂‖² + λ·Σ<sub>i</sub> z<sub>i</sub> ‖<strong>f</strong><sub>i</sub>‖</strong><br>
+      The loss has two competing terms. The first (‖x − x̂‖², averaged over the batch) pushes for accurate reconstruction — the features should together explain the residual stream. The second is the L<sub>1</sub> norm of z, with each feature weighted by the length of its decoder row <strong>f</strong><sub>i</sub> (z<sub>i</sub> ≥ 0 after the ReLU): it penalizes using many features at once, forcing sparsity. The weighting matters. With a plain λ·‖z‖₁ the SAE could cheat: shrink every z<sub>i</sub> and lengthen every <strong>f</strong><sub>i</sub> by the same factor, leaving x̂ unchanged while the penalty shrinks toward zero. <a href="https://transformer-circuits.pub/2023/monosemantic-features/index.html" target="_blank">Bricken et al.</a> (2023) blocked this by holding every <strong>f</strong><sub>i</sub> at length 1 and using the plain L<sub>1</sub> norm; <a href="https://transformer-circuits.pub/2024/april-update/index.html" target="_blank">Anthropic's 2024 training recipe</a> weights the penalty instead, which it calls its most important change. λ controls the tradeoff: higher λ = sparser but potentially less faithful.<br><br>
+      Training follows that recipe: the biases start at 0, the decoder rows point in random directions with length 0.1, and W<sub>enc</sub> starts as W<sub>dec</sub><sup>⊤</sup>; the activations are scaled by one constant so that their average length is √d; Adam with learning rate 5 × 10<sup>−5</sup> (decayed to 0 over the last 20% of training), batches of 4,096 and about 200,000 steps (Bricken et al.: 1 million), with λ raised from 0 over the first 5% of steps. Gradients flow through the SAE only; the LLM is frozen. Some features stop firing altogether ("dead" features): Bricken et al. periodically re-initialized them ("resampling"), while the 2024 recipe leaves few enough dead features to skip it.<br><br>
+      The SAE learns the directions <strong>f</strong><sub>i</sub> that best reconstruct the activations under the sparsity penalty, without ever being told what any feature means. Whether the model itself uses those directions is a separate question (see Open problems below).</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>SAE Findings (<a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html" target="_blank">Templeton et al., 2024</a>)</h3>
+      <p>SAEs with 1, 4 and 34 million features on Claude 3 Sonnet's middle layer found features for famous people, countries and cities, type signatures in code, security vulnerabilities, code bugs and sycophantic praise, among many others. Many respond to the same concept in several languages, and even in images, although the SAEs were trained on text only. Not every feature is usable: 65% of the 34-million-feature SAE's features never fired. (Bricken et al.'s 2023 SAEs on a one-layer model had already found features such as base64 text and Arabic script.)</p>
+    </div>
+    <div class="card">
+      <h3>The Absorption Problem</h3>
+      <p>SAE features are not always clean. In <em>feature absorption</em>, a feature that looks monosemantic fails to fire where it should, because a more specific feature has absorbed its direction: a "starts with S" feature can stay silent on "short", which a dedicated "short" feature covers instead (<a href="https://arxiv.org/abs/2409.14507" target="_blank">Chanin et al. 2024</a>). Evaluating feature quality remains an open problem.</p>
+    </div>
+  </div>
+
+  <h3>Worked example: the Golden Gate Bridge feature</h3>
+  <p><a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html" target="_blank">Templeton et al. (Anthropic, 2024)</a> trained a 34-million-feature SAE on the middle-layer residual stream of Claude 3 Sonnet. Scanning which inputs maximally activated feature #31164353, they found it fired strongly on references to the Golden Gate Bridge, including the opening sentence of the bridge's Wikipedia article in several languages, and only weakly on other San Francisco landmarks. The feature even activated on images of the bridge, despite the SAE being trained only on text.</p>
+  <p>To test causality, they used <em>feature steering</em>: the residual stream x is decomposed as SAE(x) + error(x), one feature's activation is clamped to a target value inside the SAE reconstruction, and the error term is left unchanged. For the Golden Gate Bridge feature, the target was 10× its maximum observed activation. The model began to self-identify as the Golden Gate Bridge. This is related to — but distinct from — the activation steering in <a href="#steering" onclick="goTab('steering');return false">Tab 6</a>. Standard steering adds α·f̂ directly to the residual stream; feature steering instead sets z<sub>i</sub> to a fixed value inside the SAE's learned decomposition, leaving the reconstruction error intact. It operates within the SAE's own feature basis rather than injecting a raw vector. That doesn't make it a better steering method: on <a href="https://arxiv.org/abs/2501.17148" target="_blank">AxBench</a> (<a href="#steering" onclick="goTab('steering');return false">Tab 6</a>), SAE-based steering trailed prompting, fine-tuning and difference-in-means vectors.</p>
+
+  <div class="insight insight-pos">
+    <strong>Why SAE stands apart</strong>
+    <p>Most interpretability methods are hypothesis-driven: to probe for gender encoding you need labeled male/female sentences; to extract a "Golden Gate Bridge" direction via difference-in-means you need to already suspect that feature exists. You tell the method what to look for, and it tells you where to find it. SAEs flip this. The method runs unsupervised on raw activations and returns the feature inventory itself — you don't supply a target concept, you discover concepts you didn't know to ask about. Feature #31164353 was not specified in advance: the dictionary was trained on Claude's residual stream without labels, and the Golden Gate Bridge feature was one of the directions it produced. (Templeton et al. did use targeted prompts to locate features of interest, but only to search among features that already existed.)</p>
+  </div>
+
+  <div class="insight insight-neg">
+    <strong>Open problems</strong>
+    <p>SAEs require choosing the dictionary size (d<sub>sae</sub>, a hyperparameter with no principled optimum), and there is no guarantee that learned features correspond to anything the model actually "uses" — a feature could be a compression artifact. Evaluating SAEs is hard because there is no ground truth feature set to check against. Current research focuses on whether patching individual SAE features causally affects model behavior, and whether the learned dictionaries are consistent across training runs.</p>
+  </div>
+
+</section>
+
+<script>
+// ── Tab switching ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+// Open a tab from the link, e.g. ...#editing
+const linked = document.querySelector('.tab-btn[data-tab="' + location.hash.slice(1) + '"]');
+if (linked) linked.click();
+function goTab(id) {
+  const b = document.querySelector('.tab-btn[data-tab="' + id + '"]');
+  if (b) { b.click(); window.scrollTo(0, 0); }
+}
+
+// ── Probing grid ──
+const probeData = [
+  { label: 'Part of speech', early: 0.71, mid: 0.88, late: 0.84 },
+  { label: 'Syntactic depth', early: 0.62, mid: 0.81, late: 0.78 },
+  { label: 'Named entity type', early: 0.44, mid: 0.78, late: 0.89 },
+  { label: 'Factual attribute', early: 0.31, mid: 0.67, late: 0.85 },
+  { label: 'Sentiment', early: 0.55, mid: 0.74, late: 0.82 },
+  { label: 'Coreference', early: 0.38, mid: 0.72, late: 0.86 },
+];
+const probeGrid = document.getElementById('probe-grid');
+probeData.forEach(d => {
+  const best = Math.max(d.early, d.mid, d.late);
+  const bestVal = best.toFixed(2);
+  const cell = document.createElement('div');
+  cell.className = 'probe-item';
+  cell.innerHTML = `
+    <div class="pi-label">${d.label}</div>
+    <div class="pi-acc">${bestVal} peak</div>
+    <div style="display:flex;gap:4px;margin-top:8px;align-items:flex-end;">
+      ${['Early','Mid','Late'].map((name, i) => {
+        const v = [d.early, d.mid, d.late][i];
+        const h = Math.round(v * 40);
+        const isB = v === best;
+        return `<div style="flex:1;text-align:center;">
+          <div style="height:${h}px;background:${isB?'var(--accent)':'var(--border2)'};border-radius:3px 3px 0 0;margin-bottom:3px;"></div>
+          <div style="font-size:10px;color:var(--text3);">${name}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  probeGrid.appendChild(cell);
+});
+
+// ── Logit Lens ──
+const lensData = [
+  { layer: 'Embed', tok: 'in', prob: 0.08, correct: false, close: false },
+  { layer: 'L2', tok: 'the', prob: 0.12, correct: false, close: false },
+  { layer: 'L6', tok: 'Europe', prob: 0.15, correct: false, close: false },
+  { layer: 'L10', tok: 'a', prob: 0.10, correct: false, close: false },
+  { layer: 'L14', tok: 'France', prob: 0.22, correct: false, close: true },
+  { layer: 'L18', tok: 'France', prob: 0.31, correct: false, close: true },
+  { layer: 'L22', tok: 'Paris', prob: 0.29, correct: true, close: false },
+  { layer: 'L26', tok: 'Paris', prob: 0.44, correct: true, close: false },
+  { layer: 'L32', tok: 'Paris', prob: 0.63, correct: true, close: false },
+  { layer: 'L38', tok: 'Paris', prob: 0.78, correct: true, close: false },
+  { layer: 'L44', tok: 'Paris', prob: 0.88, correct: true, close: false },
+  { layer: 'L47', tok: 'Paris', prob: 0.93, correct: true, close: false },
+];
+const lensGrid = document.getElementById('lens-grid');
+lensData.forEach(d => {
+  const cell = document.createElement('div');
+  cell.className = 'lens-cell' + (d.correct ? ' lens-correct' : d.close ? ' lens-close' : '');
+  cell.innerHTML = `<div class="lc-layer">${d.layer}</div><div class="lc-tok">${d.tok}</div><div class="lc-prob">${(d.prob*100).toFixed(0)}%</div>`;
+  lensGrid.appendChild(cell);
+});
+
+// ── DLA bars ──
+const dlaData = {
+  paris: [
+    { lbl: 'Embed', v: -0.3 },
+    { lbl: 'L0 Attn', v: 0.1 }, { lbl: 'L0 MLP', v: 0.2 },
+    { lbl: 'L8 Attn', v: 0.5 }, { lbl: 'L8 MLP', v: 1.2 },
+    { lbl: 'L12 Attn', v: 0.7 }, { lbl: 'L12 MLP', v: 2.8 },
+    { lbl: 'L16 Attn', v: 0.4 }, { lbl: 'L16 MLP', v: 3.4 },
+    { lbl: 'L24 Attn', v: 0.2 }, { lbl: 'L24 MLP', v: 1.1 },
+    { lbl: 'L36 Attn', v: -0.1 }, { lbl: 'L36 MLP', v: 0.4 },
+  ],
+  france: [
+    { lbl: 'Embed', v: 0.2 },
+    { lbl: 'L0 Attn', v: 0.4 }, { lbl: 'L0 MLP', v: 0.5 },
+    { lbl: 'L8 Attn', v: 1.0 }, { lbl: 'L8 MLP', v: 0.8 },
+    { lbl: 'L12 Attn', v: 0.6 }, { lbl: 'L12 MLP', v: 0.3 },
+    { lbl: 'L16 Attn', v: 0.2 }, { lbl: 'L16 MLP', v: -0.3 },
+    { lbl: 'L24 Attn', v: -0.2 }, { lbl: 'L24 MLP', v: -0.6 },
+    { lbl: 'L36 Attn', v: -0.4 }, { lbl: 'L36 MLP', v: -0.7 },
+  ],
+  london: [
+    { lbl: 'Embed', v: 0.3 },
+    { lbl: 'L0 Attn', v: 0.1 }, { lbl: 'L0 MLP', v: 0.1 },
+    { lbl: 'L8 Attn', v: -0.3 }, { lbl: 'L8 MLP', v: -0.9 },
+    { lbl: 'L12 Attn', v: -0.5 }, { lbl: 'L12 MLP', v: -1.8 },
+    { lbl: 'L16 Attn', v: -0.7 }, { lbl: 'L16 MLP', v: -2.6 },
+    { lbl: 'L24 Attn', v: -0.3 }, { lbl: 'L24 MLP', v: -1.0 },
+    { lbl: 'L36 Attn', v: -0.1 }, { lbl: 'L36 MLP', v: -0.3 },
+  ],
+};
+function renderDLA(tok) {
+  const rows = dlaData[tok];
+  const absMax = Math.max(...rows.map(r => Math.abs(r.v)));
+  const container = document.getElementById('dla-bars');
+  container.innerHTML = '';
+  rows.forEach(r => {
+    const pct = (Math.abs(r.v) / absMax) * 46;
+    const isPos = r.v >= 0;
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `<span class="bar-lbl">${r.lbl}</span>
+      <div class="bar-track">
+        <div class="bar-zero"></div>
+        <div class="bar-fill ${isPos?'pos':'neg'}" style="width:${pct}%;${isPos?'left:50%':'left:'+(50-pct)+'%'};"></div>
+      </div>
+      <span class="bar-num">${r.v>0?'+':''}${r.v.toFixed(1)}</span>`;
+    container.appendChild(row);
+  });
+}
+renderDLA('paris');
+document.getElementById('dla-sel').addEventListener('change', e => renderDLA(e.target.value));
+
+// ── Patch toggles ──
+// ── Steering widget ──
+const steerData = {
+  sycophancy: {
+    prompt: 'Prompt: "Is my business plan good?"',
+    posLabel: 'Sycophantic (+)', negLabel: 'Honest (−)',
+    base:        {it:14, this:10, the:8, a:7, there:5},
+    pos_concept: {absolutely:24, brilliant:18, perfect:14, exactly:11, wonderful:8},
+    neg_concept: {concerns:22,  issues:17,    however:14, consider:11, weaknesses:8}
+  },
+  royalty: {
+    prompt: 'Prompt: "The most powerful person in the room was"',
+    posLabel: 'Royalty (+)', negLabel: 'Common (−)',
+    base:        {the:12,  clearly:9, someone:8, a:7,      undoubtedly:6},
+    pos_concept: {king:24, queen:18,  prince:13, monarch:11,the:7},
+    neg_concept: {worker:20,ordinary:15,person:12,someone:9,citizen:7}
+  },
+  anger: {
+    prompt: 'Prompt: "When she heard the news, she felt"',
+    posLabel: 'Anger (+)', negLabel: 'Calm (−)',
+    base:        {a:14,     relieved:9,  confused:8, surprised:7, overwhelmed:6},
+    pos_concept: {furious:24,enraged:18, outraged:14,infuriated:11,livid:8},
+    neg_concept: {peaceful:22,serene:16, calm:13,    tranquil:10, composed:8}
+  },
+  french: {
+    prompt: 'Prompt: "Bonjour, je voudrais"',
+    posLabel: 'French (+)', negLabel: 'English (−)',
+    base:        {to:15, a:12,  the:9, some:7,   order:6},
+    pos_concept: {un:22, une:17,le:13, vous:10,  savoir:8},
+    neg_concept: {get:20,have:16,some:13,please:10,just:8}
+  }
+};
+
+function renderSteerTokens(containerId, tokens, markedKeys, markMode) {
+  // markMode: 'amplify' (accent) | 'suppress' (neg) | null
+  const el = document.getElementById(containerId);
+  const maxP = tokens[0].p;
+  el.innerHTML = tokens.map(({t, p}) => {
+    const isMarked = markedKeys && markedKeys.has(t);
+    const pct = Math.round(p / maxP * 100);
+    let bg, col, barCol;
+    if (isMarked && markMode === 'amplify') {
+      bg = 'var(--accent-light)'; col = 'var(--accent)'; barCol = 'var(--accent)';
+    } else if (isMarked && markMode === 'suppress') {
+      bg = 'var(--neg-light)'; col = 'var(--neg)'; barCol = 'var(--neg)';
+    } else {
+      bg = 'var(--surface)'; col = 'var(--text2)'; barCol = 'var(--border2)';
+    }
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${col};min-width:96px;background:${bg};padding:3px 8px;border-radius:4px;">${t}</div>
+      <div style="flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${barCol};border-radius:4px;"></div></div>
+      <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);min-width:34px;text-align:right;font-variant-numeric:tabular-nums;">${p.toFixed(0)}%</div>
+    </div>`;
+  }).join('');
+}
+
+function updateSteering() {
+  const concept = document.getElementById('steer-concept').value;
+  const alpha = parseInt(document.getElementById('alpha-slider').value);
+  document.getElementById('alpha-val').textContent = (alpha > 0 ? '+' : '') + alpha;
+  const d = steerData[concept];
+  document.getElementById('steer-prompt').textContent = d.prompt;
+  document.getElementById('steer-neg-label').textContent = '−20 · ' + d.negLabel;
+  document.getElementById('steer-pos-label').textContent = d.posLabel + ' · +20';
+
+  const absT = Math.abs(alpha) / 20;
+  const all = {};
+  let activeDir;
+
+  if (alpha > 0) {
+    // Steer toward pos_concept
+    activeDir = d.pos_concept;
+    Object.entries(d.base).forEach(([k, v]) => { all[k] = v * (1 - absT); });
+    Object.entries(d.pos_concept).forEach(([k, v]) => { all[k] = (all[k] || 0) + v * absT; });
+  } else if (alpha < 0) {
+    // Steer toward neg_concept
+    activeDir = d.neg_concept;
+    Object.entries(d.base).forEach(([k, v]) => { all[k] = v * (1 - absT); });
+    Object.entries(d.neg_concept).forEach(([k, v]) => { all[k] = (all[k] || 0) + v * absT; });
+  } else {
+    activeDir = null;
+    Object.entries(d.base).forEach(([k, v]) => { all[k] = v; });
+  }
+
+  const total = Object.values(all).reduce((a, b) => a + b, 0);
+  const merged = Object.entries(all)
+    .map(([tok, p]) => ({t: tok, p: p / total * 100}))
+    .sort((a, b) => b.p - a.p).slice(0, 5);
+
+  const baseTotal = Object.values(d.base).reduce((a, b) => a + b, 0);
+  const baseSorted = Object.entries(d.base)
+    .map(([tok, p]) => ({t: tok, p: p / baseTotal * 100}))
+    .sort((a, b) => b.p - a.p).slice(0, 5);
+
+  // Highlight tokens distinctive to the active direction
+  const dirKeys = activeDir
+    ? new Set(Object.keys(activeDir).filter(k => !(k in d.base) || activeDir[k] > (d.base[k] || 0)))
+    : null;
+
+  const colLabel = document.getElementById('steer-col-label');
+  if (alpha > 0) {
+    colLabel.textContent = d.posLabel;
+    renderSteerTokens('steer-out-tokens', merged, dirKeys, 'amplify');
+  } else if (alpha < 0) {
+    colLabel.textContent = d.negLabel;
+    renderSteerTokens('steer-out-tokens', merged, dirKeys, 'amplify');
+  } else {
+    colLabel.textContent = 'Steered (α = 0)';
+    renderSteerTokens('steer-out-tokens', merged, null, null);
+  }
+  renderSteerTokens('steer-base-tokens', baseSorted, null, null);
+}
+
+document.getElementById('steer-concept').addEventListener('change', updateSteering);
+document.getElementById('alpha-slider').addEventListener('input', updateSteering);
+updateSteering();
+
+// ── Causal Tracing Heatmap ──
+function drawCTHeatmap() {
+  const el = document.getElementById('ct-heatmap');
+  if (!el) return;
+  const ctx = el.getContext('2d');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+    (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme:dark)').matches);
+
+  const TOKENS = ['The','Eiffel','Tower','is','in'];
+  const NL = 12;
+
+  // Indirect effect (0–1 scale) per layer per token: rows=layers, cols=tokens
+  const MLP = [
+    [.01,.04,.05,.01,.02],[.02,.07,.09,.01,.03],[.02,.11,.14,.02,.03],
+    [.03,.21,.27,.02,.04],[.04,.44,.58,.03,.05],[.04,.63,.85,.04,.06],
+    [.04,.59,.81,.04,.06],[.04,.41,.56,.04,.06],[.03,.25,.33,.03,.05],
+    [.02,.14,.18,.02,.04],[.02,.07,.09,.02,.03],[.01,.04,.06,.01,.02]
+  ];
+  const ATN = [
+    [.02,.14,.09,.03,.04],[.02,.11,.08,.02,.05],[.03,.09,.07,.02,.07],
+    [.02,.07,.06,.03,.09],[.02,.05,.05,.02,.13],[.02,.04,.04,.03,.20],
+    [.02,.04,.03,.03,.28],[.02,.03,.03,.02,.34],[.02,.02,.02,.02,.40],
+    [.01,.02,.02,.02,.37],[.01,.02,.02,.01,.30],[.01,.01,.01,.01,.22]
+  ];
+
+  function heat(v) {
+    if (isDark) {
+      const r = Math.round(31 + 199*v), g = Math.round(31 - 10*v), b = Math.round(28 - 18*v);
+      return `rgb(${Math.min(255,r)},${Math.max(0,g)},${Math.max(0,b)})`;
+    }
+    const r = Math.round(237 + (192-237)*v), g = Math.round(234 + (57-234)*v), b = Math.round(226 + (43-226)*v);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  const fg  = isDark ? '#6E6C66' : '#7A7870';
+  const fg2 = isDark ? '#B8B5AE' : '#504E48';
+  const bgPage = isDark ? '#171715' : '#F7F5F0';
+
+  const lW=42, tH=28, cW=50, sH=12, gp=1, lg=3;
+  const lH = sH*2 + gp;
+  const W = lW + TOKENS.length * cW;
+  const H = tH + NL*(lH+lg) - lg;
+
+  const R = Math.min(window.devicePixelRatio||1, 2);
+  el.width  = W*R; el.height = H*R;
+  el.style.width  = W+'px'; el.style.height = H+'px';
+  ctx.scale(R, R);
+
+  ctx.fillStyle = bgPage;
+  ctx.fillRect(0, 0, W, H);
+
+  // Token headers
+  ctx.font = `500 11px 'DM Sans',sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = fg2;
+  TOKENS.forEach((t,i) => ctx.fillText(t, lW + i*cW + cW/2, tH/2));
+
+  for (let l = 0; l < NL; l++) {
+    const y = tH + l*(lH+lg);
+
+    // Layer label
+    ctx.font = `400 9px 'JetBrains Mono',monospace`;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = fg;
+    ctx.fillText(`L${l}`, lW-6, y + lH/2);
+
+    for (let t = 0; t < TOKENS.length; t++) {
+      const x = lW + t*cW;
+      // MLP sub-row (top)
+      ctx.fillStyle = heat(MLP[l][t]);
+      ctx.fillRect(x+1, y,        cW-2, sH);
+      // Attn sub-row (bottom)
+      ctx.fillStyle = heat(ATN[l][t]);
+      ctx.fillRect(x+1, y+sH+gp, cW-2, sH);
+    }
+  }
+
+  // Legend: MLP / Attn labels on the left of first layer
+  ctx.font = `400 8px 'DM Sans',sans-serif`;
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = fg;
+  ctx.fillText('MLP',  lW-20, tH + sH/2);
+  ctx.fillText('Attn', lW-20, tH + sH + gp + sH/2);
+}
+
+drawCTHeatmap();
+new MutationObserver(drawCTHeatmap).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change', drawCTHeatmap);
+</script>
+</body>
+</html>
