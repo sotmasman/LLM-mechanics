@@ -47,6 +47,9 @@ h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-siz
 .foot { margin-top: 40px; font-size: 14px; color: var(--text3); max-width: 680px; }
 .foot code { font-size: 13px; }
 .foot a { color: var(--accent); }
+.code { max-width: 680px; margin: -20px 0 32px; font-size: 15px; color: var(--text2); }
+.code a { color: var(--accent); }
+.code code { font-size: 13.5px; }
 </style>
 <style>
 .theme-btn{margin-left:auto;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;
@@ -59,6 +62,7 @@ h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-siz
   <div class="top"><div class="label">LLM Mechanics</div><button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Switch between light and dark"></button></div>
   <h1>How large language models work, and how to study them</h1>
   <p class="intro">Nine lessons, from the artificial neuron to hands-on interpretability experiments on GPT-2. Lessons 1–8 explain the ideas with interactive figures; Lesson 9 applies the methods to a real model, with MATLAB scripts that reproduce every result.</p>
+  <p class="code">The code (<code>Matlab code</code>, <code>Python code</code>) and the instructions for running it are in the repository <a href="https://github.com/sotmasman/LLM-mechanics">github.com/sotmasman/LLM-mechanics</a>; see its README.</p>
   <nav class="grid" aria-label="Lessons">
     <a class="card" href="lesson1.html">
       <span class="num">Lesson 1</span>
@@ -106,7 +110,7 @@ h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-siz
       <span class="sub">Hands-on experiments with a real language model — activations, attention, and the residual stream under the microscope.</span>
     </a>
   </nav>
-  <p class="foot">The code (<code>Matlab code</code>, <code>Python code</code>) and the instructions for running it are in the repository <a href="https://github.com/sotmasman/LLM-mechanics">github.com/sotmasman/LLM-mechanics</a>; see its README. Lessons and code are released under the MIT License.</p>
+  <p class="foot">Lessons and code are released under the MIT License.</p>
 </main>
 <script>
 (function(){
