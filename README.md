@@ -1,9 +1,16 @@
 # LLM Mechanics
 
 Nine lessons on how large language models work and how to study them, from the artificial neuron to
-hands-on interpretability experiments on GPT-2, with the code that reproduces every result of Lesson 9.
+hands-on interpretability experiments on GPT-2, with MATLAB and Python code that reproduces the experiments.
 
 **Website:** https://sotmasman.github.io/LLM-mechanics/
+
+> **Developer's note.** These lessons and code were designed for me (Sotiris) to learn about the mechanics of
+> language models. The lessons and code were created by Claude Opus 5.5 (Anthropic) and underwent multiple
+> rounds of revisions in consultation with me. The material is primarily aimed at systems/computational
+> neuroscience readers interested in getting an introduction into how language models work and how they are
+> studied. I hope you find it a useful learning tool. Please contact me with any feedback.
+> —Sotiris
 
 | Folder | What it holds |
 |---|---|
@@ -14,13 +21,12 @@ hands-on interpretability experiments on GPT-2, with the code that reproduces ev
 Lessons 1–8 need nothing but a browser; their interactive figures run in the page. Lesson 9 runs real
 experiments on GPT-2, and its figures were made with the code in this repository.
 
-## Publishing the website
+## Reading the lessons
 
-On GitHub: **Settings → Pages → Build and deployment → Deploy from a branch**, choose the branch and the
-`/docs` folder. The pages link to each other with relative links (`lesson7.html#dla` opens Lesson 7 at its
-DLA tab), so the site also works when opened from a local copy of `docs/` through any web server. The pages
-load fonts from Google Fonts and Lesson 1's tokenizer demo loads `gpt-tokenizer` from jsDelivr; everything
-else is in the folder.
+Online at https://sotmasman.github.io/LLM-mechanics/. To read them offline, download this repository and
+serve the `docs/` folder with any local web server, e.g. `python -m http.server` run inside `docs/`, then
+open http://localhost:8000. Offline, the pages fall back to system fonts, and Lesson 1's live tokenizer demo
+(which loads `gpt-tokenizer` from jsDelivr) needs an internet connection; everything else is in the folder.
 
 ## What the code needs
 
