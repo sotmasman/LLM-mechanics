@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>LLM Mechanics</title>
+<meta name="description" content="Nine lessons on how large language models work and how to study them, from the artificial neuron to hands-on interpretability experiments on GPT-2, with code.">
+<link rel="canonical" href="https://sotmasman.github.io/LLM-mechanics/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap">
@@ -35,6 +37,7 @@ h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-siz
 .sub { font-size: 14px; color: var(--text2); }
 .foot { margin-top: 40px; font-size: 14px; color: var(--text3); max-width: 680px; }
 .foot code { font-size: 13px; }
+.foot a { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -46,7 +49,7 @@ h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-siz
     <a class="card" href="lesson1.html">
       <span class="num">Lesson 1</span>
       <span class="title">Neural Networks and Language as Probability</span>
-      <span class="sub">Tabs 1–5 cover the substrate underlying every LLM: what a neural network computes, how it learns, and how it represents information. Tabs 6–10 cover the framing that turns such a network into a language model: text as tokens, …</span>
+      <span class="sub">What a neural network computes, how it learns and represents information, and how text becomes tokens, vectors and next-token probabilities.</span>
     </a>
     <a class="card" href="lesson2.html">
       <span class="num">Lesson 2</span>
@@ -89,7 +92,7 @@ h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-siz
       <span class="sub">Hands-on experiments with a real language model — activations, attention, and the residual stream under the microscope.</span>
     </a>
   </nav>
-  <p class="foot">The code for Lesson 9 (<code>Matlab code</code>, <code>Python code</code>) and the instructions for running it are in this site's repository; see its README.</p>
+  <p class="foot">The code for Lesson 9 (<code>Matlab code</code>, <code>Python code</code>) and the instructions for running it are in the repository <a href="https://github.com/sotmasman/LLM-mechanics">github.com/sotmasman/LLM-mechanics</a>; see its README. Lessons and code are released under the MIT License.</p>
 </main>
 </body>
 </html>

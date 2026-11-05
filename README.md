@@ -3,6 +3,8 @@
 Nine lessons on how large language models work and how to study them, from the artificial neuron to
 hands-on interpretability experiments on GPT-2, with the code that reproduces every result of Lesson 9.
 
+**Website:** https://sotmasman.github.io/LLM-mechanics/
+
 | Folder | What it holds |
 |---|---|
 | `docs/` | The website: `index.html`, `lesson1.html` … `lesson9.html`, and `img/` (the figures of Lesson 9). Static HTML, no build step. |
@@ -149,6 +151,12 @@ output folder and λ = 5; `sae_l5_lam1.json` and `sae_l5_lam20.json` are the oth
   given a `checkpoint`; Lesson 9 uses the final, published weights throughout.
 - Prompts are passed to Python through a temporary UTF-8 file, so any characters (accents, Greek) survive
   the command line.
+
+## License
+
+Everything in this repository, the lessons and figures in `docs/` as well as the code, is released under the
+MIT License (see `LICENSE`). The models and datasets used here have their own licenses: GPT-2 (MIT),
+Pythia (Apache 2.0), OpenWebText and WikiText-2 (see their pages).
 
 ## For AI agents
 
