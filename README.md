@@ -9,7 +9,8 @@ hands-on interpretability experiments on GPT-2, with MATLAB and Python code that
 > language models. The lessons and code were created by Claude Opus 5.5 (Anthropic) and underwent multiple
 > rounds of revisions in consultation with me. The material is primarily aimed at systems/computational
 > neuroscience readers interested in getting an introduction into how language models work and how they are
-> studied. I hope you find it a useful learning tool. Please contact me with any feedback.
+> studied. I hope you find it a useful learning tool. Please contact me with any feedback; my email is on my
+> [lab website](https://masmanidislab.neurobio.ucla.edu/).
 > —Sotiris
 
 | Folder | What it holds |
