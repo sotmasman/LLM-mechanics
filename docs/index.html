@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){var t;try{t=localStorage.getItem('llm-theme')}catch(e){}
+document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>LLM Mechanics</title>
@@ -16,12 +18,19 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #171715; --surface: #1F1F1C; --text: #F0EDE6; --text2: #B8B5AE; --text3: #8A877F;
     --accent: #6B9EF8; --accent-light: #1A2A4A; --border: #38362E;
     color-scheme: dark;
   }
 }
+:root[data-theme="dark"] {
+  --bg: #171715; --surface: #1F1F1C; --text: #F0EDE6; --text2: #B8B5AE; --text3: #8A877F;
+  --accent: #6B9EF8; --accent-light: #1A2A4A; --border: #38362E;
+  color-scheme: dark;
+}
+.top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.top .label { margin-bottom: 0; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; line-height: 1.6; }
 .wrap { max-width: 980px; margin: 0 auto; padding: 48px 20px 64px; }
@@ -39,10 +48,15 @@ h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-siz
 .foot code { font-size: 13px; }
 .foot a { color: var(--accent); }
 </style>
+<style>
+.theme-btn{margin-left:auto;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;
+  border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;white-space:nowrap}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
 </head>
 <body>
 <main class="wrap">
-  <div class="label">LLM Mechanics</div>
+  <div class="top"><div class="label">LLM Mechanics</div><button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Switch between light and dark"></button></div>
   <h1>How large language models work, and how to study them</h1>
   <p class="intro">Nine lessons, from the artificial neuron to hands-on interpretability experiments on GPT-2. Lessons 1–8 explain the ideas with interactive figures; Lesson 9 applies the methods to a real model, with MATLAB scripts that reproduce every result.</p>
   <nav class="grid" aria-label="Lessons">
@@ -94,5 +108,28 @@ h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-siz
   </nav>
   <p class="foot">The code for Lesson 9 (<code>Matlab code</code>, <code>Python code</code>) and the instructions for running it are in the repository <a href="https://github.com/sotmasman/LLM-mechanics">github.com/sotmasman/LLM-mechanics</a>; see its README. Lessons and code are released under the MIT License.</p>
 </main>
+<script>
+(function(){
+  var RELOAD = false;
+  function label(){var d=document.documentElement.getAttribute('data-theme')!=='light';
+    document.querySelectorAll('.theme-btn').forEach(function(b){b.textContent=d?'\u2600 Light':'\u263E Dark';});}
+  window.toggleTheme=function(){
+    var t=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+    document.documentElement.setAttribute('data-theme',t);
+    try{localStorage.setItem('llm-theme',t)}catch(e){}
+    label();
+    if(RELOAD){                       // figures drawn on load: redraw them by reloading on the same tab and scroll position
+      var b=document.querySelector('.tab-btn.active'),id=b&&(b.dataset.tab||((b.getAttribute('onclick')||'').match(/'([^']+)'\)/)||[])[1]);
+      try{sessionStorage.setItem('llm-scroll',String(window.scrollY))}catch(e){}
+      if(id) history.replaceState(null,'','#'+id.replace(/^tab-/,''));
+      location.reload();
+    }
+  };
+  label();
+  window.addEventListener('load',function(){setTimeout(function(){var y=null;
+    try{y=sessionStorage.getItem('llm-scroll');sessionStorage.removeItem('llm-scroll')}catch(e){}
+    if(y!==null) window.scrollTo(0,+y);},0);});
+})();
+</script>
 </body>
 </html>

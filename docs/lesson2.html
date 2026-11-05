@@ -1,4 +1,11 @@
-<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head>
+<script>(function(){var t;try{t=localStorage.getItem('llm-theme')}catch(e){}
+document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');})();</script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
+.theme-btn{margin-left:auto;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;
+  border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;white-space:nowrap}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head><body>
 <title>Lesson 2 · The Transformer</title>
 <meta name="description" content="Almost every modern language model is built from a stack of transformer blocks (state-space models such as Mamba, and hybrids, are the main exceptions). …">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -225,6 +232,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: va
     <a href="lesson8.html" class="ls-btn">8 · Neural Systems</a>
     <a href="lesson9.html" class="ls-btn">9 · Hands-On</a>
   </div>
+  <button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Switch between light and dark"></button>
 </nav>
 
 <header class="page-header">
@@ -1468,6 +1476,29 @@ function goTab(id) {
     (b.getAttribute('onclick') || '').includes("'" + id + "'"));
   if (b) { b.click(); window.scrollTo(0, 0); }
 }
+</script>
+<script>
+(function(){
+  var RELOAD = false;
+  function label(){var d=document.documentElement.getAttribute('data-theme')!=='light';
+    document.querySelectorAll('.theme-btn').forEach(function(b){b.textContent=d?'\u2600 Light':'\u263E Dark';});}
+  window.toggleTheme=function(){
+    var t=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+    document.documentElement.setAttribute('data-theme',t);
+    try{localStorage.setItem('llm-theme',t)}catch(e){}
+    label();
+    if(RELOAD){                       // figures drawn on load: redraw them by reloading on the same tab and scroll position
+      var b=document.querySelector('.tab-btn.active'),id=b&&(b.dataset.tab||((b.getAttribute('onclick')||'').match(/'([^']+)'\)/)||[])[1]);
+      try{sessionStorage.setItem('llm-scroll',String(window.scrollY))}catch(e){}
+      if(id) history.replaceState(null,'','#'+id.replace(/^tab-/,''));
+      location.reload();
+    }
+  };
+  label();
+  window.addEventListener('load',function(){setTimeout(function(){var y=null;
+    try{y=sessionStorage.getItem('llm-scroll');sessionStorage.removeItem('llm-scroll')}catch(e){}
+    if(y!==null) window.scrollTo(0,+y);},0);});
+})();
 </script>
 </body>
 </html>
