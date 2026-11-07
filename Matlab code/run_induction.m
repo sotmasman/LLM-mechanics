@@ -27,8 +27,8 @@ checkpointRange = [];   % training steps (checkpoints on disk); [] = the trained
 nSeq            = 20;                      % sequences
 seqLen          = 50;                      % random tokens per copy
 seed            = 1;
-ablate_type     = 'layer';                      % '' = no ablation; or 'head', 'mlp', 'attn', 'layer' (as in run_ablation)
-ablate_which    = [5];                      % 'head': [layer head] rows, e.g. [5 5; 6 9]; others: layers, e.g. 5:7
+ablate_type     = '';                           % '' = no ablation (the default); or 'head', 'mlp', 'attn', 'layer' (as in run_ablation)
+ablate_which    = [];                       % 'head': [layer head] rows, e.g. [5 5; 6 9]; others: layers, e.g. 5:7
 ablate_how      = 'zero';                  % 'zero', 'noise', or 'mean' (see ablate); applied at every position
 
 %****************************************************
